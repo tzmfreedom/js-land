@@ -9,7 +9,8 @@ var INVALID_INTERVAL = Tree.INVALID_INTERVAL;
 var TerminalNode = Tree.TerminalNode;
 var TerminalNodeImpl = Tree.TerminalNodeImpl;
 
-var input = require('fs').readFileSync('/dev/stdin', 'utf8');
+// var input = require('fs').readFileSync('/dev/stdin', 'utf8');
+var input = require('fs').readFileSync(process.argv[2], 'utf8');
 var chars = new antlr4.InputStream(input);
 var lexer = new ApexLexer.apexLexer(chars);
 var tokens  = new antlr4.CommonTokenStream(lexer);
@@ -18,7 +19,7 @@ parser.buildParseTrees = true;
 var tree = parser.compilationUnit();
 
 var visitor = new ApexVisitor.apexVisitor();
-visitor.visit(tree);
+console.log(visitor.visit(tree));
 
 /*
 walk(tree, 0);

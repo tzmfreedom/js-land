@@ -1,7 +1,7 @@
 // Generated from apex.g4 by ANTLR 4.7.1
 // jshint ignore: start
 var antlr4 = require('antlr4/index');
-import { ApexMethod, ApexClass, ApexObject, ApexClassStore } from './apexClass'
+var ApexClass = require('./apexClass');
 
 // This class defines a complete generic visitor for a parse tree produced by apexParser.
 
@@ -21,19 +21,29 @@ apexVisitor.prototype.visitCompilationUnit = function(ctx) {
 
 // Visit a parse tree produced by apexParser#typeDeclaration.
 apexVisitor.prototype.visitTypeDeclaration = function(ctx) {
-  return this.visitChildren(ctx);
+    let classDecl = ctx.classDeclaration().accept(this);
+    classDecl.modifier = ctx.classOrInterfaceModifier().map((modifier) => {
+        return modifier.accept(this)
+    });
+    return classDecl;
 };
 
 
 // Visit a parse tree produced by apexParser#modifier.
 apexVisitor.prototype.visitModifier = function(ctx) {
-  return this.visitChildren(ctx);
+    if (ctx.classOrInterfaceModifier()) {
+        return ctx.classOrInterfaceModifier().accept(this);
+    }
+    return ctx.getText();
 };
 
 
 // Visit a parse tree produced by apexParser#classOrInterfaceModifier.
 apexVisitor.prototype.visitClassOrInterfaceModifier = function(ctx) {
-  return this.visitChildren(ctx);
+    if (ctx.annotation()) {
+        return ctx.annotation().accept(this);
+    }
+    return ctx.getText();
 };
 
 
@@ -47,12 +57,23 @@ apexVisitor.prototype.visitVariableModifier = function(ctx) {
 apexVisitor.prototype.visitClassDeclaration = function(ctx) {
     let className = ctx.Identifier().getText();
     let superClass = ctx.type().getText();
-    let implements = ctx.typeList().map((type) => { type.getText() });
+    let implementClasses = [];
+    if (ctx.typeList()) {
+        implementClasses = ctx.typeList().map((type) => { return type.getText() });
+    }
     let declarations = ctx.classBody().accept(this);
-    let apexClass = new ApexClass(className, superClass, implements, instanceFields, staticFields, instanceMethods, staticMethods)
-    ApexClassStore.register(className, apexClass);
+    let apexClass = new ApexClass.ApexClass(
+        className,
+        superClass,
+        implementClasses,
+        declarations.instanceFields,
+        declarations.staticFields,
+        declarations.instanceMethods,
+        declarations.staticMethods
+    );
+    ApexClass.ApexClassStore.register(className, apexClass);
 
-    return null;
+    return apexClass;
 };
 
 
@@ -112,10 +133,29 @@ apexVisitor.prototype.visitTypeList = function(ctx) {
 
 // Visit a parse tree produced by apexParser#classBody.
 apexVisitor.prototype.visitClassBody = function(ctx) {
-    let classBodyDeclarations = ctx.classBodyDeclaration().map((declaration) => {
-});
-
-    return this.visitChildren(ctx);
+    let properties = {
+        instanceFields: [],
+        staticFields: [],
+        instanceMethods: [],
+        staticMethods: [],
+    };
+    ctx.classBodyDeclaration().forEach((declaration) => {
+        let decl = declaration.accept(this);
+        if (decl instanceof ApexClass.ApexMethod) {
+            if (decl.modifiers.includes('static')) {
+                properties.staticMethods.push(decl);
+            } else {
+                properties.instanceMethods.push(decl);
+            }
+        } else if (decl instanceof ApexClass.InstanceField) {
+            if (decl.modifiers.includes('static')) {
+                properties.staticFields.push(decl);
+            } else {
+                properties.instanceFields.push(decl);
+            }
+        }
+    });
+    return properties;
 };
 
 
@@ -127,27 +167,16 @@ apexVisitor.prototype.visitInterfaceBody = function(ctx) {
 
 // Visit a parse tree produced by apexParser#classBodyDeclaration.
 apexVisitor.prototype.visitClassBodyDeclaration = function(ctx) {
-    let declarations = {
-        instanceFields: [],
-        staticField: [],
-        instanceMethods: [],
-        staticMethods: [],
-    };
-    let modifiers = ctx.modifier();
-    console.log(modifiers);
-    ctx.memberDeclaration().forEach((declaration) => {
-        var decl = declaration.accept(this);
-        if (decl instanceof ApexMethod) {
-            declarations.instanceMethods.push(decl);
-        }
-    });
-    return declarations
+    let declaration = ctx.memberDeclaration();
+    let decl = declaration.accept(this);
+    decl.modifiers = ctx.modifier().map((modifier) => { return modifier.accept(this) });
+    return decl;
 };
 
 
 // Visit a parse tree produced by apexParser#memberDeclaration.
 apexVisitor.prototype.visitMemberDeclaration = function(ctx) {
-    return this.visitChildren(ctx);
+    return this.visitChildren(ctx)[0];
 };
 
 
@@ -155,11 +184,9 @@ apexVisitor.prototype.visitMemberDeclaration = function(ctx) {
 apexVisitor.prototype.visitMethodDeclaration = function(ctx) {
     let methodName = ctx.Identifier();
     let throws = ctx.qualifiedNameList();
-    let statements = ctx.methodBody().blockStatement();
-    console.log(methodName);
-    console.log(throws);
+    let statements = ctx.methodBody().accept(this);
 
-    return new ApexMethod(methodName, throws, statements);
+    return new ApexClass.ApexMethod(methodName, throws, statements);
 };
 
 
@@ -184,10 +211,8 @@ apexVisitor.prototype.visitGenericConstructorDeclaration = function(ctx) {
 // Visit a parse tree produced by apexParser#fieldDeclaration.
 apexVisitor.prototype.visitFieldDeclaration = function(ctx) {
     let type = ctx.type();
-    let throws = ctx.variableDeclarators().forEach((variableDeclarator) => {
-    });
-
-    return new ApexMethod(methodName, throws, statements);
+    let declarators = ctx.variableDeclarators().accept(this);
+    return new ApexClass.InstanceField(type, declarators);
 };
 
 
@@ -241,7 +266,7 @@ apexVisitor.prototype.visitGenericInterfaceMethodDeclaration = function(ctx) {
 
 // Visit a parse tree produced by apexParser#variableDeclarators.
 apexVisitor.prototype.visitVariableDeclarators = function(ctx) {
-  return this.visitChildren(ctx);
+  return ctx.variableDeclarator();
 };
 
 
@@ -364,7 +389,7 @@ apexVisitor.prototype.visitLiteral = function(ctx) {
 
 // Visit a parse tree produced by apexParser#annotation.
 apexVisitor.prototype.visitAnnotation = function(ctx) {
-  return this.visitChildren(ctx);
+  return ctx.annotationName().qualifiedName().getText();
 };
 
 
@@ -454,7 +479,7 @@ apexVisitor.prototype.visitBlock = function(ctx) {
 
 // Visit a parse tree produced by apexParser#blockStatement.
 apexVisitor.prototype.visitBlockStatement = function(ctx) {
-  return this.visitChildren(ctx);
+    return ctx.statement();
 };
 
 
@@ -598,7 +623,6 @@ apexVisitor.prototype.visitApexDbExpression = function(ctx) {
 
 // Visit a parse tree produced by apexParser#expression.
 apexVisitor.prototype.visitExpression = function(ctx) {
-  console.log(ctx.expression());
   return this.visitChildren(ctx);
 };
 

@@ -42,7 +42,7 @@ grammar apex;
 
 // starting point for parsing a apexcode file
 compilationUnit
-    :   typeDeclaration* EOF
+    :   typeDeclaration EOF
     ;
 
 typeDeclaration
