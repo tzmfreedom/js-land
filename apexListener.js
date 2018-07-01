@@ -533,15 +533,6 @@ apexListener.prototype.exitElementValueArrayInitializer = function(ctx) {
 };
 
 
-// Enter a parse tree produced by apexParser#annotationTypeDeclaration.
-apexListener.prototype.enterAnnotationTypeDeclaration = function(ctx) {
-};
-
-// Exit a parse tree produced by apexParser#annotationTypeDeclaration.
-apexListener.prototype.exitAnnotationTypeDeclaration = function(ctx) {
-};
-
-
 // Enter a parse tree produced by apexParser#annotationTypeBody.
 apexListener.prototype.enterAnnotationTypeBody = function(ctx) {
 };
@@ -803,15 +794,6 @@ apexListener.prototype.exitConstantExpression = function(ctx) {
 };
 
 
-// Enter a parse tree produced by apexParser#apexDbExpressionLong.
-apexListener.prototype.enterApexDbExpressionLong = function(ctx) {
-};
-
-// Exit a parse tree produced by apexParser#apexDbExpressionLong.
-apexListener.prototype.exitApexDbExpressionLong = function(ctx) {
-};
-
-
 // Enter a parse tree produced by apexParser#apexDbExpressionShort.
 apexListener.prototype.enterApexDbExpressionShort = function(ctx) {
 };
@@ -830,12 +812,84 @@ apexListener.prototype.exitApexDbExpression = function(ctx) {
 };
 
 
-// Enter a parse tree produced by apexParser#expression.
-apexListener.prototype.enterExpression = function(ctx) {
+// Enter a parse tree produced by apexParser#TernalyExpression.
+apexListener.prototype.enterTernalyExpression = function(ctx) {
 };
 
-// Exit a parse tree produced by apexParser#expression.
-apexListener.prototype.exitExpression = function(ctx) {
+// Exit a parse tree produced by apexParser#TernalyExpression.
+apexListener.prototype.exitTernalyExpression = function(ctx) {
+};
+
+
+// Enter a parse tree produced by apexParser#ArrayAccess.
+apexListener.prototype.enterArrayAccess = function(ctx) {
+};
+
+// Exit a parse tree produced by apexParser#ArrayAccess.
+apexListener.prototype.exitArrayAccess = function(ctx) {
+};
+
+
+// Enter a parse tree produced by apexParser#PrimaryExpression.
+apexListener.prototype.enterPrimaryExpression = function(ctx) {
+};
+
+// Exit a parse tree produced by apexParser#PrimaryExpression.
+apexListener.prototype.exitPrimaryExpression = function(ctx) {
+};
+
+
+// Enter a parse tree produced by apexParser#OpExpression.
+apexListener.prototype.enterOpExpression = function(ctx) {
+};
+
+// Exit a parse tree produced by apexParser#OpExpression.
+apexListener.prototype.exitOpExpression = function(ctx) {
+};
+
+
+// Enter a parse tree produced by apexParser#NewExpression.
+apexListener.prototype.enterNewExpression = function(ctx) {
+};
+
+// Exit a parse tree produced by apexParser#NewExpression.
+apexListener.prototype.exitNewExpression = function(ctx) {
+};
+
+
+// Enter a parse tree produced by apexParser#MethodInvocation.
+apexListener.prototype.enterMethodInvocation = function(ctx) {
+};
+
+// Exit a parse tree produced by apexParser#MethodInvocation.
+apexListener.prototype.exitMethodInvocation = function(ctx) {
+};
+
+
+// Enter a parse tree produced by apexParser#CastExpression.
+apexListener.prototype.enterCastExpression = function(ctx) {
+};
+
+// Exit a parse tree produced by apexParser#CastExpression.
+apexListener.prototype.exitCastExpression = function(ctx) {
+};
+
+
+// Enter a parse tree produced by apexParser#ShiftExpression.
+apexListener.prototype.enterShiftExpression = function(ctx) {
+};
+
+// Exit a parse tree produced by apexParser#ShiftExpression.
+apexListener.prototype.exitShiftExpression = function(ctx) {
+};
+
+
+// Enter a parse tree produced by apexParser#FieldAccess.
+apexListener.prototype.enterFieldAccess = function(ctx) {
+};
+
+// Exit a parse tree produced by apexParser#FieldAccess.
+apexListener.prototype.exitFieldAccess = function(ctx) {
 };
 
 

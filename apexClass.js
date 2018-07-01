@@ -22,13 +22,28 @@ class ApexMethod {
     }
 }
 
-class InstanceField {
-    constructor(identifier, parameters, throws, statements) {
+class ApexMethodNative {
+    constructor(callFunction) {
+        this.callFunction = callFunction;
+    }
+
+    call() {
+        this.callFunction();
+    }
+}
+
+class InstanceFieldDeclaration {
+    constructor(type, declarators) {
+        this.modifiers   = [];
+        this.type        = type;
+        this.declarators = declarators;
+    }
+}
+
+class InstanceFieldDeclarator {
+    constructor(identifier, expression) {
         this.identifier = identifier;
-        this.modifiers  = [];
-        this.parameters = parameters;
-        this.statements = throws;
-        this.statements = statements;
+        this.expression = expression;
     }
 }
 
@@ -39,31 +54,27 @@ class ApexObject {
     }
 }
 
+let store = {};
 class ApexClassStore {
-    static store() {
-        if (this._store == undefined) {
-            this._store = [];
-        }
-        return this._store;
-    }
-
     static register(class_name, class_object) {
-        if (this.store[class_name]) {
+        if (store[class_name]) {
             console.log(`Already Stored ${class_name}`);
         } else {
-            this.store[class_name] = class_object;
+            store[class_name] = class_object;
         }
     }
 
     static get(class_name) {
-        this.store[class_name];
+        return store[class_name];
     }
 }
 
 module.exports = {
     ApexClass: ApexClass,
     ApexMethod: ApexMethod,
-    InstanceField: InstanceField,
+    ApexMethodNative: ApexMethodNative,
+    InstanceFieldDeclaration: InstanceFieldDeclaration,
+    InstanceFieldDeclarator: InstanceFieldDeclarator,
     ApexObject: ApexObject,
     ApexClassStore: ApexClassStore,
 };

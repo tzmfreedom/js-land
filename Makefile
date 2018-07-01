@@ -8,4 +8,4 @@ debug:
 
 .PHONY: build
 build:
-	java -jar /usr/local/bin/antlr4 -Dlanguage=JavaScript apex.g4
+	java -jar /usr/local/bin/antlr4 -Dlanguage=JavaScript -visitor apex.g4

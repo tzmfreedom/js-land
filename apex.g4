@@ -49,15 +49,13 @@ typeDeclaration
     :   classOrInterfaceModifier* classDeclaration
     |   classOrInterfaceModifier* enumDeclaration
     |   classOrInterfaceModifier* interfaceDeclaration
-    |   classOrInterfaceModifier* annotationTypeDeclaration
     |   ';'
     ;
 
 modifier
     :   classOrInterfaceModifier
-    |   (   NATIVE
-        |   SYNCHRONIZED
-        |   TRANSIENT
+    |   (
+        TRANSIENT
         )
     ;
 
@@ -149,7 +147,6 @@ memberDeclaration
     |   constructorDeclaration
     |   genericConstructorDeclaration
     |   interfaceDeclaration
-    |   annotationTypeDeclaration
     |   classDeclaration
     |   enumDeclaration
     |   propertyDeclaration
@@ -203,7 +200,6 @@ interfaceMemberDeclaration
     |   interfaceMethodDeclaration
     |   genericInterfaceMethodDeclaration
     |   interfaceDeclaration
-    |   annotationTypeDeclaration
     |   classDeclaration
     |   enumDeclaration
     ;
@@ -350,10 +346,6 @@ elementValueArrayInitializer
     :   '{' (elementValue (',' elementValue)*)? (',')? '}'
     ;
 
-annotationTypeDeclaration
-    :   '@' INTERFACE Identifier annotationTypeBody
-    ;
-
 annotationTypeBody
     :   '{' (annotationTypeElementDeclaration)* '}'
     ;
@@ -368,7 +360,6 @@ annotationTypeElementRest
     |   classDeclaration ';'?
     |   interfaceDeclaration ';'?
     |   enumDeclaration ';'?
-    |   annotationTypeDeclaration ';'?
     ;
 
 annotationMethodOrConstantRest
@@ -499,50 +490,40 @@ constantExpression
     :   expression
     ;
 
-apexDbExpressionLong
-    :   DATABASE '.' (DB_INSERT | DB_UPSERT | DB_UPDATE | DB_DELETE | DB_UNDELETE) parExpression
-    ;
-	
 apexDbExpressionShort
     :   (DB_INSERT | DB_UPSERT | DB_UPDATE | DB_DELETE | DB_UNDELETE) expression
     ;
 
 
 apexDbExpression
-	: apexDbExpressionLong
-	| apexDbExpressionShort
+	: apexDbExpressionShort
 	;
 	
 expression
-    :   primary
-    |   expression '.' GET '(' expressionList? ')'
-    |   expression '.' SET '(' expressionList? ')'
-    |   expression '.' Identifier
-    |   expression '.' THIS
-    |   expression '.' NEW nonWildcardTypeArguments? innerCreator
-    |   expression '.' SUPER superSuffix
-    |   expression '.' explicitGenericInvocation
-    |   expression '[' expression ']'
-    |   expression '(' expressionList? ')'
-    |   NEW creator
-    |   '(' type ')' expression
-    |   expression ('++' | '--')
-    |   ('+'|'-'|'++'|'--') expression
-    |   ('~'|'!') expression
-    |   expression ('*'|'/'|'%') expression
-    |   expression ('+'|'-') expression
-    |   expression ('<' '<' | '>' '>' '>' | '>' '>') expression
-    |   expression ('<=' | '>=' | '>' | '<') expression
-    |   expression INSTANCEOF type
-    |   expression ('==' | '!=') expression
-    |   expression '&' expression
-    |   expression '^' expression
-    |   expression '|' expression
-    |   expression '&&' expression
-    |   expression '||' expression
-    |   expression '?' expression ':' expression
+    :   primary                                                   # PrimaryExpression
+    |   expression '.' Identifier                                 # FieldAccess
+    |   expression '.' explicitGenericInvocation                # OpExpression
+    |   expression '[' expression ']'                           # ArrayAccess
+    |   expression '(' expressionList? ')'                      # MethodInvocation
+    |   NEW creator                                             # NewExpression
+    |   '(' type ')' expression                                 # CastExpression
+    |   expression op=('++' | '--')                             # OpExpression
+    |   op=('+'|'-'|'++'|'--') expression                       # OpExpression
+    |   op=('~'|'!') expression                                 # OpExpression
+    |   expression op=('*'|'/'|'%') expression                  # OpExpression
+    |   expression op=('+'|'-') expression                      # OpExpression
+    |   expression ('<' '<' | '>' '>' '>' | '>' '>') expression # ShiftExpression
+    |   expression op=('<=' | '>=' | '>' | '<') expression      # OpExpression
+    |   expression op=INSTANCEOF type                           # OpExpression
+    |   expression op=('==' | '!=') expression                  # OpExpression
+    |   expression op='&' expression                            # OpExpression
+    |   expression op='^' expression                            # OpExpression
+    |   expression op='|' expression                            # OpExpression
+    |   expression op='&&' expression                           # OpExpression
+    |   expression op='||' expression                           # OpExpression
+    |   expression op='?' expression ':' expression             # TernalyExpression
     |   <assoc=right> expression
-        (   '='
+        op=(   '='
         |   '+='
         |   '-='
         |   '*='
@@ -555,7 +536,7 @@ expression
         |   '<<='
         |   '%='
         )
-        expression
+        expression                                             # OpExpression
     ;
 
 primary
