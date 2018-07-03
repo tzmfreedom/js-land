@@ -1,0 +1,121 @@
+annotation:
+  - name
+class:
+  - modifiers
+  - name
+  - access_modifier
+  - annotations
+  - instance_fields
+  - instance_methods
+  - constructor
+  - static_fields
+  - static_methods
+  - super_class
+  - implements
+interger:
+  - value
+argument:
+  - type
+  - name
+array_access:
+  - receiver
+  - key
+boolean:
+  - value
+break: []
+comment: []
+constructor_declaration:
+  - access_modifier
+  - name
+  - modifiers
+  - return_type
+  - arguments
+  - statements
+  - native
+  - call_proc
+continue: []
+dml:
+  - type
+  - object
+double:
+  - value
+field_declaration:
+  - type
+  - access_modifier
+  - modifiers
+  - statements
+field_declarator:
+  - name
+  - modifiers
+  - expression
+for:
+  - init_statement
+  - exit_condition
+  - increment_statement
+  - statements
+forenum:
+  - type
+  - identifier
+  - list_object
+  - statements
+if:
+  - condition
+  - if_statement
+  - else_statement
+method_declaration:
+  - access_modifier
+  - name
+  - modifiers
+  - return_type
+  - arguments
+  - statements
+  - native
+  - call_proc
+method_invocation:
+  - receiver
+  - arguments
+  - method_name
+name:
+  - value
+new:
+  - class_name
+  - arguments
+'null': []
+object:
+  - class_node
+  - arguments
+  - instance_fields
+  - generics_node
+binary_operator:
+  - type
+  - left
+  - right
+return:
+  - expression
+soql:
+  - soql
+string:
+  - value
+switch:
+  - expression
+  - statements
+trigger:
+  - name
+  - object
+  - arguments
+  - statements
+trigger_timing:
+  - timing
+  - dml variable_declaration
+variable_declaration:
+  - type
+  - statements
+variable_declarator:
+  - left
+  - right
+when:
+  - condition
+  - statements
+while:
+  - condition_statement
+  - statements

@@ -5,20 +5,20 @@ var Apex = require('./apexClass');
 var ApexVisitor = require('./apexVisitor');
 var LocalEnvironment = require('./localEnv');
 
-let apexInterpreter = function() {
+let ApexAstBuilder = function() {
     ApexVisitor.apexVisitor.call(this); // inherit default listener
     return this;
 };
-apexInterpreter.prototype = Object.create(ApexVisitor.apexVisitor.prototype);
+ApexAstBuilder.prototype = Object.create(ApexVisitor.apexVisitor.prototype);
 
 // Visit a parse tree produced by apexParser#compilationUnit.
-apexInterpreter.prototype.visitCompilationUnit = function(ctx) {
+ApexAstBuilder.prototype.visitCompilationUnit = function(ctx) {
     return ctx.typeDeclaration().accept(this);
 };
 
 
 // Visit a parse tree produced by apexParser#typeDeclaration.
-apexInterpreter.prototype.visitTypeDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitTypeDeclaration = function(ctx) {
     let classDecl = ctx.classDeclaration().accept(this);
     classDecl.modifier = ctx.classOrInterfaceModifier().map((modifier) => {
         return modifier.accept(this)
@@ -28,7 +28,7 @@ apexInterpreter.prototype.visitTypeDeclaration = function(ctx) {
 
 
 // Visit a parse tree produced by apexParser#modifier.
-apexInterpreter.prototype.visitModifier = function(ctx) {
+ApexAstBuilder.prototype.visitModifier = function(ctx) {
     if (ctx.classOrInterfaceModifier()) {
         return ctx.classOrInterfaceModifier().accept(this);
     }
@@ -37,7 +37,7 @@ apexInterpreter.prototype.visitModifier = function(ctx) {
 
 
 // Visit a parse tree produced by apexParser#classOrInterfaceModifier.
-apexInterpreter.prototype.visitClassOrInterfaceModifier = function(ctx) {
+ApexAstBuilder.prototype.visitClassOrInterfaceModifier = function(ctx) {
     if (ctx.annotation()) {
         return ctx.annotation().accept(this);
     }
@@ -46,13 +46,13 @@ apexInterpreter.prototype.visitClassOrInterfaceModifier = function(ctx) {
 
 
 // Visit a parse tree produced by apexParser#variableModifier.
-apexInterpreter.prototype.visitVariableModifier = function(ctx) {
+ApexAstBuilder.prototype.visitVariableModifier = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#classDeclaration.
-apexInterpreter.prototype.visitClassDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitClassDeclaration = function(ctx) {
     let className = ctx.Identifier().getText();
     let superClass = ctx.type().getText();
     let implementClasses = [];
@@ -76,61 +76,61 @@ apexInterpreter.prototype.visitClassDeclaration = function(ctx) {
 
 
 // Visit a parse tree produced by apexParser#typeParameters.
-apexInterpreter.prototype.visitTypeParameters = function(ctx) {
+ApexAstBuilder.prototype.visitTypeParameters = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#typeParameter.
-apexInterpreter.prototype.visitTypeParameter = function(ctx) {
+ApexAstBuilder.prototype.visitTypeParameter = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#typeBound.
-apexInterpreter.prototype.visitTypeBound = function(ctx) {
+ApexAstBuilder.prototype.visitTypeBound = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#enumDeclaration.
-apexInterpreter.prototype.visitEnumDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitEnumDeclaration = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#enumConstants.
-apexInterpreter.prototype.visitEnumConstants = function(ctx) {
+ApexAstBuilder.prototype.visitEnumConstants = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#enumConstant.
-apexInterpreter.prototype.visitEnumConstant = function(ctx) {
+ApexAstBuilder.prototype.visitEnumConstant = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#enumBodyDeclarations.
-apexInterpreter.prototype.visitEnumBodyDeclarations = function(ctx) {
+ApexAstBuilder.prototype.visitEnumBodyDeclarations = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#interfaceDeclaration.
-apexInterpreter.prototype.visitInterfaceDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitInterfaceDeclaration = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#typeList.
-apexInterpreter.prototype.visitTypeList = function(ctx) {
+ApexAstBuilder.prototype.visitTypeList = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#classBody.
-apexInterpreter.prototype.visitClassBody = function(ctx) {
+ApexAstBuilder.prototype.visitClassBody = function(ctx) {
     let properties = {
         instanceFields: {},
         staticFields: {},
@@ -164,13 +164,13 @@ apexInterpreter.prototype.visitClassBody = function(ctx) {
 
 
 // Visit a parse tree produced by apexParser#interfaceBody.
-apexInterpreter.prototype.visitInterfaceBody = function(ctx) {
+ApexAstBuilder.prototype.visitInterfaceBody = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#classBodyDeclaration.
-apexInterpreter.prototype.visitClassBodyDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitClassBodyDeclaration = function(ctx) {
     let declaration = ctx.memberDeclaration();
     let decl = declaration.accept(this);
     decl.modifiers = ctx.modifier().map((modifier) => { return modifier.accept(this) });
@@ -179,13 +179,13 @@ apexInterpreter.prototype.visitClassBodyDeclaration = function(ctx) {
 
 
 // Visit a parse tree produced by apexParser#memberDeclaration.
-apexInterpreter.prototype.visitMemberDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitMemberDeclaration = function(ctx) {
     return this.visitChildren(ctx)[0];
 };
 
 
 // Visit a parse tree produced by apexParser#methodDeclaration.
-apexInterpreter.prototype.visitMethodDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitMethodDeclaration = function(ctx) {
     let methodName = ctx.Identifier();
     let parameters = ctx.formalParameters();
     let throws = ctx.qualifiedNameList();
@@ -196,25 +196,25 @@ apexInterpreter.prototype.visitMethodDeclaration = function(ctx) {
 
 
 // Visit a parse tree produced by apexParser#genericMethodDeclaration.
-apexInterpreter.prototype.visitGenericMethodDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitGenericMethodDeclaration = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#constructorDeclaration.
-apexInterpreter.prototype.visitConstructorDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitConstructorDeclaration = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#genericConstructorDeclaration.
-apexInterpreter.prototype.visitGenericConstructorDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitGenericConstructorDeclaration = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#fieldDeclaration.
-apexInterpreter.prototype.visitFieldDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitFieldDeclaration = function(ctx) {
     let type = ctx.type().accept(this);
     let declarators = ctx.variableDeclarators().accept(this);
     return new Apex.InstanceFieldDeclaration(type, declarators);
@@ -222,55 +222,55 @@ apexInterpreter.prototype.visitFieldDeclaration = function(ctx) {
 
 
 // Visit a parse tree produced by apexParser#propertyDeclaration.
-apexInterpreter.prototype.visitPropertyDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitPropertyDeclaration = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#propertyBodyDeclaration.
-apexInterpreter.prototype.visitPropertyBodyDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitPropertyBodyDeclaration = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#interfaceBodyDeclaration.
-apexInterpreter.prototype.visitInterfaceBodyDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitInterfaceBodyDeclaration = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#interfaceMemberDeclaration.
-apexInterpreter.prototype.visitInterfaceMemberDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitInterfaceMemberDeclaration = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#constDeclaration.
-apexInterpreter.prototype.visitConstDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitConstDeclaration = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#constantDeclarator.
-apexInterpreter.prototype.visitConstantDeclarator = function(ctx) {
+ApexAstBuilder.prototype.visitConstantDeclarator = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#interfaceMethodDeclaration.
-apexInterpreter.prototype.visitInterfaceMethodDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitInterfaceMethodDeclaration = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#genericInterfaceMethodDeclaration.
-apexInterpreter.prototype.visitGenericInterfaceMethodDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitGenericInterfaceMethodDeclaration = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#variableDeclarators.
-apexInterpreter.prototype.visitVariableDeclarators = function(ctx) {
+ApexAstBuilder.prototype.visitVariableDeclarators = function(ctx) {
     return ctx.variableDeclarator().map((declarator) => {
         return declarator.accept(this);
     });
@@ -278,7 +278,7 @@ apexInterpreter.prototype.visitVariableDeclarators = function(ctx) {
 
 
 // Visit a parse tree produced by apexParser#variableDeclarator.
-apexInterpreter.prototype.visitVariableDeclarator = function(ctx) {
+ApexAstBuilder.prototype.visitVariableDeclarator = function(ctx) {
     let declaratorId = ctx.variableDeclaratorId().getText();
     let expression = ctx.variableInitializer();
 
@@ -287,313 +287,313 @@ apexInterpreter.prototype.visitVariableDeclarator = function(ctx) {
 
 
 // Visit a parse tree produced by apexParser#variableDeclaratorId.
-apexInterpreter.prototype.visitVariableDeclaratorId = function(ctx) {
+ApexAstBuilder.prototype.visitVariableDeclaratorId = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#variableInitializer.
-apexInterpreter.prototype.visitVariableInitializer = function(ctx) {
+ApexAstBuilder.prototype.visitVariableInitializer = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#arrayInitializer.
-apexInterpreter.prototype.visitArrayInitializer = function(ctx) {
+ApexAstBuilder.prototype.visitArrayInitializer = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#enumConstantName.
-apexInterpreter.prototype.visitEnumConstantName = function(ctx) {
+ApexAstBuilder.prototype.visitEnumConstantName = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#type.
-apexInterpreter.prototype.visitType = function(ctx) {
+ApexAstBuilder.prototype.visitType = function(ctx) {
     return ctx.getText();
 };
 
 
 // Visit a parse tree produced by apexParser#classOrInterfaceType.
-apexInterpreter.prototype.visitClassOrInterfaceType = function(ctx) {
+ApexAstBuilder.prototype.visitClassOrInterfaceType = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#primitiveType.
-apexInterpreter.prototype.visitPrimitiveType = function(ctx) {
+ApexAstBuilder.prototype.visitPrimitiveType = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#typeArguments.
-apexInterpreter.prototype.visitTypeArguments = function(ctx) {
+ApexAstBuilder.prototype.visitTypeArguments = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#typeArgument.
-apexInterpreter.prototype.visitTypeArgument = function(ctx) {
+ApexAstBuilder.prototype.visitTypeArgument = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#qualifiedNameList.
-apexInterpreter.prototype.visitQualifiedNameList = function(ctx) {
+ApexAstBuilder.prototype.visitQualifiedNameList = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#formalParameters.
-apexInterpreter.prototype.visitFormalParameters = function(ctx) {
+ApexAstBuilder.prototype.visitFormalParameters = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#formalParameterList.
-apexInterpreter.prototype.visitFormalParameterList = function(ctx) {
+ApexAstBuilder.prototype.visitFormalParameterList = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#formalParameter.
-apexInterpreter.prototype.visitFormalParameter = function(ctx) {
+ApexAstBuilder.prototype.visitFormalParameter = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#lastFormalParameter.
-apexInterpreter.prototype.visitLastFormalParameter = function(ctx) {
+ApexAstBuilder.prototype.visitLastFormalParameter = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#methodBody.
-apexInterpreter.prototype.visitMethodBody = function(ctx) {
+ApexAstBuilder.prototype.visitMethodBody = function(ctx) {
     return ctx.block().accept(this);
 };
 
 
 // Visit a parse tree produced by apexParser#constructorBody.
-apexInterpreter.prototype.visitConstructorBody = function(ctx) {
+ApexAstBuilder.prototype.visitConstructorBody = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#qualifiedName.
-apexInterpreter.prototype.visitQualifiedName = function(ctx) {
+ApexAstBuilder.prototype.visitQualifiedName = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#literal.
-apexInterpreter.prototype.visitLiteral = function(ctx) {
+ApexAstBuilder.prototype.visitLiteral = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#annotation.
-apexInterpreter.prototype.visitAnnotation = function(ctx) {
+ApexAstBuilder.prototype.visitAnnotation = function(ctx) {
     return ctx.annotationName().qualifiedName().getText();
 };
 
 
 // Visit a parse tree produced by apexParser#annotationName.
-apexInterpreter.prototype.visitAnnotationName = function(ctx) {
+ApexAstBuilder.prototype.visitAnnotationName = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#elementValuePairs.
-apexInterpreter.prototype.visitElementValuePairs = function(ctx) {
+ApexAstBuilder.prototype.visitElementValuePairs = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#elementValuePair.
-apexInterpreter.prototype.visitElementValuePair = function(ctx) {
+ApexAstBuilder.prototype.visitElementValuePair = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#elementValue.
-apexInterpreter.prototype.visitElementValue = function(ctx) {
+ApexAstBuilder.prototype.visitElementValue = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#elementValueArrayInitializer.
-apexInterpreter.prototype.visitElementValueArrayInitializer = function(ctx) {
+ApexAstBuilder.prototype.visitElementValueArrayInitializer = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#annotationTypeDeclaration.
-apexInterpreter.prototype.visitAnnotationTypeDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitAnnotationTypeDeclaration = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#annotationTypeBody.
-apexInterpreter.prototype.visitAnnotationTypeBody = function(ctx) {
+ApexAstBuilder.prototype.visitAnnotationTypeBody = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#annotationTypeElementDeclaration.
-apexInterpreter.prototype.visitAnnotationTypeElementDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitAnnotationTypeElementDeclaration = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#annotationTypeElementRest.
-apexInterpreter.prototype.visitAnnotationTypeElementRest = function(ctx) {
+ApexAstBuilder.prototype.visitAnnotationTypeElementRest = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#annotationMethodOrConstantRest.
-apexInterpreter.prototype.visitAnnotationMethodOrConstantRest = function(ctx) {
+ApexAstBuilder.prototype.visitAnnotationMethodOrConstantRest = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#annotationMethodRest.
-apexInterpreter.prototype.visitAnnotationMethodRest = function(ctx) {
+ApexAstBuilder.prototype.visitAnnotationMethodRest = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#annotationConstantRest.
-apexInterpreter.prototype.visitAnnotationConstantRest = function(ctx) {
+ApexAstBuilder.prototype.visitAnnotationConstantRest = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#defaultValue.
-apexInterpreter.prototype.visitDefaultValue = function(ctx) {
+ApexAstBuilder.prototype.visitDefaultValue = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#block.
-apexInterpreter.prototype.visitBlock = function(ctx) {
+ApexAstBuilder.prototype.visitBlock = function(ctx) {
     return ctx.blockStatement();
 };
 
 
 // Visit a parse tree produced by apexParser#blockStatement.
-apexInterpreter.prototype.visitBlockStatement = function(ctx) {
+ApexAstBuilder.prototype.visitBlockStatement = function(ctx) {
     return ctx.statement().accept(this);
 };
 
 
 // Visit a parse tree produced by apexParser#localVariableDeclarationStatement.
-apexInterpreter.prototype.visitLocalVariableDeclarationStatement = function(ctx) {
+ApexAstBuilder.prototype.visitLocalVariableDeclarationStatement = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#localVariableDeclaration.
-apexInterpreter.prototype.visitLocalVariableDeclaration = function(ctx) {
+ApexAstBuilder.prototype.visitLocalVariableDeclaration = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#statement.
-apexInterpreter.prototype.visitStatement = function(ctx) {
+ApexAstBuilder.prototype.visitStatement = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#propertyBlock.
-apexInterpreter.prototype.visitPropertyBlock = function(ctx) {
+ApexAstBuilder.prototype.visitPropertyBlock = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#getter.
-apexInterpreter.prototype.visitGetter = function(ctx) {
+ApexAstBuilder.prototype.visitGetter = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#setter.
-apexInterpreter.prototype.visitSetter = function(ctx) {
+ApexAstBuilder.prototype.visitSetter = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#catchClause.
-apexInterpreter.prototype.visitCatchClause = function(ctx) {
+ApexAstBuilder.prototype.visitCatchClause = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#catchType.
-apexInterpreter.prototype.visitCatchType = function(ctx) {
+ApexAstBuilder.prototype.visitCatchType = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#finallyBlock.
-apexInterpreter.prototype.visitFinallyBlock = function(ctx) {
+ApexAstBuilder.prototype.visitFinallyBlock = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#resourceSpecification.
-apexInterpreter.prototype.visitResourceSpecification = function(ctx) {
+ApexAstBuilder.prototype.visitResourceSpecification = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#resources.
-apexInterpreter.prototype.visitResources = function(ctx) {
+ApexAstBuilder.prototype.visitResources = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#resource.
-apexInterpreter.prototype.visitResource = function(ctx) {
+ApexAstBuilder.prototype.visitResource = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#forControl.
-apexInterpreter.prototype.visitForControl = function(ctx) {
+ApexAstBuilder.prototype.visitForControl = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#forInit.
-apexInterpreter.prototype.visitForInit = function(ctx) {
+ApexAstBuilder.prototype.visitForInit = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#enhancedForControl.
-apexInterpreter.prototype.visitEnhancedForControl = function(ctx) {
+ApexAstBuilder.prototype.visitEnhancedForControl = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#forUpdate.
-apexInterpreter.prototype.visitForUpdate = function(ctx) {
+ApexAstBuilder.prototype.visitForUpdate = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#parExpression.
-apexInterpreter.prototype.visitParExpression = function(ctx) {
+ApexAstBuilder.prototype.visitParExpression = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#expressionList.
-apexInterpreter.prototype.visitExpressionList = function(ctx) {
+ApexAstBuilder.prototype.visitExpressionList = function(ctx) {
     return ctx.expression().map((expression) => {
         return expression.accept(this);
     });
@@ -601,56 +601,56 @@ apexInterpreter.prototype.visitExpressionList = function(ctx) {
 
 
 // Visit a parse tree produced by apexParser#statementExpression.
-apexInterpreter.prototype.visitStatementExpression = function(ctx) {
+ApexAstBuilder.prototype.visitStatementExpression = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#constantExpression.
-apexInterpreter.prototype.visitConstantExpression = function(ctx) {
+ApexAstBuilder.prototype.visitConstantExpression = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#apexDbExpressionLong.
-apexInterpreter.prototype.visitApexDbExpressionLong = function(ctx) {
+ApexAstBuilder.prototype.visitApexDbExpressionLong = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#apexDbExpressionShort.
-apexInterpreter.prototype.visitApexDbExpressionShort = function(ctx) {
+ApexAstBuilder.prototype.visitApexDbExpressionShort = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#apexDbExpression.
-apexInterpreter.prototype.visitApexDbExpression = function(ctx) {
+ApexAstBuilder.prototype.visitApexDbExpression = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 
 // Visit a parse tree produced by apexParser#PrimaryExpression.
-apexInterpreter.prototype.visitPrimaryExpression = function(ctx) {
+ApexAstBuilder.prototype.visitPrimaryExpression = function(ctx) {
     return ctx.getText();
 };
 
 
 // Visit a parse tree produced by apexParser#OpExpression.
-apexInterpreter.prototype.visitOpExpression = function(ctx) {
+ApexAstBuilder.prototype.visitOpExpression = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#NewExpression.
-apexInterpreter.prototype.visitNewExpression = function(ctx) {
+ApexAstBuilder.prototype.visitNewExpression = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#MethodInvocation.
-apexInterpreter.prototype.visitMethodInvocation = function(ctx) {
+ApexAstBuilder.prototype.visitMethodInvocation = function(ctx) {
     let receiver = ctx.expression().accept(this);
     let apexClass = Apex.ApexClassStore.get(receiver);
     let arguments = ctx.expressionList().accept(this);
@@ -676,26 +676,26 @@ apexInterpreter.prototype.visitMethodInvocation = function(ctx) {
 
 
 // Visit a parse tree produced by apexParser#CastExpression.
-apexInterpreter.prototype.visitCastExpression = function(ctx) {
+ApexAstBuilder.prototype.visitCastExpression = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#ShiftExpression.
-apexInterpreter.prototype.visitShiftExpression = function(ctx) {
+ApexAstBuilder.prototype.visitShiftExpression = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#FieldAccess.
-apexInterpreter.prototype.visitFieldAccess = function(ctx) {
+ApexAstBuilder.prototype.visitFieldAccess = function(ctx) {
     let expression = ctx.expression().accept(this);
     return [expression, ctx.Identifier().getText()];
 };
 
 
 // Visit a parse tree produced by apexParser#primary.
-apexInterpreter.prototype.visitPrimary = function(ctx) {
+ApexAstBuilder.prototype.visitPrimary = function(ctx) {
     if (ctx.Identifier()) {
         return ctx.Identifier();
     }
@@ -704,99 +704,99 @@ apexInterpreter.prototype.visitPrimary = function(ctx) {
 
 
 // Visit a parse tree produced by apexParser#creator.
-apexInterpreter.prototype.visitCreator = function(ctx) {
+ApexAstBuilder.prototype.visitCreator = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#createdName.
-apexInterpreter.prototype.visitCreatedName = function(ctx) {
+ApexAstBuilder.prototype.visitCreatedName = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#innerCreator.
-apexInterpreter.prototype.visitInnerCreator = function(ctx) {
+ApexAstBuilder.prototype.visitInnerCreator = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#arrayCreatorRest.
-apexInterpreter.prototype.visitArrayCreatorRest = function(ctx) {
+ApexAstBuilder.prototype.visitArrayCreatorRest = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#mapCreatorRest.
-apexInterpreter.prototype.visitMapCreatorRest = function(ctx) {
+ApexAstBuilder.prototype.visitMapCreatorRest = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#setCreatorRest.
-apexInterpreter.prototype.visitSetCreatorRest = function(ctx) {
+ApexAstBuilder.prototype.visitSetCreatorRest = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#classCreatorRest.
-apexInterpreter.prototype.visitClassCreatorRest = function(ctx) {
+ApexAstBuilder.prototype.visitClassCreatorRest = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#explicitGenericInvocation.
-apexInterpreter.prototype.visitExplicitGenericInvocation = function(ctx) {
+ApexAstBuilder.prototype.visitExplicitGenericInvocation = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#nonWildcardTypeArguments.
-apexInterpreter.prototype.visitNonWildcardTypeArguments = function(ctx) {
+ApexAstBuilder.prototype.visitNonWildcardTypeArguments = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#typeArgumentsOrDiamond.
-apexInterpreter.prototype.visitTypeArgumentsOrDiamond = function(ctx) {
+ApexAstBuilder.prototype.visitTypeArgumentsOrDiamond = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#nonWildcardTypeArgumentsOrDiamond.
-apexInterpreter.prototype.visitNonWildcardTypeArgumentsOrDiamond = function(ctx) {
+ApexAstBuilder.prototype.visitNonWildcardTypeArgumentsOrDiamond = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#superSuffix.
-apexInterpreter.prototype.visitSuperSuffix = function(ctx) {
+ApexAstBuilder.prototype.visitSuperSuffix = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#explicitGenericInvocationSuffix.
-apexInterpreter.prototype.visitExplicitGenericInvocationSuffix = function(ctx) {
+ApexAstBuilder.prototype.visitExplicitGenericInvocationSuffix = function(ctx) {
     return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#arguments.
-apexInterpreter.prototype.visitArguments = function(ctx) {
+ApexAstBuilder.prototype.visitArguments = function(ctx) {
     return this.visitChildren(ctx);
 };
 
-apexInterpreter.prototype.pushScope = function(env) {
+ApexAstBuilder.prototype.pushScope = function(env) {
     LocalEnvironment.pushScope(env);
 };
 
-apexInterpreter.prototype.popScope = function() {
+ApexAstBuilder.prototype.popScope = function() {
     LocalEnvironment.popScope();
 };
 
-apexInterpreter.prototype.getValue = function(key) {
+ApexAstBuilder.prototype.getValue = function(key) {
     return LocalEnvironment.get(key);
 };
 
 
-exports.apexInterpreter = apexInterpreter;
+exports.ApexAstBuilder = ApexAstBuilder;
