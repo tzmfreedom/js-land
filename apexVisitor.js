@@ -360,48 +360,6 @@ apexVisitor.prototype.visitElementValueArrayInitializer = function(ctx) {
 };
 
 
-// Visit a parse tree produced by apexParser#annotationTypeBody.
-apexVisitor.prototype.visitAnnotationTypeBody = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#annotationTypeElementDeclaration.
-apexVisitor.prototype.visitAnnotationTypeElementDeclaration = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#annotationTypeElementRest.
-apexVisitor.prototype.visitAnnotationTypeElementRest = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#annotationMethodOrConstantRest.
-apexVisitor.prototype.visitAnnotationMethodOrConstantRest = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#annotationMethodRest.
-apexVisitor.prototype.visitAnnotationMethodRest = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#annotationConstantRest.
-apexVisitor.prototype.visitAnnotationConstantRest = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#defaultValue.
-apexVisitor.prototype.visitDefaultValue = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
 // Visit a parse tree produced by apexParser#block.
 apexVisitor.prototype.visitBlock = function(ctx) {
   return this.visitChildren(ctx);

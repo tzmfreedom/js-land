@@ -533,69 +533,6 @@ apexListener.prototype.exitElementValueArrayInitializer = function(ctx) {
 };
 
 
-// Enter a parse tree produced by apexParser#annotationTypeBody.
-apexListener.prototype.enterAnnotationTypeBody = function(ctx) {
-};
-
-// Exit a parse tree produced by apexParser#annotationTypeBody.
-apexListener.prototype.exitAnnotationTypeBody = function(ctx) {
-};
-
-
-// Enter a parse tree produced by apexParser#annotationTypeElementDeclaration.
-apexListener.prototype.enterAnnotationTypeElementDeclaration = function(ctx) {
-};
-
-// Exit a parse tree produced by apexParser#annotationTypeElementDeclaration.
-apexListener.prototype.exitAnnotationTypeElementDeclaration = function(ctx) {
-};
-
-
-// Enter a parse tree produced by apexParser#annotationTypeElementRest.
-apexListener.prototype.enterAnnotationTypeElementRest = function(ctx) {
-};
-
-// Exit a parse tree produced by apexParser#annotationTypeElementRest.
-apexListener.prototype.exitAnnotationTypeElementRest = function(ctx) {
-};
-
-
-// Enter a parse tree produced by apexParser#annotationMethodOrConstantRest.
-apexListener.prototype.enterAnnotationMethodOrConstantRest = function(ctx) {
-};
-
-// Exit a parse tree produced by apexParser#annotationMethodOrConstantRest.
-apexListener.prototype.exitAnnotationMethodOrConstantRest = function(ctx) {
-};
-
-
-// Enter a parse tree produced by apexParser#annotationMethodRest.
-apexListener.prototype.enterAnnotationMethodRest = function(ctx) {
-};
-
-// Exit a parse tree produced by apexParser#annotationMethodRest.
-apexListener.prototype.exitAnnotationMethodRest = function(ctx) {
-};
-
-
-// Enter a parse tree produced by apexParser#annotationConstantRest.
-apexListener.prototype.enterAnnotationConstantRest = function(ctx) {
-};
-
-// Exit a parse tree produced by apexParser#annotationConstantRest.
-apexListener.prototype.exitAnnotationConstantRest = function(ctx) {
-};
-
-
-// Enter a parse tree produced by apexParser#defaultValue.
-apexListener.prototype.enterDefaultValue = function(ctx) {
-};
-
-// Exit a parse tree produced by apexParser#defaultValue.
-apexListener.prototype.exitDefaultValue = function(ctx) {
-};
-
-
 // Enter a parse tree produced by apexParser#block.
 apexListener.prototype.enterBlock = function(ctx) {
 };

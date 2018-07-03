@@ -4,6 +4,7 @@ var antlr4 = require('antlr4/index');
 var Apex = require('./apexClass');
 var ApexVisitor = require('./apexVisitor');
 var LocalEnvironment = require('./localEnv');
+var Ast = require('./node/ast');
 
 let ApexAstBuilder = function() {
     ApexVisitor.apexVisitor.call(this); // inherit default listener
@@ -19,11 +20,22 @@ ApexAstBuilder.prototype.visitCompilationUnit = function(ctx) {
 
 // Visit a parse tree produced by apexParser#typeDeclaration.
 ApexAstBuilder.prototype.visitTypeDeclaration = function(ctx) {
-    let classDecl = ctx.classDeclaration().accept(this);
-    classDecl.modifier = ctx.classOrInterfaceModifier().map((modifier) => {
-        return modifier.accept(this)
+    let modifiers = ctx.classOrInterfaceModifier().map((modifier) => {
+        return modifier.accept(this);
     });
-    return classDecl;
+    if (ctx.classDeclaration()) {
+        let classDeclaration = ctx.classDeclaration().accept(this);
+        classDeclaration.modifier = modifiers;
+        return classDeclaration;
+    } else if (ctx.enumDeclaration()) {
+        let enumDeclaration = ctx.enumDeclaration().accept(this);
+        enumDeclaration.modifier = modifiers;
+        return enumDeclaration;
+    } else if (ctx.interfaceBodyDeclaration()) {
+        let interfaceBodyDeclaration = ctx.interfaceBodyDeclaration().accept(this);
+        interfaceBodyDeclaration.modifier = modifiers;
+        return interfaceBodyDeclaration;
+    }
 };
 
 
@@ -32,7 +44,7 @@ ApexAstBuilder.prototype.visitModifier = function(ctx) {
     if (ctx.classOrInterfaceModifier()) {
         return ctx.classOrInterfaceModifier().accept(this);
     }
-    return ctx.getText();
+    return new Ast.ModifierNode(ctx.getText());
 };
 
 
@@ -41,7 +53,7 @@ ApexAstBuilder.prototype.visitClassOrInterfaceModifier = function(ctx) {
     if (ctx.annotation()) {
         return ctx.annotation().accept(this);
     }
-    return ctx.getText();
+    return new Ast.ModifierNode(ctx.getText());
 };
 
 
@@ -384,54 +396,83 @@ ApexAstBuilder.prototype.visitConstructorBody = function(ctx) {
 
 // Visit a parse tree produced by apexParser#qualifiedName.
 ApexAstBuilder.prototype.visitQualifiedName = function(ctx) {
-    return this.visitChildren(ctx);
+    let value = ctx.Identifier().map((identifier) => {
+        return identifier.getText();
+    });
+    return new Ast.NameNode(value);
 };
 
 
 // Visit a parse tree produced by apexParser#literal.
 ApexAstBuilder.prototype.visitLiteral = function(ctx) {
-    return this.visitChildren(ctx);
+    if (ctx.IntegerLiteral()) {
+        return new Ast.IntergerNode(ctx.IntegerLiteral());
+    } else if (ctx.FloatingPointLiteral()) {
+        return new Ast.DoubleNode(ctx.IntegerLiteral());
+    } else if (ctx.StringLiteral()) {
+        return new Ast.StringNode(ctx.StringLiteral());
+    } else if (ctx.BooleanLiteral()) {
+        return new Ast.BooleanNode(ctx.BooleanLiteral());
+    } else if (ctx.NullLiteral()) {
+        return new Ast.NullNode(ctx.BooleanLiteral());
+    }
+    throw 'Invalid Literal';
 };
 
 
 // Visit a parse tree produced by apexParser#annotation.
 ApexAstBuilder.prototype.visitAnnotation = function(ctx) {
-    return ctx.annotationName().qualifiedName().getText();
+    let name = ctx.annotationName().accept(this);
+    let parameters;
+    if (ctx.elementValuePairs()) {
+        parameters = ctx.elementValuePairs().accept(this);
+    } else if (ctx.elementValue()) {
+        parameters = ctx.elementValue().accept(this);
+    }
+    return new Ast.AnnotationNode(name, parameters);
 };
 
 
 // Visit a parse tree produced by apexParser#annotationName.
 ApexAstBuilder.prototype.visitAnnotationName = function(ctx) {
-    return this.visitChildren(ctx);
+    return ctx.qualifiedName().accept(this);
 };
 
 
 // Visit a parse tree produced by apexParser#elementValuePairs.
 ApexAstBuilder.prototype.visitElementValuePairs = function(ctx) {
-    return this.visitChildren(ctx);
+    return ctx.elementValuePair().map((pair) => {
+        return pair.accept(this);
+    });
 };
 
 
 // Visit a parse tree produced by apexParser#elementValuePair.
 ApexAstBuilder.prototype.visitElementValuePair = function(ctx) {
-    return this.visitChildren(ctx);
+    let identifier = ctx.Identifier().getText();
+    let expression = ctx.elementValue().accept(this);
+    return {
+        identifier: identifier,
+        expression: expression,
+    };
 };
 
 
 // Visit a parse tree produced by apexParser#elementValue.
 ApexAstBuilder.prototype.visitElementValue = function(ctx) {
-    return this.visitChildren(ctx);
+    if (ctx.expression()) {
+        return ctx.expression().accept(this);
+    } else if (ctx.annotation()) {
+        return ctx.annotation().accept(this);
+    } else if (ctx.elementValueArrayInitializer()) {
+        return ctx.elementValueArrayInitializer().accept(this);
+    }
+    throw 'Invalid ElementValue';
 };
 
 
 // Visit a parse tree produced by apexParser#elementValueArrayInitializer.
 ApexAstBuilder.prototype.visitElementValueArrayInitializer = function(ctx) {
-    return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#annotationTypeDeclaration.
-ApexAstBuilder.prototype.visitAnnotationTypeDeclaration = function(ctx) {
     return this.visitChildren(ctx);
 };
 

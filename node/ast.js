@@ -8,6 +8,16 @@ class AnnotationNode extends BaseNode {
   }
 }
 
+class ModifierNode extends BaseNode {
+  constructor(name) {
+    this.name = name;
+  }
+
+  accept(visitor) {
+    visitor.visitModifier(this);
+  }
+}
+
 class ClassNode extends BaseNode {
   constructor(modifiers, name, access_modifier, annotations, instance_fields, instance_methods, constructor, static_fields, static_methods, super_class, implements) {
     this.modifiers = modifiers;
@@ -397,6 +407,7 @@ class WhileNode extends BaseNode {
 
 
 exports.AnnotationNode = AnnotationNode
+exports.ModifierNode = ModifierNode
 exports.ClassNode = ClassNode
 exports.IntergerNode = IntergerNode
 exports.ArgumentNode = ArgumentNode

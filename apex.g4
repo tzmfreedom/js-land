@@ -346,38 +346,6 @@ elementValueArrayInitializer
     :   '{' (elementValue (',' elementValue)*)? (',')? '}'
     ;
 
-annotationTypeBody
-    :   '{' (annotationTypeElementDeclaration)* '}'
-    ;
-
-annotationTypeElementDeclaration
-    :   modifier* annotationTypeElementRest
-    |   ';' // this is not allowed by the grammar, but apparently allowed by the actual compiler
-    ;
-
-annotationTypeElementRest
-    :   type annotationMethodOrConstantRest ';'
-    |   classDeclaration ';'?
-    |   interfaceDeclaration ';'?
-    |   enumDeclaration ';'?
-    ;
-
-annotationMethodOrConstantRest
-    :   annotationMethodRest
-    |   annotationConstantRest
-    ;
-
-annotationMethodRest
-    :   Identifier '(' ')' defaultValue?
-    ;
-
-annotationConstantRest
-    :   variableDeclarators
-    ;
-
-defaultValue
-    :   DEFAULT elementValue
-    ;
 
 // STATEMENTS / BLOCKS
 
