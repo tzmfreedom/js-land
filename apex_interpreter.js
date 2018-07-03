@@ -1,11 +1,13 @@
-let Ast = require('./ast');
+let Ast = require('./node/ast');
 let LocalEnvironment = require('./localEnv');
 let ApexClassStore = require('./apexClass').ApexClassStore;
 let NameSpaceStore = require('./apexClass').NameSpaceStore;
 
 class ApexInterpreter {
   visit(node) {
+    this.pushScope({});
     node.accept(this);
+    this.popScope();
   }
 
   visitAnnotation(node) {
@@ -33,10 +35,6 @@ class ApexInterpreter {
   }
 
   visitComment(node) {
-  
-  }
-
-  visitConstructorDeclaration(node) {
   
   }
 
@@ -72,26 +70,26 @@ class ApexInterpreter {
   
   }
 
-  visitMethodDeclaration(node) {
-  
-  }
-
   visitMethodInvocation(node) {
-    let receiver = node.receiver.accept(this);
-    let method = receiver.class.instanceMethods.filter((method) => {
-      return method.name == node.methodName;
-    });
+    let receiver, methodNode;
+    [receiver, methodNode] = this.searchMethod(node);
     let env = {
       this: receiver,
     };
+    let parameters = node.parameters.map((parameter) => { return parameter.accept(this); });
+
     this.pushScope(env);
     let returnValue;
-    method.statements.forEach((statement) => {
-      returnValue = statement.accept(this);
-      if (returnValue instanceof Ast.ReturnNode) {
-        return null;
-      }
-    });
+    if (methodNode.nativeFunction) {
+      methodNode.nativeFunction.call(this, parameters);
+    } else {
+      methodNode.statements.forEach((statement) => {
+        returnValue = statement.accept(this);
+        if (returnValue instanceof Ast.ReturnNode) {
+          return null;
+        }
+      });
+    }
     this.popScope();
   }
 

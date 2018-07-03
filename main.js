@@ -1,26 +1,27 @@
-let antlr4 = require('antlr4');
-let ApexParser = require('./apexParser');
-let ApexLexer = require('./apexLexer');
-let ApexInterpreter = require('./apex_interpreter');
-let ApexAstBuilder = require('./ApexAstBuilder');
+const antlr4 = require('antlr4');
+const ApexParser = require('./apexParser');
+const ApexLexer = require('./apexLexer');
+const ApexInterpreter = require('./apex_interpreter');
+const ApexAstBuilder = require('./ApexAstBuilder');
+const util = require('util');
 
 // Create CST with ANTLR
-let input = require('fs').readFileSync(process.argv[2], 'utf8');
-let chars = new antlr4.InputStream(input);
-let lexer = new ApexLexer.apexLexer(chars);
-let tokens  = new antlr4.CommonTokenStream(lexer);
-let parser = new ApexParser.apexParser(tokens);
+const input = require('fs').readFileSync(process.argv[2], 'utf8');
+const chars = new antlr4.InputStream(input);
+const lexer = new ApexLexer.apexLexer(chars);
+const tokens  = new antlr4.CommonTokenStream(lexer);
+const parser = new ApexParser.apexParser(tokens);
 parser.buildParseTrees = true;
-let tree = parser.compilationUnit();
+const tree = parser.compilationUnit();
 
 // Create AST from CST with Visitor
-let visitor = new ApexAstBuilder();
-let top = visitor.visit(tree);
-// console.log(top);
+const visitor = new ApexAstBuilder();
+const top = visitor.visit(tree);
+console.log(util.inspect(top, {depth: 5, colors: true}));
 
-let interpreter = new ApexInterpreter();
+const interpreter = new ApexInterpreter();
 
-let method = top.staticMethods.find((method) => { return method.name == 'action'; });
-method.statements.forEach((statement) => {
-    statement.accept(interpreter);
-});
+const method = top.staticMethods.find((method) => { return method.name == 'action'; });
+// method.statements.forEach((statement) => {
+//     statement.accept(interpreter);
+// });
