@@ -17,11 +17,11 @@ const tree = parser.compilationUnit();
 // Create AST from CST with Visitor
 const visitor = new ApexAstBuilder();
 const top = visitor.visit(tree);
-console.log(util.inspect(top, {depth: 5, colors: true}));
+console.log(util.inspect(top, {depth: 6, colors: true}));
 
 const interpreter = new ApexInterpreter();
 
 const method = top.staticMethods.find((method) => { return method.name == 'action'; });
-// method.statements.forEach((statement) => {
-//     statement.accept(interpreter);
-// });
+method.statements.forEach((statement) => {
+    statement.accept(interpreter);
+});

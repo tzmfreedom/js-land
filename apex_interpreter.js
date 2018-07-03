@@ -11,7 +11,7 @@ class ApexInterpreter {
   }
 
   visitAnnotation(node) {
-  
+    return node;
   }
 
   visitInterger(node) {
@@ -19,7 +19,7 @@ class ApexInterpreter {
   }
 
   visitArgument(node) {
-  
+    return node;
   }
 
   visitArrayAccess(node) {
