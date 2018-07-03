@@ -3,7 +3,6 @@
 var antlr4 = require('antlr4/index');
 var Apex = require('./apexClass');
 var ApexVisitor = require('./apexVisitor');
-var LocalEnvironment = require('./localEnv');
 var Ast = require('./node/ast');
 
 let ApexAstBuilder = function() {
@@ -434,15 +433,16 @@ ApexAstBuilder.prototype.visitQualifiedName = function(ctx) {
 // Visit a parse tree produced by apexParser#literal.
 ApexAstBuilder.prototype.visitLiteral = function(ctx) {
     if (ctx.IntegerLiteral()) {
-        return new Ast.IntergerNode(ctx.IntegerLiteral());
+        return new Ast.IntergerNode(ctx.IntegerLiteral().getText());
     } else if (ctx.FloatingPointLiteral()) {
-        return new Ast.DoubleNode(ctx.IntegerLiteral());
+        return new Ast.DoubleNode(ctx.IntegerLiteral().getText());
     } else if (ctx.StringLiteral()) {
-        return new Ast.StringNode(ctx.StringLiteral());
+        let text = ctx.StringLiteral().getText();
+        return new Ast.StringNode(text.substring(1, text.length - 1));
     } else if (ctx.BooleanLiteral()) {
-        return new Ast.BooleanNode(ctx.BooleanLiteral());
+        return new Ast.BooleanNode(ctx.BooleanLiteral().getText());
     } else if (ctx.NullLiteral()) {
-        return new Ast.NullNode(ctx.BooleanLiteral());
+        return new Ast.NullNode();
     }
     throw 'Invalid Literal';
 };
@@ -737,13 +737,18 @@ ApexAstBuilder.prototype.visitNewExpression = function(ctx) {
 
 // Visit a parse tree produced by apexParser#MethodInvocation.
 ApexAstBuilder.prototype.visitMethodInvocation = function(ctx) {
-    let names = ctx.expression().accept(this);
-    let receiver = names;
+    let receiver = ctx.expression().accept(this);
+    let methodName;
+    if (receiver instanceof Ast.NameNode) {
+        // receiver, methodNameの調整
+        methodName = receiver.value.pop();
+    } else if (receiver instanceof Ast.FieldAccessNode) {
+        methodName = receiver.fieldName;
+    }
     let arguments = [];
     if (ctx.expressionList()) {
         arguments = ctx.expressionList().accept(this);
     }
-    let methodName = names[names.length-1];
     return new Ast.MethodInvocationNode(receiver, arguments, methodName);
 };
 
@@ -767,6 +772,11 @@ ApexAstBuilder.prototype.visitShiftExpression = function(ctx) {
 ApexAstBuilder.prototype.visitFieldAccess = function(ctx) {
     let expression = ctx.expression().accept(this);
     let fieldName = ctx.Identifier().getText();
+    if (expression instanceof Ast.NameNode) {
+        return new Ast.NameNode(expression.value.concat(fieldName))
+    } else if (expression instanceof Ast.StringNode) {
+        return new Ast.NameNode([expression.value, fieldName])
+    }
     return new Ast.FieldAccessNode(expression, fieldName);
 };
 
@@ -776,13 +786,13 @@ ApexAstBuilder.prototype.visitPrimary = function(ctx) {
     if (ctx.expression()) {
         return ctx.expression().accept(this);
     } else if (ctx.THIS()) {
-        return new Ast.NameNode(ctx.THIS().getText());
+        return new Ast.NameNode([ctx.THIS().getText()]);
     } else if (ctx.SUPER()) {
-        return new Ast.NameNode(ctx.SUPER().getText());
+        return new Ast.NameNode([ctx.SUPER().getText()]);
     } else if (ctx.literal()) {
         return ctx.literal().accept(this);
     } else if (ctx.Identifier()) {
-        return new Ast.NameNode(ctx.Identifier().getText());
+        return new Ast.NameNode([ctx.Identifier().getText()]);
     } else if (ctx.SoqlLiteral()) {
         return new Ast.SoqlNode(ctx.SoqlLiteral().getText());
     }
@@ -882,18 +892,6 @@ ApexAstBuilder.prototype.visitExplicitGenericInvocationSuffix = function(ctx) {
 // Visit a parse tree produced by apexParser#arguments.
 ApexAstBuilder.prototype.visitArguments = function(ctx) {
     return this.visitChildren(ctx);
-};
-
-ApexAstBuilder.prototype.pushScope = function(env) {
-    LocalEnvironment.pushScope(env);
-};
-
-ApexAstBuilder.prototype.popScope = function() {
-    LocalEnvironment.popScope();
-};
-
-ApexAstBuilder.prototype.getValue = function(key) {
-    return LocalEnvironment.get(key);
 };
 
 

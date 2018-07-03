@@ -1,7 +1,7 @@
 let antlr4 = require('antlr4');
 let ApexParser = require('./apexParser');
 let ApexLexer = require('./apexLexer');
-let Apex = require('./apexClass');
+let ApexInterpreter = require('./apex_interpreter');
 let ApexAstBuilder = require('./ApexAstBuilder');
 
 // Create CST with ANTLR
@@ -16,7 +16,11 @@ let tree = parser.compilationUnit();
 // Create AST from CST with Visitor
 let visitor = new ApexAstBuilder();
 let top = visitor.visit(tree);
-console.log(top);
+// console.log(top);
 
-// let staticMethods = Apex.ApexClassStore.get('Hoge').staticMethods;
-// visitor.visit(staticMethods.action.statements);
+let interpreter = new ApexInterpreter();
+
+let method = top.staticMethods.find((method) => { return method.name == 'action'; });
+method.statements.forEach((statement) => {
+    statement.accept(interpreter);
+});
