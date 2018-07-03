@@ -426,24 +426,6 @@ apexVisitor.prototype.visitFinallyBlock = function(ctx) {
 };
 
 
-// Visit a parse tree produced by apexParser#resourceSpecification.
-apexVisitor.prototype.visitResourceSpecification = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#resources.
-apexVisitor.prototype.visitResources = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#resource.
-apexVisitor.prototype.visitResource = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
 // Visit a parse tree produced by apexParser#forControl.
 apexVisitor.prototype.visitForControl = function(ctx) {
   return this.visitChildren(ctx);

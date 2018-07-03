@@ -4,17 +4,16 @@ annotation:
 modifier:
   - name
 class:
+  - annotations
   - modifiers
   - name
-  - access_modifier
-  - annotations
-  - instance_fields
-  - instance_methods
+  - superClass
+  - implementClasses
   - constructor
-  - static_fields
-  - static_methods
-  - super_class
-  - implements
+  - instanceFields
+  - instanceMethods
+  - staticFields
+  - staticMethods
 interger:
   - value
 argument:
@@ -28,14 +27,12 @@ boolean:
 break: []
 comment: []
 constructor_declaration:
-  - access_modifier
   - name
   - modifiers
-  - return_type
-  - arguments
+  - throws
+  - parameters
   - statements
-  - native
-  - call_proc
+  - nativeFunction
 continue: []
 dml:
   - type
@@ -44,56 +41,74 @@ double:
   - value
 field_declaration:
   - type
-  - access_modifier
   - modifiers
-  - statements
+  - declarators
 field_declarator:
   - name
   - modifiers
   - expression
+try:
+  - block
+  - catchClause
+  - finallyBlock
+catch:
+  - modifiers
+  - type
+  - identifier
+  - block
+finally:
+  - block
 for:
-  - init_statement
-  - exit_condition
-  - increment_statement
+  - forControl
   - statements
 forenum:
   - type
   - identifier
-  - list_object
+  - listExpression
   - statements
+forControl:
+  - forInit
+  - expression
+  - forUpdate
+enhancedForControl:
+  - modifiers
+  - type
+  - variableDeclaratorId
+  - expression
 if:
   - condition
-  - if_statement
-  - else_statement
+  - ifStatement
+  - elseStatement
 method_declaration:
-  - access_modifier
   - name
   - modifiers
-  - return_type
-  - arguments
+  - returnType
+  - parameters
+  - throws
   - statements
-  - native
-  - call_proc
+  - nativeFunction
 method_invocation:
   - receiver
-  - arguments
-  - method_name
+  - parameters
+  - methodName
 name:
   - value
 new:
-  - class_name
-  - arguments
+  - className
+  - parameters
 'null': []
 object:
-  - class_node
-  - arguments
-  - instance_fields
-  - generics_node
+  - classNode
+  - genericType
+  - instanceFields
+  - genericsNode
 binary_operator:
   - type
   - left
   - right
 return:
+  - expression
+throw:
   - expression
 soql:
   - soql
@@ -105,14 +120,15 @@ switch:
 trigger:
   - name
   - object
-  - arguments
+  - triggerTimings
   - statements
 trigger_timing:
   - timing
-  - dml variable_declaration
+  - dmm
 variable_declaration:
+  - modifiers
   - type
-  - statements
+  - declarators
 variable_declarator:
   - left
   - right
@@ -120,5 +136,16 @@ when:
   - condition
   - statements
 while:
-  - condition_statement
+  - condition
   - statements
+  - doFlag
+nothingStatement: []
+castExpression:
+  - type
+  - expression
+fieldAccess:
+  - expression
+  - fieldName
+type:
+  - name
+  - parameters

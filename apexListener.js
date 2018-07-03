@@ -632,33 +632,6 @@ apexListener.prototype.exitFinallyBlock = function(ctx) {
 };
 
 
-// Enter a parse tree produced by apexParser#resourceSpecification.
-apexListener.prototype.enterResourceSpecification = function(ctx) {
-};
-
-// Exit a parse tree produced by apexParser#resourceSpecification.
-apexListener.prototype.exitResourceSpecification = function(ctx) {
-};
-
-
-// Enter a parse tree produced by apexParser#resources.
-apexListener.prototype.enterResources = function(ctx) {
-};
-
-// Exit a parse tree produced by apexParser#resources.
-apexListener.prototype.exitResources = function(ctx) {
-};
-
-
-// Enter a parse tree produced by apexParser#resource.
-apexListener.prototype.enterResource = function(ctx) {
-};
-
-// Exit a parse tree produced by apexParser#resource.
-apexListener.prototype.exitResource = function(ctx) {
-};
-
-
 // Enter a parse tree produced by apexParser#forControl.
 apexListener.prototype.enterForControl = function(ctx) {
 };

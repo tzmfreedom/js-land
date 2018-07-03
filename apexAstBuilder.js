@@ -66,24 +66,60 @@ ApexAstBuilder.prototype.visitVariableModifier = function(ctx) {
 // Visit a parse tree produced by apexParser#classDeclaration.
 ApexAstBuilder.prototype.visitClassDeclaration = function(ctx) {
     let className = ctx.Identifier().getText();
-    let superClass = ctx.type().getText();
+    let superClass = ctx.type().accept(this);
     let implementClasses = [];
     if (ctx.typeList()) {
-        implementClasses = ctx.typeList().map((type) => { return type.getText() });
+        implementClasses = ctx.typeList().map((type) => { return type.accept(this); });
     }
     let declarations = ctx.classBody().accept(this);
-    let apexClass = new Apex.ApexClass(
+    let constructor = declarations.filter((declaration) => {
+        return declaration instanceof Ast.ConstructorDeclarationNode;
+    });
+    let instanceMethods = declarations.filter((declaration) => {
+        return (
+            declaration instanceof Ast.MethodDeclarationNode
+            && declaration.modifiers.every((modifier) => {
+                return modifier.name != 'static';
+            })
+        );
+    });
+    let staticMethods = declarations.filter((declaration) => {
+        return (
+            declaration instanceof Ast.MethodDeclarationNode
+            && declaration.modifiers.some((modifier) => {
+                return modifier.name == 'static';
+            })
+        );
+    });
+    let instanceFields = declarations.filter((declaration) => {
+        return (
+            declaration instanceof Ast.FieldDeclarationNode
+            && declaration.modifiers.every((modifier) => {
+                return modifier.name != 'static';
+            })
+        );
+    });
+    let staticFields = declarations.filter((declaration) => {
+        return (
+            declaration instanceof Ast.FieldDeclarationNode
+            && declaration.modifiers.some((modifier) => {
+                return modifier.name == 'static';
+            })
+        );
+    });
+
+    return new Ast.ClassNode(
+        null,
+        null,
         className,
         superClass,
         implementClasses,
-        declarations.instanceFields,
-        declarations.staticFields,
-        declarations.instanceMethods,
-        declarations.staticMethods
+        constructor,
+        instanceFields,
+        instanceMethods,
+        staticFields,
+        staticMethods
     );
-    Apex.ApexClassStore.register(className, apexClass);
-
-    return apexClass;
 };
 
 
@@ -143,35 +179,9 @@ ApexAstBuilder.prototype.visitTypeList = function(ctx) {
 
 // Visit a parse tree produced by apexParser#classBody.
 ApexAstBuilder.prototype.visitClassBody = function(ctx) {
-    let properties = {
-        instanceFields: {},
-        staticFields: {},
-        instanceMethods: {},
-        staticMethods: {},
-    };
-    ctx.classBodyDeclaration().forEach((declaration) => {
-        let decl = declaration.accept(this);
-        if (decl instanceof Apex.ApexMethod) {
-            if (decl.modifiers.includes('static')) {
-                properties.staticMethods[decl.identifier] = decl;
-            } else {
-                properties.instanceMethods[decl.identifier] = decl;
-            }
-        } else if (decl instanceof Apex.InstanceFieldDeclaration) {
-            if (decl.modifiers.includes('static')) {
-                decl.declarators.forEach((declarator) => {
-                    declarator.type = decl.type;
-                    properties.staticFields[declarator.identifier] = declarator;
-                });
-            } else {
-                decl.declarators.forEach((declarator) => {
-                    declarator.type = decl.type;
-                    properties.instanceFields[declarator.identifier] = declarator;
-                });
-            }
-        }
+    return ctx.classBodyDeclaration().map((declaration) => {
+        return declaration.accept(this);
     });
-    return properties;
 };
 
 
@@ -198,12 +208,20 @@ ApexAstBuilder.prototype.visitMemberDeclaration = function(ctx) {
 
 // Visit a parse tree produced by apexParser#methodDeclaration.
 ApexAstBuilder.prototype.visitMethodDeclaration = function(ctx) {
-    let methodName = ctx.Identifier();
-    let parameters = ctx.formalParameters();
-    let throws = ctx.qualifiedNameList();
+    let methodName = ctx.Identifier().getText();
+    let returnType = ctx.type() ? ctx.type().accept(this) : 'void';
+    let parameters = ctx.formalParameters().accept(this);
+    let throws = ctx.qualifiedNameList() ? ctx.qualifiedNameList().accept(this) : [];
     let statements = ctx.methodBody().accept(this);
 
-    return new Apex.ApexMethod(methodName, parameters, throws, statements);
+    return new Ast.MethodDeclarationNode(
+        methodName,
+        null,
+        returnType,
+        parameters,
+        throws,
+        statements
+    );
 };
 
 
@@ -215,7 +233,17 @@ ApexAstBuilder.prototype.visitGenericMethodDeclaration = function(ctx) {
 
 // Visit a parse tree produced by apexParser#constructorDeclaration.
 ApexAstBuilder.prototype.visitConstructorDeclaration = function(ctx) {
-    return this.visitChildren(ctx);
+    let name = ctx.Identifier().accept(this);
+    let formalParameters = ctx.formalParameters().accept(this);
+    let throws = ctx.qualifiedNameList().accept(this);
+    let constructorBody = ctx.constructorBody().accept(this);
+    return new Ast.ConstructorDeclarationNode(
+        name,
+        null,
+        throws,
+        formalParameters,
+        constructorBody
+    )
 };
 
 
@@ -229,7 +257,7 @@ ApexAstBuilder.prototype.visitGenericConstructorDeclaration = function(ctx) {
 ApexAstBuilder.prototype.visitFieldDeclaration = function(ctx) {
     let type = ctx.type().accept(this);
     let declarators = ctx.variableDeclarators().accept(this);
-    return new Apex.InstanceFieldDeclaration(type, declarators);
+    return new Ast.FieldDeclarationNode(type, null, declarators)
 };
 
 
@@ -477,75 +505,85 @@ ApexAstBuilder.prototype.visitElementValueArrayInitializer = function(ctx) {
 };
 
 
-// Visit a parse tree produced by apexParser#annotationTypeBody.
-ApexAstBuilder.prototype.visitAnnotationTypeBody = function(ctx) {
-    return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#annotationTypeElementDeclaration.
-ApexAstBuilder.prototype.visitAnnotationTypeElementDeclaration = function(ctx) {
-    return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#annotationTypeElementRest.
-ApexAstBuilder.prototype.visitAnnotationTypeElementRest = function(ctx) {
-    return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#annotationMethodOrConstantRest.
-ApexAstBuilder.prototype.visitAnnotationMethodOrConstantRest = function(ctx) {
-    return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#annotationMethodRest.
-ApexAstBuilder.prototype.visitAnnotationMethodRest = function(ctx) {
-    return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#annotationConstantRest.
-ApexAstBuilder.prototype.visitAnnotationConstantRest = function(ctx) {
-    return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#defaultValue.
-ApexAstBuilder.prototype.visitDefaultValue = function(ctx) {
-    return this.visitChildren(ctx);
-};
-
-
 // Visit a parse tree produced by apexParser#block.
 ApexAstBuilder.prototype.visitBlock = function(ctx) {
-    return ctx.blockStatement();
+    return ctx.blockStatement().map((statement) => {
+        return statement.accept(this);
+    });
 };
 
 
 // Visit a parse tree produced by apexParser#blockStatement.
 ApexAstBuilder.prototype.visitBlockStatement = function(ctx) {
-    return ctx.statement().accept(this);
+    if (ctx.statement()) {
+        return ctx.statement().accept(this);
+    } else if (ctx.localVariableDeclarationStatement()) {
+        return ctx.localVariableDeclarationStatement().accept(this);
+    } else if (ctx.typeDeclaration()) {
+        return ctx.typeDeclaration().accept(this);
+    }
 };
 
 
 // Visit a parse tree produced by apexParser#localVariableDeclarationStatement.
 ApexAstBuilder.prototype.visitLocalVariableDeclarationStatement = function(ctx) {
-    return this.visitChildren(ctx);
+    return ctx.localVariableDeclaration().accept(this);
 };
 
 
 // Visit a parse tree produced by apexParser#localVariableDeclaration.
 ApexAstBuilder.prototype.visitLocalVariableDeclaration = function(ctx) {
-    return this.visitChildren(ctx);
+    let modifiers = ctx.variableModifier().map((modifier) => {
+        return modifier.accept(this);
+    });
+    let type = ctx.type().accept(this);
+    let declarators = ctx.variableDeclarators().accept(this);
+    return new Ast.VariableDeclarationNode(modifiers, type, declarators);
 };
 
 
 // Visit a parse tree produced by apexParser#statement.
 ApexAstBuilder.prototype.visitStatement = function(ctx) {
-    return this.visitChildren(ctx);
+    if (ctx.block()) {
+        return ctx.block().accept(this);
+    } else if (ctx.IF()) {
+        let condition = ctx.parExpression().accept(this);
+        let if_statement = ctx.statement()[0];
+        let else_statement = ctx.statement().length > 1 ? ctx.statement()[1] : null;
+        return new Ast.IfNode(condition, if_statement, else_statement);
+    } else if (ctx.FOR()) {
+        let forControl = ctx.forControl().accept(this);
+        let statement = ctx.statement().accept(this);
+        return new Ast.ForNode(forControl, statement);
+    } else if (ctx.WHILE()) {
+        let doFlag = ctx.DO() != null;
+        let condition = ctx.parExpression().accept(this);
+        let statements = ctx.statement().accept(this);
+        return new Ast.WhileNode(condition, statements, doFlag);
+    } else if (ctx.TRY()) {
+        let block = ctx.block().accept(this);
+        let catchClause = ctx.catchClause() ? ctx.catchClause().accept(this) : null;
+        let finallyBlock = ctx.finallyBlock() ? ctx.finallyBlock().accept(this) : null;
+        return new Ast.TryNode(block, catchClause, finallyBlock);
+    } else if (ctx.RETURN()) {
+        let expression = ctx.expression().accept(this);
+        return new Ast.ReturnNode(expression);
+    } else if (ctx.THROW()) {
+        let expression = ctx.expression().accept(this);
+        return new Ast.ThrowNode(expression);
+    } else if (ctx.BREAK()) {
+        let expression = ctx.expression().accept(this);
+        return new Ast.ReturnNode(expression);
+    } else if (ctx.CONTINUE()) {
+        let expression = ctx.expression().accept(this);
+        return new Ast.ReturnNode(expression);
+    } else if (ctx.statementExpression()) {
+        return ctx.statementExpression().accept(this);
+    } else if (ctx.apexDbExpression()) {
+        return ctx.apexDbExpression().accept(this);
+    } else {
+        return new Ast.NothingStatementNode();
+    }
 };
 
 
@@ -569,67 +607,74 @@ ApexAstBuilder.prototype.visitSetter = function(ctx) {
 
 // Visit a parse tree produced by apexParser#catchClause.
 ApexAstBuilder.prototype.visitCatchClause = function(ctx) {
-    return this.visitChildren(ctx);
+    let modifiers = ctx.variableModifier().map((modifier) => {
+        return modifier.accept(this);
+    });
+    let catchType = ctx.catchType().accept(this);
+    let block = ctx.block().accept(this);
+    let identifier = ctx.Identifier().getText();
+    return new Ast.CatchNode(modifiers, catchType, identifier, block);
 };
 
 
 // Visit a parse tree produced by apexParser#catchType.
 ApexAstBuilder.prototype.visitCatchType = function(ctx) {
-    return this.visitChildren(ctx);
+    return ctx.qualifiedName().map((name) => {
+        return name.accept(this);
+    });
 };
 
 
 // Visit a parse tree produced by apexParser#finallyBlock.
 ApexAstBuilder.prototype.visitFinallyBlock = function(ctx) {
-    return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#resourceSpecification.
-ApexAstBuilder.prototype.visitResourceSpecification = function(ctx) {
-    return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#resources.
-ApexAstBuilder.prototype.visitResources = function(ctx) {
-    return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#resource.
-ApexAstBuilder.prototype.visitResource = function(ctx) {
-    return this.visitChildren(ctx);
+    return ctx.block().accept(this);
 };
 
 
 // Visit a parse tree produced by apexParser#forControl.
 ApexAstBuilder.prototype.visitForControl = function(ctx) {
-    return this.visitChildren(ctx);
+    if (ctx.enhancedForControl()) {
+        return ctx.enhancedForControl().accept(this);
+    } else {
+        let forInit = ctx.forInit().accept(this);
+        let expression = ctx.expression().accept(this);
+        let forUpdate = ctx.forUpdate().accept(this);
+        return new Ast.ForControl(forInit, expression, forUpdate);
+    }
 };
 
 
 // Visit a parse tree produced by apexParser#forInit.
 ApexAstBuilder.prototype.visitForInit = function(ctx) {
-    return this.visitChildren(ctx);
+    if (ctx.localVariableDeclaration()) {
+        return ctx.localVariableDeclaration().accept(this);
+    } else {
+        return ctx.expressionList().accept(this);
+    }
 };
 
 
 // Visit a parse tree produced by apexParser#enhancedForControl.
 ApexAstBuilder.prototype.visitEnhancedForControl = function(ctx) {
-    return this.visitChildren(ctx);
+    let modifiers = ctx.variableModifier().map((modifier) => {
+        return modifier.accept(this);
+    });
+    let type = ctx.type().accept(this);
+    let variableDeclaratorId = ctx.variableDeclaratorId().accept(this);
+    let expression = ctx.expression().accept(this);
+    return new Ast.EnhancedForControl(modifiers, type, variableDeclaratorId, expression)
 };
 
 
 // Visit a parse tree produced by apexParser#forUpdate.
 ApexAstBuilder.prototype.visitForUpdate = function(ctx) {
-    return this.visitChildren(ctx);
+    return ctx.expressionList().accept(this);
 };
 
 
 // Visit a parse tree produced by apexParser#parExpression.
 ApexAstBuilder.prototype.visitParExpression = function(ctx) {
-    return this.visitChildren(ctx);
+    return ctx.expression().accept(this);
 };
 
 
@@ -643,82 +688,72 @@ ApexAstBuilder.prototype.visitExpressionList = function(ctx) {
 
 // Visit a parse tree produced by apexParser#statementExpression.
 ApexAstBuilder.prototype.visitStatementExpression = function(ctx) {
-    return this.visitChildren(ctx);
+    return ctx.expression().accept(this);
 };
 
 
 // Visit a parse tree produced by apexParser#constantExpression.
 ApexAstBuilder.prototype.visitConstantExpression = function(ctx) {
-    return this.visitChildren(ctx);
+    return ctx.expression().accept(this);
 };
 
-
-// Visit a parse tree produced by apexParser#apexDbExpressionLong.
-ApexAstBuilder.prototype.visitApexDbExpressionLong = function(ctx) {
-    return this.visitChildren(ctx);
-};
 
 
 // Visit a parse tree produced by apexParser#apexDbExpressionShort.
 ApexAstBuilder.prototype.visitApexDbExpressionShort = function(ctx) {
-    return this.visitChildren(ctx);
+    let dml = ctx.dml().getText();
+    let expression = ctx.expression().accept(this);
+    return new Ast.DmlNode(dml, expression);
 };
 
 
 // Visit a parse tree produced by apexParser#apexDbExpression.
 ApexAstBuilder.prototype.visitApexDbExpression = function(ctx) {
-    return this.visitChildren(ctx);
+    return ctx.apexDbExpressionShort().accept(this);
 };
 
 
 
 // Visit a parse tree produced by apexParser#PrimaryExpression.
 ApexAstBuilder.prototype.visitPrimaryExpression = function(ctx) {
-    return ctx.getText();
+    return ctx.primary().accept(this);
 };
 
 
 // Visit a parse tree produced by apexParser#OpExpression.
 ApexAstBuilder.prototype.visitOpExpression = function(ctx) {
-    return this.visitChildren(ctx);
+    let op = ctx.op().getText();
+    let left = ctx.expression()[0].accept(this);
+    let right = ctx.expression()[1].accept(this);
+    return new Ast.BinaryOperatorNode(op, left, right);
 };
 
 
 // Visit a parse tree produced by apexParser#NewExpression.
 ApexAstBuilder.prototype.visitNewExpression = function(ctx) {
-    return this.visitChildren(ctx);
+    return ctx.creator().accept(this);
 };
 
 
 // Visit a parse tree produced by apexParser#MethodInvocation.
 ApexAstBuilder.prototype.visitMethodInvocation = function(ctx) {
-    let receiver = ctx.expression().accept(this);
-    let apexClass = Apex.ApexClassStore.get(receiver);
-    let arguments = ctx.expressionList().accept(this);
-    console.log(receiver);
-    console.log(arguments);
-    class_node = Apex.ApexClassStore.get('System');
-    method = class_node.staticMethods['debug'];
-    let env = { object: { value: arguments[0] } };
-    env.this = receiver;
-    this.pushScope(env);
-    var return_value;
-    if (method instanceof Apex.ApexMethodNative) {
-        method.call();
-    } else {
-        method.statements.forEach((statemente) => {
-            return_value = statement.accept(this);
-        });
+    let names = ctx.expression().accept(this);
+    let receiver = names;
+    let arguments = [];
+    if (ctx.expressionList()) {
+        arguments = ctx.expressionList().accept(this);
     }
-    this.popScope();
-    return return_value;
+    let methodName = names[names.length-1];
+    return new Ast.MethodInvocationNode(receiver, arguments, methodName);
 };
 
 
 
 // Visit a parse tree produced by apexParser#CastExpression.
 ApexAstBuilder.prototype.visitCastExpression = function(ctx) {
-    return this.visitChildren(ctx);
+    let type = ctx.type().accept(this);
+    let expression = ctx.expression().accept(this);
+    return new Ast.CastExpressionNode(type, expression);
 };
 
 
@@ -731,28 +766,50 @@ ApexAstBuilder.prototype.visitShiftExpression = function(ctx) {
 // Visit a parse tree produced by apexParser#FieldAccess.
 ApexAstBuilder.prototype.visitFieldAccess = function(ctx) {
     let expression = ctx.expression().accept(this);
-    return [expression, ctx.Identifier().getText()];
+    let fieldName = ctx.Identifier().getText();
+    return new Ast.FieldAccessNode(expression, fieldName);
 };
 
 
 // Visit a parse tree produced by apexParser#primary.
 ApexAstBuilder.prototype.visitPrimary = function(ctx) {
-    if (ctx.Identifier()) {
-        return ctx.Identifier();
+    if (ctx.expression()) {
+        return ctx.expression().accept(this);
+    } else if (ctx.THIS()) {
+        return new Ast.NameNode(ctx.THIS().getText());
+    } else if (ctx.SUPER()) {
+        return new Ast.NameNode(ctx.SUPER().getText());
+    } else if (ctx.literal()) {
+        return ctx.literal().accept(this);
+    } else if (ctx.Identifier()) {
+        return new Ast.NameNode(ctx.Identifier().getText());
+    } else if (ctx.SoqlLiteral()) {
+        return new Ast.SoqlNode(ctx.SoqlLiteral().getText());
     }
-    return this.visitChildren(ctx);
 };
 
 
 // Visit a parse tree produced by apexParser#creator.
 ApexAstBuilder.prototype.visitCreator = function(ctx) {
-    return this.visitChildren(ctx);
+    if (ctx.nonWildcardTypeArguments()) {
+        let createdName = ctx.createdName().accept(this);
+        let classCreatorRest = ctx.classCreatorRest().accept(this);
+        return new Ast.NewNode(createdName, classCreatorRest);
+    } else {
+
+    }
 };
 
 
 // Visit a parse tree produced by apexParser#createdName.
 ApexAstBuilder.prototype.visitCreatedName = function(ctx) {
-    return this.visitChildren(ctx);
+    if (ctx.Identifier()) {
+        let name = ctx.Identifier().getText();
+        let arguments = ctx.typeArgumentsOrDiamond().map((type) => {
+            return type.accept(this);
+        });
+        return new Ast.TypeNode(name, arguments);
+    }
 };
 
 
@@ -840,4 +897,4 @@ ApexAstBuilder.prototype.getValue = function(key) {
 };
 
 
-exports.ApexAstBuilder = ApexAstBuilder;
+module.exports = ApexAstBuilder;

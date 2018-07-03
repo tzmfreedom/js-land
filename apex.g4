@@ -372,16 +372,14 @@ statement
     |   IF parExpression statement (ELSE statement)?
     |   FOR '(' forControl ')' statement
     |   WHILE parExpression statement
-    |   DO statement WHILE parExpression ';'
+    |   DO statement WHILE parExpression
     |   TRY block (catchClause+ finallyBlock? | finallyBlock)
-    |   TRY resourceSpecification block catchClause* finallyBlock?
     |   RETURN expression? ';'
     |   THROW expression ';'
     |   BREAK Identifier? ';'
     |   CONTINUE Identifier? ';'
     |   ';'
     |   statementExpression ';'
-    |   Identifier ':' statement
     |   apexDbExpression ';'
     ;
 
@@ -410,17 +408,6 @@ finallyBlock
     :   FINALLY block
     ;
 
-resourceSpecification
-    :   '(' resources ';'? ')'
-    ;
-
-resources
-    :   resource (';' resource)*
-    ;
-
-resource
-    :   variableModifier* classOrInterfaceType variableDeclaratorId '=' expression
-    ;
 
 forControl
     :   enhancedForControl
@@ -459,7 +446,7 @@ constantExpression
     ;
 
 apexDbExpressionShort
-    :   (DB_INSERT | DB_UPSERT | DB_UPDATE | DB_DELETE | DB_UNDELETE) expression
+    :   dml=(DB_INSERT | DB_UPSERT | DB_UPDATE | DB_DELETE | DB_UNDELETE) expression
     ;
 
 

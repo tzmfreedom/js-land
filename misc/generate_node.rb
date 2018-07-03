@@ -5,7 +5,7 @@ require 'yaml'
 BASE_CLASS = 'BaseNode'
 def generate_class(class_name, fields)
   puts <<~JS
-class #{class_name}Node extends #{BASE_CLASS} {
+class #{class_name}Node {
   constructor(#{fields.join(', ')}) {
 #{fields.map { |field| "    this.#{field} = #{field};" }.join("\n")}
   }

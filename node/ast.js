@@ -1,6 +1,7 @@
-class AnnotationNode extends BaseNode {
-  constructor(name) {
+class AnnotationNode {
+  constructor(name, parameters) {
     this.name = name;
+    this.parameters = parameters;
   }
 
   accept(visitor) {
@@ -8,7 +9,7 @@ class AnnotationNode extends BaseNode {
   }
 }
 
-class ModifierNode extends BaseNode {
+class ModifierNode {
   constructor(name) {
     this.name = name;
   }
@@ -18,19 +19,18 @@ class ModifierNode extends BaseNode {
   }
 }
 
-class ClassNode extends BaseNode {
-  constructor(modifiers, name, access_modifier, annotations, instance_fields, instance_methods, constructor, static_fields, static_methods, super_class, implements) {
+class ClassNode {
+  constructor(annotations, modifiers, name, superClass, implementClasses, constructor, instanceFields, instanceMethods, staticFields, staticMethods) {
+    this.annotations = annotations;
     this.modifiers = modifiers;
     this.name = name;
-    this.access_modifier = access_modifier;
-    this.annotations = annotations;
-    this.instance_fields = instance_fields;
-    this.instance_methods = instance_methods;
+    this.superClass = superClass;
+    this.implementClasses = implementClasses;
     this.constructor = constructor;
-    this.static_fields = static_fields;
-    this.static_methods = static_methods;
-    this.super_class = super_class;
-    this.implements = implements;
+    this.instanceFields = instanceFields;
+    this.instanceMethods = instanceMethods;
+    this.staticFields = staticFields;
+    this.staticMethods = staticMethods;
   }
 
   accept(visitor) {
@@ -38,7 +38,7 @@ class ClassNode extends BaseNode {
   }
 }
 
-class IntergerNode extends BaseNode {
+class IntergerNode {
   constructor(value) {
     this.value = value;
   }
@@ -48,7 +48,7 @@ class IntergerNode extends BaseNode {
   }
 }
 
-class ArgumentNode extends BaseNode {
+class ArgumentNode {
   constructor(type, name) {
     this.type = type;
     this.name = name;
@@ -59,7 +59,7 @@ class ArgumentNode extends BaseNode {
   }
 }
 
-class ArrayAccessNode extends BaseNode {
+class ArrayAccessNode {
   constructor(receiver, key) {
     this.receiver = receiver;
     this.key = key;
@@ -70,7 +70,7 @@ class ArrayAccessNode extends BaseNode {
   }
 }
 
-class BooleanNode extends BaseNode {
+class BooleanNode {
   constructor(value) {
     this.value = value;
   }
@@ -80,7 +80,7 @@ class BooleanNode extends BaseNode {
   }
 }
 
-class BreakNode extends BaseNode {
+class BreakNode {
   constructor() {
 
   }
@@ -90,7 +90,7 @@ class BreakNode extends BaseNode {
   }
 }
 
-class CommentNode extends BaseNode {
+class CommentNode {
   constructor() {
 
   }
@@ -100,16 +100,14 @@ class CommentNode extends BaseNode {
   }
 }
 
-class ConstructorDeclarationNode extends BaseNode {
-  constructor(access_modifier, name, modifiers, return_type, arguments, statements, native, call_proc) {
-    this.access_modifier = access_modifier;
+class ConstructorDeclarationNode {
+  constructor(name, modifiers, throws, parameters, statements, nativeFunction) {
     this.name = name;
     this.modifiers = modifiers;
-    this.return_type = return_type;
-    this.arguments = arguments;
+    this.throws = throws;
+    this.parameters = parameters;
     this.statements = statements;
-    this.native = native;
-    this.call_proc = call_proc;
+    this.nativeFunction = nativeFunction;
   }
 
   accept(visitor) {
@@ -117,7 +115,7 @@ class ConstructorDeclarationNode extends BaseNode {
   }
 }
 
-class ContinueNode extends BaseNode {
+class ContinueNode {
   constructor() {
 
   }
@@ -127,7 +125,7 @@ class ContinueNode extends BaseNode {
   }
 }
 
-class DmlNode extends BaseNode {
+class DmlNode {
   constructor(type, object) {
     this.type = type;
     this.object = object;
@@ -138,7 +136,7 @@ class DmlNode extends BaseNode {
   }
 }
 
-class DoubleNode extends BaseNode {
+class DoubleNode {
   constructor(value) {
     this.value = value;
   }
@@ -148,10 +146,9 @@ class DoubleNode extends BaseNode {
   }
 }
 
-class FieldDeclarationNode extends BaseNode {
-  constructor(type, access_modifier, modifiers, statements) {
+class FieldDeclarationNode {
+  constructor(type, modifiers, statements) {
     this.type = type;
-    this.access_modifier = access_modifier;
     this.modifiers = modifiers;
     this.statements = statements;
   }
@@ -161,7 +158,7 @@ class FieldDeclarationNode extends BaseNode {
   }
 }
 
-class FieldDeclaratorNode extends BaseNode {
+class FieldDeclaratorNode {
   constructor(name, modifiers, expression) {
     this.name = name;
     this.modifiers = modifiers;
@@ -173,11 +170,44 @@ class FieldDeclaratorNode extends BaseNode {
   }
 }
 
-class ForNode extends BaseNode {
-  constructor(init_statement, exit_condition, increment_statement, statements) {
-    this.init_statement = init_statement;
-    this.exit_condition = exit_condition;
-    this.increment_statement = increment_statement;
+class TryNode {
+  constructor(block, catchClause, finallyBlock) {
+    this.block = block;
+    this.catchClause = catchClause;
+    this.finallyBlock = finallyBlock;
+  }
+
+  accept(visitor) {
+    visitor.visitTry(this);
+  }
+}
+
+class CatchNode {
+  constructor(modifiers, type, identifier, block) {
+    this.modifiers = modifiers;
+    this.type = type;
+    this.identifier = identifier;
+    this.block = block;
+  }
+
+  accept(visitor) {
+    visitor.visitCatch(this);
+  }
+}
+
+class FinallyNode {
+  constructor(block) {
+    this.block = block;
+  }
+
+  accept(visitor) {
+    visitor.visitFinally(this);
+  }
+}
+
+class ForNode {
+  constructor(forControl, statements) {
+    this.forControl = forControl;
     this.statements = statements;
   }
 
@@ -186,11 +216,11 @@ class ForNode extends BaseNode {
   }
 }
 
-class ForenumNode extends BaseNode {
-  constructor(type, identifier, list_object, statements) {
+class ForenumNode {
+  constructor(type, identifier, listExpression, statements) {
     this.type = type;
     this.identifier = identifier;
-    this.list_object = list_object;
+    this.listExpression = listExpression;
     this.statements = statements;
   }
 
@@ -199,11 +229,36 @@ class ForenumNode extends BaseNode {
   }
 }
 
-class IfNode extends BaseNode {
-  constructor(condition, if_statement, else_statement) {
+class ForControlNode {
+  constructor(forInit, expression, forUpdate) {
+    this.forInit = forInit;
+    this.expression = expression;
+    this.forUpdate = forUpdate;
+  }
+
+  accept(visitor) {
+    visitor.visitForControl(this);
+  }
+}
+
+class EnhancedForControlNode {
+  constructor(modifiers, type, variableDeclaratorId, expression) {
+    this.modifiers = modifiers;
+    this.type = type;
+    this.variableDeclaratorId = variableDeclaratorId;
+    this.expression = expression;
+  }
+
+  accept(visitor) {
+    visitor.visitEnhancedForControl(this);
+  }
+}
+
+class IfNode {
+  constructor(condition, ifStatement, elseStatement) {
     this.condition = condition;
-    this.if_statement = if_statement;
-    this.else_statement = else_statement;
+    this.ifStatement = ifStatement;
+    this.elseStatement = elseStatement;
   }
 
   accept(visitor) {
@@ -211,16 +266,15 @@ class IfNode extends BaseNode {
   }
 }
 
-class MethodDeclarationNode extends BaseNode {
-  constructor(access_modifier, name, modifiers, return_type, arguments, statements, native, call_proc) {
-    this.access_modifier = access_modifier;
+class MethodDeclarationNode {
+  constructor(name, modifiers, returnType, parameters, throws, statements, nativeFunction) {
     this.name = name;
     this.modifiers = modifiers;
-    this.return_type = return_type;
-    this.arguments = arguments;
+    this.returnType = returnType;
+    this.parameters = parameters;
+    this.throws = throws;
     this.statements = statements;
-    this.native = native;
-    this.call_proc = call_proc;
+    this.nativeFunction = nativeFunction;
   }
 
   accept(visitor) {
@@ -228,11 +282,11 @@ class MethodDeclarationNode extends BaseNode {
   }
 }
 
-class MethodInvocationNode extends BaseNode {
-  constructor(receiver, arguments, method_name) {
+class MethodInvocationNode {
+  constructor(receiver, parameters, methodName) {
     this.receiver = receiver;
-    this.arguments = arguments;
-    this.method_name = method_name;
+    this.parameters = parameters;
+    this.methodName = methodName;
   }
 
   accept(visitor) {
@@ -240,7 +294,7 @@ class MethodInvocationNode extends BaseNode {
   }
 }
 
-class NameNode extends BaseNode {
+class NameNode {
   constructor(value) {
     this.value = value;
   }
@@ -250,10 +304,10 @@ class NameNode extends BaseNode {
   }
 }
 
-class NewNode extends BaseNode {
-  constructor(class_name, arguments) {
-    this.class_name = class_name;
-    this.arguments = arguments;
+class NewNode {
+  constructor(className, parameters) {
+    this.className = className;
+    this.parameters = parameters;
   }
 
   accept(visitor) {
@@ -261,7 +315,7 @@ class NewNode extends BaseNode {
   }
 }
 
-class NullNode extends BaseNode {
+class NullNode {
   constructor() {
 
   }
@@ -271,12 +325,12 @@ class NullNode extends BaseNode {
   }
 }
 
-class ObjectNode extends BaseNode {
-  constructor(class_node, arguments, instance_fields, generics_node) {
-    this.class_node = class_node;
-    this.arguments = arguments;
-    this.instance_fields = instance_fields;
-    this.generics_node = generics_node;
+class ObjectNode {
+  constructor(classNode, genericType, instanceFields, genericsNode) {
+    this.classNode = classNode;
+    this.genericType = genericType;
+    this.instanceFields = instanceFields;
+    this.genericsNode = genericsNode;
   }
 
   accept(visitor) {
@@ -284,7 +338,7 @@ class ObjectNode extends BaseNode {
   }
 }
 
-class BinaryOperatorNode extends BaseNode {
+class BinaryOperatorNode {
   constructor(type, left, right) {
     this.type = type;
     this.left = left;
@@ -296,7 +350,7 @@ class BinaryOperatorNode extends BaseNode {
   }
 }
 
-class ReturnNode extends BaseNode {
+class ReturnNode {
   constructor(expression) {
     this.expression = expression;
   }
@@ -306,7 +360,17 @@ class ReturnNode extends BaseNode {
   }
 }
 
-class SoqlNode extends BaseNode {
+class ThrowNode {
+  constructor(expression) {
+    this.expression = expression;
+  }
+
+  accept(visitor) {
+    visitor.visitThrow(this);
+  }
+}
+
+class SoqlNode {
   constructor(soql) {
     this.soql = soql;
   }
@@ -316,7 +380,7 @@ class SoqlNode extends BaseNode {
   }
 }
 
-class StringNode extends BaseNode {
+class StringNode {
   constructor(value) {
     this.value = value;
   }
@@ -326,7 +390,7 @@ class StringNode extends BaseNode {
   }
 }
 
-class SwitchNode extends BaseNode {
+class SwitchNode {
   constructor(expression, statements) {
     this.expression = expression;
     this.statements = statements;
@@ -337,11 +401,11 @@ class SwitchNode extends BaseNode {
   }
 }
 
-class TriggerNode extends BaseNode {
-  constructor(name, object, arguments, statements) {
+class TriggerNode {
+  constructor(name, object, triggerTimings, statements) {
     this.name = name;
     this.object = object;
-    this.arguments = arguments;
+    this.triggerTimings = triggerTimings;
     this.statements = statements;
   }
 
@@ -350,10 +414,10 @@ class TriggerNode extends BaseNode {
   }
 }
 
-class TriggerTimingNode extends BaseNode {
-  constructor(timing, dml variable_declaration) {
+class TriggerTimingNode {
+  constructor(timing, dmm) {
     this.timing = timing;
-    this.dml variable_declaration = dml variable_declaration;
+    this.dmm = dmm;
   }
 
   accept(visitor) {
@@ -361,10 +425,11 @@ class TriggerTimingNode extends BaseNode {
   }
 }
 
-class VariableDeclarationNode extends BaseNode {
-  constructor(type, statements) {
+class VariableDeclarationNode {
+  constructor(modifiers, type, declarators) {
+    this.modifiers = modifiers;
     this.type = type;
-    this.statements = statements;
+    this.declarators = declarators;
   }
 
   accept(visitor) {
@@ -372,7 +437,7 @@ class VariableDeclarationNode extends BaseNode {
   }
 }
 
-class VariableDeclaratorNode extends BaseNode {
+class VariableDeclaratorNode {
   constructor(left, right) {
     this.left = left;
     this.right = right;
@@ -383,7 +448,7 @@ class VariableDeclaratorNode extends BaseNode {
   }
 }
 
-class WhenNode extends BaseNode {
+class WhenNode {
   constructor(condition, statements) {
     this.condition = condition;
     this.statements = statements;
@@ -394,14 +459,58 @@ class WhenNode extends BaseNode {
   }
 }
 
-class WhileNode extends BaseNode {
-  constructor(condition_statement, statements) {
-    this.condition_statement = condition_statement;
+class WhileNode {
+  constructor(condition, statements, doFlag) {
+    this.condition = condition;
     this.statements = statements;
+    this.doFlag = doFlag;
   }
 
   accept(visitor) {
     visitor.visitWhile(this);
+  }
+}
+
+class NothingStatementNode {
+  constructor() {
+
+  }
+
+  accept(visitor) {
+    visitor.visitNothingStatement(this);
+  }
+}
+
+class CastExpressionNode {
+  constructor(type, expression) {
+    this.type = type;
+    this.expression = expression;
+  }
+
+  accept(visitor) {
+    visitor.visitCastExpression(this);
+  }
+}
+
+class FieldAccessNode {
+  constructor(expression, fieldName) {
+    this.expression = expression;
+    this.fieldName = fieldName;
+  }
+
+  accept(visitor) {
+    visitor.visitFieldAccess(this);
+  }
+}
+
+class TypeNode {
+  constructor(name, parameters) {
+    this.name = name;
+    this.parameters = parameters;
+  }
+
+  accept(visitor) {
+    visitor.visitType(this);
   }
 }
 
@@ -421,8 +530,13 @@ exports.DmlNode = DmlNode
 exports.DoubleNode = DoubleNode
 exports.FieldDeclarationNode = FieldDeclarationNode
 exports.FieldDeclaratorNode = FieldDeclaratorNode
+exports.TryNode = TryNode
+exports.CatchNode = CatchNode
+exports.FinallyNode = FinallyNode
 exports.ForNode = ForNode
 exports.ForenumNode = ForenumNode
+exports.ForControlNode = ForControlNode
+exports.EnhancedForControlNode = EnhancedForControlNode
 exports.IfNode = IfNode
 exports.MethodDeclarationNode = MethodDeclarationNode
 exports.MethodInvocationNode = MethodInvocationNode
@@ -432,6 +546,7 @@ exports.NullNode = NullNode
 exports.ObjectNode = ObjectNode
 exports.BinaryOperatorNode = BinaryOperatorNode
 exports.ReturnNode = ReturnNode
+exports.ThrowNode = ThrowNode
 exports.SoqlNode = SoqlNode
 exports.StringNode = StringNode
 exports.SwitchNode = SwitchNode
@@ -441,3 +556,7 @@ exports.VariableDeclarationNode = VariableDeclarationNode
 exports.VariableDeclaratorNode = VariableDeclaratorNode
 exports.WhenNode = WhenNode
 exports.WhileNode = WhileNode
+exports.NothingStatementNode = NothingStatementNode
+exports.CastExpressionNode = CastExpressionNode
+exports.FieldAccessNode = FieldAccessNode
+exports.TypeNode = TypeNode
