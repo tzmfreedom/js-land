@@ -1,13 +1,112 @@
 let Ast = require('./node/ast');
-let LocalEnvironment = require('./localEnv');
 let ApexClassStore = require('./apexClass').ApexClassStore;
 let NameSpaceStore = require('./apexClass').NameSpaceStore;
+let ApexClass = require('./apexClass').ApexClass;
 
-class ApexInterpreter {
+class ApexBuilder {
   visit(node) {
-    this.pushScope({});
     node.accept(this);
-    this.popScope();
+  }
+
+  validateModifierDuplication(node) {
+    let modifiers = [];
+    node.modifiers.map((modifier) => {
+      if (modifiers.includes(modifier.name)){
+        // TODO: lineno
+        throw `Compile Error: duplicate modifier ${name} at line : `
+      }
+      modifiers.push(modifier.name);
+    });
+  }
+
+  validateParameter(node) {
+    let parameters = [];
+    node.parameters.map((parameter) => {
+      if (parameters.includes(parameter.name)){
+        // TODO: lineno
+        throw `Compile Error: duplicate modifier ${name} at line : `
+      }
+      parameters.push(parameter.name);
+    });
+  }
+
+  validateStatement(node) {
+    node.statements.forEach((statement) => {
+      // TypeCheck
+      // Variable Type Check
+      // If Boolean
+      // While Boolean
+      // Invalid Operator
+      statement.accept(this);
+    });
+  }
+
+  visitClass(node) {
+    this.validateModifierDuplication(node);
+
+    let staticMethods = {};
+    node.staticMethods.forEach((method) => {
+      if (name in staticMethods) {
+        // TODO: check argument
+        // TODO: lineno
+        throw `Compile Error: duplicate method name ${name} at line : `
+      }
+      staticMethods[name] = method.accept(this);
+    });
+
+    let instanceMethods = {};
+    node.instanceMethods.forEach((method) => {
+      if (name in instanceMethods) {
+        // TODO: check argument
+        // TODO: lineno
+        throw `Compile Error: duplicate method name ${name} at line : `
+      }
+      instanceMethods[name] = method.accept(this);
+    });
+
+    let staticFields = {};
+    node.staticFields.forEach((field) => {
+      if (name in staticFields) {
+        // TODO: lineno
+        throw `Compile Error: duplicate static field name ${name} at line : `
+      }
+      staticFields[name] = field.accept(this);
+    });
+
+    let instanceFields = {};
+    node.instanceFields.forEach((field) => {
+      if (name in instanceFields) {
+        // TODO: lineno
+        throw `Compile Error: duplicate instance field name ${name} at line : `
+      }
+      instanceFields[name] = field.accept(this);
+    });
+
+    const classInfo = new ApexClass(
+      node.name,
+      instanceMethods,
+      staticMethods,
+      instanceFields,
+      staticFields,
+    );
+    ApexClassStore.register(node.name, classInfo);
+  }
+
+  visitMethodDeclaration(node) {
+    this.validateModifierDuplication(node);
+    // returnType Check
+    let returnType = ApexClassStore.get(node.returnType);
+    if (!returnType) {
+      // TODO: lineno
+      throw `Invalid return type ${node.returnType} at line`;
+    }
+    this.validateParameter(node);
+    this.validateStatement(node);
+    return node;
+  }
+
+  visitFieldDeclaration(node) {
+
   }
 
   visitAnnotation(node) {
@@ -260,4 +359,4 @@ class ApexInterpreter {
   }
 }
 
-module.exports = ApexInterpreter;
+module.exports = ApexBuilder;
