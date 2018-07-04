@@ -158,15 +158,28 @@ class ApexBuilder {
   }
 
   visitFor(node) {
-  
-  }
-
-  visitForenum(node) {
-  
+    let condition = node.forControl.accept(this);
+    if (!condition instanceof Ast.BooleanNode) {
+      throw `Should be boolean expression`;
+    }
+    node.statements.forEach((statement) => {
+      statement.accept(this);
+    });
+    return node;
   }
 
   visitIf(node) {
-  
+    let condition = node.condition.accept(this);
+    if (!condition instanceof Ast.BooleanNode) {
+      throw `Should be boolean expression`;
+    }
+    node.ifStatement.forEach((statement) => {
+      statement.accept(this);
+    });
+    node.elseStatement.forEach((statement) => {
+      statement.accept(this);
+    });
+    return node;
   }
 
   visitMethodInvocation(node) {
@@ -209,7 +222,20 @@ class ApexBuilder {
   }
 
   visitBinaryOperator(node) {
-  
+    switch(node.op) {
+      case '+':
+      case '-':
+      case '*':
+      case '/':
+      case '%':
+        let left = node.left.accept(this);
+        let right = node.right.accept(this);
+        if (left instanceof Ast.IntegerNode || left instanceof Ast.DoubleNode) {
+
+        }
+        break;
+
+    }
   }
 
   visitReturn(node) {

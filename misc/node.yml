@@ -14,7 +14,7 @@ class:
   - instanceMethods
   - staticFields
   - staticMethods
-interger:
+integer:
   - value
 argument:
   - type

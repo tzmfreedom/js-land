@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 class ApexClass {
     constructor(className, superClass, implementClasses, instanceFields, staticFields, instanceMethods, staticMethods) {
@@ -13,44 +13,29 @@ class ApexClass {
 }
 
 class ApexMethod {
-    constructor(identifier, parameters, throws, statements) {
-        this.identifier = identifier;
-        this.modifiers  = [];
-        this.parameters = parameters;
-        this.statements = throws;
-        this.statements = statements;
-    }
-}
-
-class ApexMethodNative {
-    constructor(callFunction) {
-        this.callFunction = callFunction;
-    }
-
-    call() {
-        this.callFunction();
+    constructor(modifiers, identifier, parameters, throws, statements, nativeFunction) {
+        this.modifiers      = modifiers;
+        this.identifier     = identifier;
+        this.parameters     = parameters;
+        this.throws         = throws;
+        this.statements     = statements;
+        this.nativeFunction = nativeFunction;
     }
 }
 
 class InstanceFieldDeclaration {
-    constructor(type, declarators) {
-        this.modifiers   = [];
-        this.type        = type;
-        this.declarators = declarators;
-    }
-}
-
-class InstanceFieldDeclarator {
-    constructor(identifier, expression) {
+    constructor(modifiers, type, identifier, expression) {
+        this.modifiers  = modifiers;
+        this.type       = type;
         this.identifier = identifier;
         this.expression = expression;
     }
 }
 
 class ApexObject {
-    constructor(class_name, parameters) {
-        this.class_name = class_name;
-        this.instance_fields = {};
+    constructor(className, instanceFields) {
+        this.className = className;
+        this.instanceFields = instanceFields;
     }
 }
 
@@ -58,7 +43,7 @@ let store = {};
 class ApexClassStore {
     static register(class_name, class_object) {
         if (store[class_name]) {
-            console.log(`Already Stored ${class_name}`);
+            throw `Already Stored ${class_name}`;
         } else {
             store[class_name] = class_object;
         }
@@ -72,9 +57,7 @@ class ApexClassStore {
 module.exports = {
     ApexClass: ApexClass,
     ApexMethod: ApexMethod,
-    ApexMethodNative: ApexMethodNative,
     InstanceFieldDeclaration: InstanceFieldDeclaration,
-    InstanceFieldDeclarator: InstanceFieldDeclarator,
     ApexObject: ApexObject,
     ApexClassStore: ApexClassStore,
 };

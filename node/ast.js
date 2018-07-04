@@ -38,13 +38,13 @@ class ClassNode {
   }
 }
 
-class IntergerNode {
+class IntegerNode {
   constructor(value) {
     this.value = value;
   }
 
   accept(visitor) {
-    visitor.visitInterger(this);
+    visitor.visitInteger(this);
   }
 }
 
@@ -147,10 +147,10 @@ class DoubleNode {
 }
 
 class FieldDeclarationNode {
-  constructor(type, modifiers, statements) {
+  constructor(type, modifiers, declarators) {
     this.type = type;
     this.modifiers = modifiers;
-    this.statements = statements;
+    this.declarators = declarators;
   }
 
   accept(visitor) {
@@ -518,7 +518,7 @@ class TypeNode {
 exports.AnnotationNode = AnnotationNode
 exports.ModifierNode = ModifierNode
 exports.ClassNode = ClassNode
-exports.IntergerNode = IntergerNode
+exports.IntegerNode = IntegerNode
 exports.ArgumentNode = ArgumentNode
 exports.ArrayAccessNode = ArrayAccessNode
 exports.BooleanNode = BooleanNode
