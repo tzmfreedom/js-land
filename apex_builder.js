@@ -379,7 +379,7 @@ class ApexBuilder {
         throw `Type not matched : variable => ${type.name}, initializer => ${expression.name}`
       }
       let env = this.currentScope();
-      env.put(declarator.name, type);
+      env.set(declarator.name, type);
     });
   }
 

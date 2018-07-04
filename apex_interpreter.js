@@ -1,7 +1,8 @@
-var Apex = require('./apexClass');
 var Ast = require('./node/ast');
 let methodSearcher = require('./methodSearcher');
 let LocalEnvironment = require('./localEnv');
+let ApexObject = require('./apexClass').ApexObject;
+let ApexClassStore = require('./apexClass').ApexClassStore;
 
 class ApexInterpreter {
   visit(node) {
@@ -35,15 +36,18 @@ class ApexInterpreter {
   }
 
   visitComment(node) {
-  
+
   }
 
   visitContinue(node) {
-  
+    return node;
   }
 
   visitDml(node) {
-  
+    let type = node.type;
+    let receiver, key;
+    [receiver, key] = node.object.accept(this);
+    dataManager[type](receiver);
   }
 
   visitDouble(node) {
@@ -59,15 +63,22 @@ class ApexInterpreter {
   }
 
   visitFor(node) {
-  
-  }
-
-  visitForenum(node) {
-  
+    this.pushScope({});
+    let condition = node.forControl.accept(this);
+    while (condition.value = true) {
+      node.statements.accept(this);
+      condition = node.forControl.accept(this);
+    }
+    this.popScope();
   }
 
   visitIf(node) {
-  
+    let condition = node.condition.accept(this);
+    if (condition.value = true) {
+      node.ifStatement.accept(this);
+    } else {
+      node.elseStatement.accept(this);
+    }
   }
 
   visitMethodInvocation(node) {
@@ -103,7 +114,17 @@ class ApexInterpreter {
   }
 
   visitNew(node) {
+    let classInfo = ApexClassStore.get(node.className);
+    let newObject = new ApexObject();
 
+    let env = { this: newObject };
+    for (let i = 0; i < classInfo.parameters.length; i++) {
+      let parameter = classInfo.parameters[i];
+      env[parameter.name] = node.parameters[i].accept(this);
+    }
+    this.pushScope(env);
+    classInfo.constructor.accept(this);
+    this.popScope();
   }
 
   visitNull(node) {
@@ -116,7 +137,67 @@ class ApexInterpreter {
   }
 
   visitBinaryOperator(node) {
-  
+    let left, right;
+    switch(node.type) {
+      case '+':
+        return new Ast.IntegerNode(node.left.accept(this) + node.right.accept(this));
+      case '-':
+        return new Ast.IntegerNode(node.left.accept(this) - node.right.accept(this));
+      case '*':
+        return new Ast.IntegerNode(node.left.accept(this) * node.right.accept(this));
+      case '/':
+        return new Ast.IntegerNode(node.left.accept(this) / node.right.accept(this));
+      case '%':
+        return new Ast.IntegerNode(node.left.accept(this) % node.right.accept(this));
+      case '<<<':
+        return new Ast.IntegerNode(node.left.accept(this) << node.right.accept(this));
+      case '<<':
+        return new Ast.IntegerNode(node.left.accept(this) << node.right.accept(this));
+      case '>>>':
+        return new Ast.IntegerNode(node.left.accept(this) >> node.right.accept(this));
+      case '>>':
+        return new Ast.IntegerNode(node.left.accept(this) >> node.right.accept(this));
+      case '&':
+        return new Ast.IntegerNode(node.left.accept(this) & node.right.accept(this));
+      case '|':
+        return new Ast.IntegerNode(node.left.accept(this) | node.right.accept(this));
+      case '^':
+        return new Ast.IntegerNode(node.left.accept(this) ^ node.right.accept(this));
+      case '<':
+        return new Ast.BooleanNode(node.left.accept(this) < node.right.accept(this));
+      case '>':
+        return new Ast.BooleanNode(node.left.accept(this) > node.right.accept(this));
+      case '<=':
+        return new Ast.BooleanNode(node.left.accept(this) <= node.right.accept(this));
+      case '>=':
+        return new Ast.BooleanNode(node.left.accept(this) >= node.right.accept(this));
+      case '==':
+        return new Ast.BooleanNode(node.left.accept(this) == node.right.accept(this));
+      case '===':
+        return new Ast.BooleanNode(node.left.accept(this) == node.right.accept(this));
+      case '!=':
+        return new Ast.BooleanNode(node.left.accept(this) != node.right.accept(this));
+      case '!==':
+        return new Ast.BooleanNode(node.left.accept(this) != node.right.accept(this));
+      case '=':
+      case '+=':
+      case '-=':
+      case '*=':
+      case '/=':
+      case '%=':
+      case '&=':
+      case '|=':
+      case '^=':
+        let receiver, key;
+        [receiver, key] = node.left.accept(this);
+        right = node.right.accept(this);
+        if (key) {
+          receiver.instanceFields[key] = right;
+        } else {
+          this.setValue(receiver.value.join('.'), right);
+        }
+        return right;
+    }
   }
 
   visitReturn(node) {
@@ -152,11 +233,14 @@ class ApexInterpreter {
   }
 
   visitWhen(node) {
-  
   }
 
   visitWhile(node) {
-  
+    let condition = node.condition.accept(this);
+    while (condition.value == true) {
+      node.statement.accept(this);
+      condition = node.condition.accept(this);
+    }
   }
 
   pushScope(env) {
@@ -169,6 +253,10 @@ class ApexInterpreter {
 
   getValue(key) {
     return LocalEnvironment.get(key);
+  }
+
+  setValue(key) {
+    LocalEnvironment.set(key);
   }
 }
 

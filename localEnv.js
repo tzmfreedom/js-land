@@ -7,7 +7,7 @@ class LocalEnvironment {
     this.parent = parent;
   }
 
-  put(key, value) {
+  set(key, value) {
     this.env[key] = value;
   }
 
@@ -19,13 +19,24 @@ class LocalEnvironment {
     return key in this.env;
   }
 
-  static get(key) {
-    let env = this.currentScope();
+  static get(key, env) {
+    if (!env) env = this.currentScope();
     let value = env.get(key);
     if (value) {
       return value;
     } else if (env.parent) {
-      return env.parent.get(key);
+      return this.get(key, env.parent);
+    } else {
+      throw `Undefined Variable ${key}`;
+    }
+  }
+
+  static set(key, value, env) {
+    if (!env) env = this.currentScope();
+    if (env.includes(key)) {
+      env.set(key, value);
+    } else if (env.parent) {
+      this.set(key, value, env.parent);
     } else {
       throw `Undefined Variable ${key}`;
     }
