@@ -1,15 +1,13 @@
 // Generated from apex.g4 by ANTLR 4.7.1
 // jshint ignore: start
-var antlr4 = require('antlr4/index');
-var Apex = require('./apexClass');
-var ApexVisitor = require('./apexVisitor');
+var ApexVisitor = require('./apexVisitor').apexVisitor;
 var Ast = require('./node/ast');
 
 let ApexAstBuilder = function() {
-  ApexVisitor.apexVisitor.call(this); // inherit default listener
+  ApexVisitor.call(this); // inherit default listener
   return this;
 };
-ApexAstBuilder.prototype = Object.create(ApexVisitor.apexVisitor.prototype);
+ApexAstBuilder.prototype = Object.create(ApexVisitor.prototype);
 
 // Visit a parse tree produced by apexParser#compilationUnit.
 ApexAstBuilder.prototype.visitCompilationUnit = function(ctx) {

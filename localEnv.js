@@ -7,6 +7,10 @@ class LocalEnvironment {
     this.parent = parent;
   }
 
+  put(key, value) {
+    this.env[key] = value;
+  }
+
   get(key) {
     return this.env[key];
   }

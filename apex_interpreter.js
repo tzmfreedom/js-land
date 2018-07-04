@@ -1,7 +1,6 @@
-let Ast = require('./node/ast');
-let LocalEnvironment = require('./localEnv');
-let ApexClassStore = require('./apexClass').ApexClassStore;
-let NameSpaceStore = require('./apexClass').NameSpaceStore;
+var Apex = require('./apexClass');
+var ApexVisitor = require('./apexVisitor');
+var Ast = require('./node/ast');
 
 class ApexInterpreter {
   visit(node) {
@@ -72,16 +71,21 @@ class ApexInterpreter {
 
   visitMethodInvocation(node) {
     let receiver, methodNode;
-    [receiver, methodNode] = this.searchMethod(node);
+    [receiver, methodNode] = methodSearcher.searchMethod(node);
     let env = {
       this: receiver,
     };
+    for (let i = 0; i < methodNode.parameters.length; i++) {
+      let parameter = methodNode.parameters[i];
+      let value = node.parameters[i];
+      env[parameter.name] = value;
+    }
     let parameters = node.parameters.map((parameter) => { return parameter.accept(this); });
 
     this.pushScope(env);
     let returnValue;
     if (methodNode.nativeFunction) {
-      methodNode.nativeFunction.call(this, parameters);
+      // methodNode.nativeFunction.call(this, parameters);
     } else {
       methodNode.statements.forEach((statement) => {
         returnValue = statement.accept(this);

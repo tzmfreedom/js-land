@@ -5,7 +5,7 @@ class AnnotationNode {
   }
 
   accept(visitor) {
-    visitor.visitAnnotation(this);
+    return visitor.visitAnnotation(this);
   }
 }
 
@@ -15,7 +15,7 @@ class ModifierNode {
   }
 
   accept(visitor) {
-    visitor.visitModifier(this);
+    return visitor.visitModifier(this);
   }
 }
 
@@ -34,7 +34,7 @@ class ClassNode {
   }
 
   accept(visitor) {
-    visitor.visitClass(this);
+    return visitor.visitClass(this);
   }
 }
 
@@ -44,7 +44,7 @@ class IntegerNode {
   }
 
   accept(visitor) {
-    visitor.visitInteger(this);
+    return visitor.visitInteger(this);
   }
 }
 
@@ -56,7 +56,7 @@ class ParameterNode {
   }
 
   accept(visitor) {
-    visitor.visitParameter(this);
+    return visitor.visitParameter(this);
   }
 }
 
@@ -67,7 +67,7 @@ class ArrayAccessNode {
   }
 
   accept(visitor) {
-    visitor.visitArrayAccess(this);
+    return visitor.visitArrayAccess(this);
   }
 }
 
@@ -77,7 +77,7 @@ class BooleanNode {
   }
 
   accept(visitor) {
-    visitor.visitBoolean(this);
+    return visitor.visitBoolean(this);
   }
 }
 
@@ -87,7 +87,7 @@ class BreakNode {
   }
 
   accept(visitor) {
-    visitor.visitBreak(this);
+    return visitor.visitBreak(this);
   }
 }
 
@@ -97,7 +97,7 @@ class CommentNode {
   }
 
   accept(visitor) {
-    visitor.visitComment(this);
+    return visitor.visitComment(this);
   }
 }
 
@@ -112,7 +112,7 @@ class ConstructorDeclarationNode {
   }
 
   accept(visitor) {
-    visitor.visitConstructorDeclaration(this);
+    return visitor.visitConstructorDeclaration(this);
   }
 }
 
@@ -122,7 +122,7 @@ class ContinueNode {
   }
 
   accept(visitor) {
-    visitor.visitContinue(this);
+    return visitor.visitContinue(this);
   }
 }
 
@@ -133,7 +133,7 @@ class DmlNode {
   }
 
   accept(visitor) {
-    visitor.visitDml(this);
+    return visitor.visitDml(this);
   }
 }
 
@@ -143,7 +143,7 @@ class DoubleNode {
   }
 
   accept(visitor) {
-    visitor.visitDouble(this);
+    return visitor.visitDouble(this);
   }
 }
 
@@ -155,7 +155,7 @@ class FieldDeclarationNode {
   }
 
   accept(visitor) {
-    visitor.visitFieldDeclaration(this);
+    return visitor.visitFieldDeclaration(this);
   }
 }
 
@@ -167,7 +167,7 @@ class FieldDeclaratorNode {
   }
 
   accept(visitor) {
-    visitor.visitFieldDeclarator(this);
+    return visitor.visitFieldDeclarator(this);
   }
 }
 
@@ -179,7 +179,7 @@ class TryNode {
   }
 
   accept(visitor) {
-    visitor.visitTry(this);
+    return visitor.visitTry(this);
   }
 }
 
@@ -192,7 +192,7 @@ class CatchNode {
   }
 
   accept(visitor) {
-    visitor.visitCatch(this);
+    return visitor.visitCatch(this);
   }
 }
 
@@ -202,7 +202,7 @@ class FinallyNode {
   }
 
   accept(visitor) {
-    visitor.visitFinally(this);
+    return visitor.visitFinally(this);
   }
 }
 
@@ -213,7 +213,7 @@ class ForNode {
   }
 
   accept(visitor) {
-    visitor.visitFor(this);
+    return visitor.visitFor(this);
   }
 }
 
@@ -226,7 +226,7 @@ class ForenumNode {
   }
 
   accept(visitor) {
-    visitor.visitForenum(this);
+    return visitor.visitForenum(this);
   }
 }
 
@@ -238,7 +238,7 @@ class ForControlNode {
   }
 
   accept(visitor) {
-    visitor.visitForControl(this);
+    return visitor.visitForControl(this);
   }
 }
 
@@ -251,7 +251,7 @@ class EnhancedForControlNode {
   }
 
   accept(visitor) {
-    visitor.visitEnhancedForControl(this);
+    return visitor.visitEnhancedForControl(this);
   }
 }
 
@@ -263,7 +263,7 @@ class IfNode {
   }
 
   accept(visitor) {
-    visitor.visitIf(this);
+    return visitor.visitIf(this);
   }
 }
 
@@ -279,7 +279,7 @@ class MethodDeclarationNode {
   }
 
   accept(visitor) {
-    visitor.visitMethodDeclaration(this);
+    return visitor.visitMethodDeclaration(this);
   }
 }
 
@@ -291,7 +291,7 @@ class MethodInvocationNode {
   }
 
   accept(visitor) {
-    visitor.visitMethodInvocation(this);
+    return visitor.visitMethodInvocation(this);
   }
 }
 
@@ -301,7 +301,7 @@ class NameNode {
   }
 
   accept(visitor) {
-    visitor.visitName(this);
+    return visitor.visitName(this);
   }
 }
 
@@ -312,7 +312,7 @@ class NewNode {
   }
 
   accept(visitor) {
-    visitor.visitNew(this);
+    return visitor.visitNew(this);
   }
 }
 
@@ -322,7 +322,7 @@ class NullNode {
   }
 
   accept(visitor) {
-    visitor.visitNull(this);
+    return visitor.visitNull(this);
   }
 }
 
@@ -335,7 +335,7 @@ class ObjectNode {
   }
 
   accept(visitor) {
-    visitor.visitObject(this);
+    return visitor.visitObject(this);
   }
 }
 
@@ -347,7 +347,7 @@ class BinaryOperatorNode {
   }
 
   accept(visitor) {
-    visitor.visitBinaryOperator(this);
+    return visitor.visitBinaryOperator(this);
   }
 }
 
@@ -357,7 +357,7 @@ class ReturnNode {
   }
 
   accept(visitor) {
-    visitor.visitReturn(this);
+    return visitor.visitReturn(this);
   }
 }
 
@@ -367,7 +367,7 @@ class ThrowNode {
   }
 
   accept(visitor) {
-    visitor.visitThrow(this);
+    return visitor.visitThrow(this);
   }
 }
 
@@ -377,7 +377,7 @@ class SoqlNode {
   }
 
   accept(visitor) {
-    visitor.visitSoql(this);
+    return visitor.visitSoql(this);
   }
 }
 
@@ -387,7 +387,7 @@ class StringNode {
   }
 
   accept(visitor) {
-    visitor.visitString(this);
+    return visitor.visitString(this);
   }
 }
 
@@ -398,7 +398,7 @@ class SwitchNode {
   }
 
   accept(visitor) {
-    visitor.visitSwitch(this);
+    return visitor.visitSwitch(this);
   }
 }
 
@@ -411,7 +411,7 @@ class TriggerNode {
   }
 
   accept(visitor) {
-    visitor.visitTrigger(this);
+    return visitor.visitTrigger(this);
   }
 }
 
@@ -422,7 +422,7 @@ class TriggerTimingNode {
   }
 
   accept(visitor) {
-    visitor.visitTriggerTiming(this);
+    return visitor.visitTriggerTiming(this);
   }
 }
 
@@ -434,18 +434,18 @@ class VariableDeclarationNode {
   }
 
   accept(visitor) {
-    visitor.visitVariableDeclaration(this);
+    return visitor.visitVariableDeclaration(this);
   }
 }
 
 class VariableDeclaratorNode {
-  constructor(left, right) {
-    this.left = left;
-    this.right = right;
+  constructor(name, expression) {
+    this.name = name;
+    this.expression = expression;
   }
 
   accept(visitor) {
-    visitor.visitVariableDeclarator(this);
+    return visitor.visitVariableDeclarator(this);
   }
 }
 
@@ -456,7 +456,7 @@ class WhenNode {
   }
 
   accept(visitor) {
-    visitor.visitWhen(this);
+    return visitor.visitWhen(this);
   }
 }
 
@@ -468,7 +468,7 @@ class WhileNode {
   }
 
   accept(visitor) {
-    visitor.visitWhile(this);
+    return visitor.visitWhile(this);
   }
 }
 
@@ -478,7 +478,7 @@ class NothingStatementNode {
   }
 
   accept(visitor) {
-    visitor.visitNothingStatement(this);
+    return visitor.visitNothingStatement(this);
   }
 }
 
@@ -489,7 +489,7 @@ class CastExpressionNode {
   }
 
   accept(visitor) {
-    visitor.visitCastExpression(this);
+    return visitor.visitCastExpression(this);
   }
 }
 
@@ -500,7 +500,7 @@ class FieldAccessNode {
   }
 
   accept(visitor) {
-    visitor.visitFieldAccess(this);
+    return visitor.visitFieldAccess(this);
   }
 }
 
@@ -511,7 +511,7 @@ class TypeNode {
   }
 
   accept(visitor) {
-    visitor.visitType(this);
+    return visitor.visitType(this);
   }
 }
 

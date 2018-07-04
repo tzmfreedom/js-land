@@ -131,8 +131,8 @@ variable_declaration:
   - type
   - declarators
 variable_declarator:
-  - left
-  - right
+  - name
+  - expression
 when:
   - condition
   - statements

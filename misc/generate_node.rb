@@ -11,7 +11,7 @@ class #{class_name}Node {
   }
 
   accept(visitor) {
-    visitor.visit#{class_name}(this);
+    return visitor.visit#{class_name}(this);
   }
 }
 JS

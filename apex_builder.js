@@ -81,12 +81,13 @@ class ApexBuilder {
 
     let instanceFields = {};
     node.instanceFields.forEach((field) => {
-      let field_name = field.name;
-      if (field_name in instanceFields) {
-        // TODO: lineno
-        throw `Compile Error: duplicate instance field name ${field_name} at line : `
-      }
-      instanceFields[field_name] = field.accept(this);
+      field.declarators.forEach((declarator) => {
+        if (declarator.name in instanceFields) {
+          // TODO: lineno
+          throw `Compile Error: duplicate instance field name ${declarator.name} at line : `
+        }
+        instanceFields[declarator.name] = declarator.expression.accept(this);
+      });
     });
 
     const classInfo = new ApexClass(
@@ -110,7 +111,13 @@ class ApexBuilder {
       }
     }
     this.validateParameter(node);
+    let env = {};
+    node.parameters.forEach((parameter) => {
+      env[parameter.name] = parameter.type;
+    });
+    this.pushScope(env);
     this.validateStatement(node);
+    this.popScope();
     return node;
   }
 
@@ -122,11 +129,11 @@ class ApexBuilder {
     return node;
   }
 
-  visitInterger(node) {
-    return node;
+  visitInteger(node) {
+    return new Ast.TypeNode('Integer', []);
   }
 
-  visitArgument(node) {
+  visitParameter(node) {
     return node;
   }
 
@@ -135,7 +142,7 @@ class ApexBuilder {
   }
 
   visitBoolean(node) {
-    return node;
+    return new Ast.TypeNode('Boolean', []);
   }
 
   visitBreak(node) {
@@ -155,7 +162,7 @@ class ApexBuilder {
   }
 
   visitDouble(node) {
-    return node;
+    return new Ast.TypeNode('Double', []);
   }
 
   visitFieldDeclaration(node) {
@@ -207,7 +214,7 @@ class ApexBuilder {
     this.pushScope(env);
     let returnValue;
     if (methodNode.nativeFunction) {
-      methodNode.nativeFunction.call(this, parameters);
+      // methodNode.nativeFunction.call(this, parameters);
     } else {
       methodNode.statements.forEach((statement) => {
         returnValue = statement.accept(this);
@@ -220,7 +227,7 @@ class ApexBuilder {
   }
 
   visitName(node) {
-    return node;
+    return methodSearcher.searchField(node);
   }
 
   visitNew(node) {
@@ -232,7 +239,7 @@ class ApexBuilder {
   }
 
   visitObject(node) {
-    return node;
+    return new Ast.TypeNode(node.classNode.name, node.genericType);
   }
 
   visitUnaryOperator(node) {
@@ -244,7 +251,8 @@ class ApexBuilder {
   }
 
   visitBinaryOperator(node) {
-    switch(node.op) {
+    let left, right;
+    switch(node.type) {
       case '+':
       case '-':
       case '*':
@@ -254,27 +262,30 @@ class ApexBuilder {
       case '<<':
       case '>>>':
       case '>>':
-        let left = node.left.accept(this);
-        let right = node.right.accept(this);
+        left = node.left.accept(this);
+        right = node.right.accept(this);
         if (!(left instanceof Ast.IntegerNode) && !(left instanceof Ast.DoubleNode)) {
           throw `Must be integer or double`;
         }
         if (!(right instanceof Ast.IntegerNode) && !(right instanceof Ast.DoubleNode)) {
           throw `Must be integer or double`;
         }
-        return new Ast.IntegerNode();
+        return left;
       case '&':
       case '|':
       case '^':
-        let left = node.left.accept(this);
-        let right = node.right.accept(this);
-        if (!(left instanceof Ast.IntegerNode)) {
+        left = node.left.accept(this);
+        right = node.right.accept(this);
+        if (left.name != 'Integer') {
           throw `Must be integer`;
         }
-        if (!(right instanceof Ast.IntegerNode)) {
+        if (right != 'Integer') {
           throw `Must be integer`;
         }
-        return new Ast.IntegerNode();
+        if (left.name != right.name) {
+          throw `Type not matched : left => ${left.name}, right => ${right.name}`
+        }
+        return left;
       case '<':
       case '>':
       case '<=':
@@ -283,23 +294,39 @@ class ApexBuilder {
       case '===':
       case '!=':
       case '!==':
-        let left = node.left.accept(this);
-        let right = node.right.accept(this);
-        return new Ast.BooleanNode();
+        left = node.left.accept(this);
+        right = node.right.accept(this);
+        if (left.name != right.name) {
+          throw `Type not matched : left => ${left.name}, right => ${right.name}`
+        }
+        return left;
+      case '=':
       case '+=':
       case '-=':
       case '*=':
       case '/=':
       case '%=':
-        let left = node.left.accept(this);
-        let right = node.right.accept(this);
-        return node;
+        let receiver, key;
+        [receiver, key] = node.left.accept(this);
+        if (key) {
+          left = receiver.instanceFields[key].accept(this);
+        } else {
+          left = this.getValue(receiver);
+        }
+        right = node.right.accept(this);
+        if (left.name != right.name) {
+          throw `Type not matched : left => ${left.name}, right => ${right.name}`
+        }
+        return left;
       case '&=':
       case '|=':
       case '^=':
-        let left = node.left.accept(this);
-        let right = node.right.accept(this);
-        break;
+        left = node.left.accept(this);
+        right = node.right.accept(this);
+        if (left.name != right.name) {
+          throw `Type not matched : left => ${left.name}, right => ${right.name}`
+        }
+        return left;
     }
   }
 
@@ -308,11 +335,13 @@ class ApexBuilder {
   }
 
   visitSoql(node) {
-    return node;
+    // TODO: parse node and extract object
+    let object = 'Account';
+    return new Ast.TypeNode('List', [object]);
   }
 
   visitString(node) {
-    return node;
+    return new Ast.TypeNode('String', []);
   }
 
   visitSwitch(node) {
@@ -328,11 +357,26 @@ class ApexBuilder {
   }
 
   visitVariableDeclaration(node) {
-  
+    let type = node.type;
+    node.declarators.forEach((declarator) => {
+      let name, expression;
+      [name, expression] = declarator.accept(this);
+
+      if (expression && type.name != expression.name) {
+        throw `Type not matched : variable => ${type.name}, initializer => ${expression.name}`
+      }
+      let env = this.currentScope();
+      env.put(declarator.name, type);
+    });
   }
 
   visitVariableDeclarator(node) {
-  
+    let name = node.name;
+    let expression = node.expression ? node.expression.accept(this) : null;
+    if (this.localIncludes(name)) {
+      throw `duplicate variable name ${name}`;
+    }
+    return [name, expression];
   }
 
   visitWhen(node) {
@@ -341,6 +385,18 @@ class ApexBuilder {
 
   visitWhile(node) {
   
+  }
+
+  currentScope() {
+    return LocalEnvironment.currentScope();
+  }
+
+  getValue(key) {
+    return LocalEnvironment.get(key);
+  }
+
+  localIncludes(key) {
+    return LocalEnvironment.includes(key);
   }
 
   pushScope(env) {

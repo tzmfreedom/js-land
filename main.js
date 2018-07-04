@@ -23,8 +23,13 @@ console.log(util.inspect(top, {depth: 6, colors: true}));
 const builder = new ApexBuilder();
 const interpreter = new ApexInterpreter();
 
+// Build
 builder.visit(top);
-// const method = top.staticMethods.find((method) => { return method.name == 'action'; });
-// method.statements.forEach((statement) => {
-//     statement.accept(interpreter);
-// });
+
+// Execute
+const method = top.staticMethods.find((method) => {
+  return method.name == 'action';
+});
+method.statements.forEach((statement) => {
+  statement.accept(interpreter);
+});

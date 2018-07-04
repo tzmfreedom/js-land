@@ -5,9 +5,9 @@ let NameSpaceStore = require('./apexClass').NameSpaceStore;
 let LocalEnvironment = require('./localEnv');
 
 class MethodSearcher {
-  searchMethod(node) {
+  searchMethod(node, visitor) {
     if (node.methodName) {
-      let receiverNode = node.receiver.accept(this);
+      let receiverNode = node.receiver.accept(visitor);
       let classNode = receiverNode.classNode;
       let methodNode = this.searchInstanceMethod(classNode, node.methodName);
       return [receiverNode, methodNode];
@@ -104,6 +104,103 @@ class MethodSearcher {
     }
   }
 
+  searchField(node) {
+    let names = node.value;
+    let name = names[0];
+
+    // variable.field...field
+    if (this.localIncludes(name)) {
+      if (names.length == 1) {
+        return [name, null];
+      }
+      let variable = this.getValue(name);
+      let receiverNode = (() => {
+        let receiverNode = variable;
+        let list = names.slice(1);
+        for (let i = 0; i < list.length - 1; i++) {
+          if (!receiverNode) return null;
+          receiverNode = receiverNode.instanceFields[list[i]];
+        }
+        return receiverNode;
+      })();
+      let lastField = names[names.length - 1];
+      if (receiverNode && receiverNode.instanceFields.includes(lastField)) {
+        return [receiverNode, lastField];
+      }
+    }
+
+    // this_field.field...field
+    if (this.localIncludes('this')) {
+      let receiver = this.getValue('this');
+      if (names.length == 1 && receiver.instanceFields.includes(name)) {
+        return [receiver, name];
+      }
+      if (receiver.instanceFields.includes(name)) {
+        let field = receiver.instanceFields[name];
+        let receiverNode = (() => {
+          let receiverNode = field;
+          let list = names.slice(1);
+          for (let i = 0; i < list.length - 1; i++) {
+            if (!receiverNode) return null;
+            receiverNode = receiverNode.instanceFields[list[i]];
+          }
+          return receiverNode;
+        })();
+        let lastField = names[names.length - 1];
+        if (receiverNode && receiverNode.instanceFields.includes(lastField)) {
+          return [receiverNode, lastField];
+        }
+      }
+    }
+
+    // class.static_field...field
+    if (names.length > 1) {
+      let apexClass = ApexClassStore.get(name);
+      let staticFieldName = names[1];
+      if (apexClass.staticFields.includes(staticFieldName)) {
+        let receiverNode = (() => {
+          let receiverNode = apexClass.staticFields[staticFieldName];
+          let list = names.slice(1);
+          for (let i = 0; i < list.length - 1; i++) {
+            if (!receiverNode) return null;
+            receiverNode = receiverNode.instanceFields[list[i]];
+          }
+          return receiverNode;
+        })();
+
+        let lastField = names[names.length - 1];
+        if (receiverNode && receiverNode.instanceFields.includes(lastField)) {
+          return [receiverNode, lastField];
+        }
+      }
+    }
+
+    if (names.length > 2) {
+      let nameSpace = NameSpaceStore.get(name);
+      let apexClassName = names[1];
+      if (nameSpace.includes(apexClassName)) {
+        let apexClass = nameSpace[apexClassName];
+        let staticFieldName = names[2];
+        if (apexClass.staticFields.includes(staticFieldName)) {
+          let receiverNode = (() => {
+            let receiverNode = apexClass.staticFields[staticFieldName];
+            let list = names.slice(2);
+            for (let i = 0; i < list.length - 1; i++) {
+              if (!receiverNode) return null;
+              receiverNode = receiverNode.instanceFields[list[i]];
+            }
+            return receiverNode;
+          })();
+
+          let lastField = names[names.length - 1];
+          if (receiverNode && receiverNode.instanceFields.includes(lastField)) {
+            return [receiverNode, lastField];
+          }
+        }
+      }
+    }
+  }
+
   searchInstanceMethod(classNode, methodName) {
     if (methodName in classNode.instanceMethods) {
       return classNode.instanceMethods[methodName];
@@ -131,10 +228,6 @@ class MethodSearcher {
 
   localIncludes(key) {
     return LocalEnvironment.includes(key);
-  }
-
-  searchField(key) {
-
   }
 }
 
