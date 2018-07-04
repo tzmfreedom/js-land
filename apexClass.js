@@ -1,63 +1,87 @@
 'use strict';
 
 class ApexClass {
-    constructor(className, superClass, implementClasses, instanceFields, staticFields, instanceMethods, staticMethods) {
-        this.className        = className;
-        this.superClass       = superClass;
-        this.implementClasses = implementClasses;
-        this.instanceFields   = instanceFields;
-        this.staticFields     = staticFields;
-        this.instanceMethods  = instanceMethods;
-        this.staticMethods    = staticMethods;
-    }
+  constructor(name, superClass, implementClasses, instanceFields, staticFields, instanceMethods, staticMethods) {
+    this.name             = name;
+    this.superClass       = superClass;
+    this.implementClasses = implementClasses;
+    this.instanceFields   = instanceFields;
+    this.staticFields     = staticFields;
+    this.instanceMethods  = instanceMethods;
+    this.staticMethods    = staticMethods;
+  }
 }
 
 class ApexMethod {
-    constructor(modifiers, identifier, parameters, throws, statements, nativeFunction) {
-        this.modifiers      = modifiers;
-        this.identifier     = identifier;
-        this.parameters     = parameters;
-        this.throws         = throws;
-        this.statements     = statements;
-        this.nativeFunction = nativeFunction;
-    }
+  constructor(modifiers, identifier, parameters, throws, statements, nativeFunction) {
+    this.modifiers      = modifiers;
+    this.identifier     = identifier;
+    this.parameters     = parameters;
+    this.throws         = throws;
+    this.statements     = statements;
+    this.nativeFunction = nativeFunction;
+  }
 }
 
 class InstanceFieldDeclaration {
-    constructor(modifiers, type, identifier, expression) {
-        this.modifiers  = modifiers;
-        this.type       = type;
-        this.identifier = identifier;
-        this.expression = expression;
-    }
+  constructor(modifiers, type, identifier, expression) {
+    this.modifiers  = modifiers;
+    this.type       = type;
+    this.identifier = identifier;
+    this.expression = expression;
+  }
 }
 
 class ApexObject {
-    constructor(className, instanceFields) {
-        this.className = className;
-        this.instanceFields = instanceFields;
-    }
+  constructor(className, instanceFields) {
+    this.className = className;
+    this.instanceFields = instanceFields;
+  }
 }
 
-let store = {};
+let apexClassStore = {};
 class ApexClassStore {
-    static register(class_name, class_object) {
-        if (store[class_name]) {
-            throw `Already Stored ${class_name}`;
-        } else {
-            store[class_name] = class_object;
-        }
+  static register(classObject) {
+    if (apexClassStore[classObject.name]) {
+      throw `Already Stored ${classObject.name}`;
+    } else {
+      apexClassStore[classObject.name] = classObject;
     }
+  }
 
-    static get(class_name) {
-        return store[class_name];
+  static get(class_name) {
+    return apexClassStore[class_name];
+  }
+
+  static all() {
+    return apexClassStore;
+  }
+}
+
+let nameSpaceStore = {};
+class NameSpaceStore {
+  static register(namespace) {
+    if (nameSpaceStore[namespace]) {
+      throw `Already Stored ${namespace}`;
+    } else {
+      nameSpaceStore[namespace] = {};
     }
+  }
+
+  static registerClass(namespace, classObject) {
+    nameSpaceStore[namespace][classObject.name] = classObject;
+  }
+
+  static get(class_name) {
+    return nameSpaceStore[class_name];
+  }
 }
 
 module.exports = {
-    ApexClass: ApexClass,
-    ApexMethod: ApexMethod,
-    InstanceFieldDeclaration: InstanceFieldDeclaration,
-    ApexObject: ApexObject,
-    ApexClassStore: ApexClassStore,
+  ApexClass: ApexClass,
+  ApexMethod: ApexMethod,
+  InstanceFieldDeclaration: InstanceFieldDeclaration,
+  ApexObject: ApexObject,
+  ApexClassStore: ApexClassStore,
+  NameSpaceStore: NameSpaceStore,
 };

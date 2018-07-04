@@ -67,7 +67,7 @@ ApexAstBuilder.prototype.visitClassDeclaration = function(ctx) {
   let className = ctx.Identifier().getText();
   let superClass;
   if (ctx.type()) {
-    ctx.type().accept(this);
+    superClass = ctx.type().accept(this);
   }
   let implementClasses = [];
   if (ctx.typeList()) {
@@ -335,7 +335,7 @@ ApexAstBuilder.prototype.visitVariableDeclarator = function(ctx) {
 
 // Visit a parse tree produced by apexParser#variableDeclaratorId.
 ApexAstBuilder.prototype.visitVariableDeclaratorId = function(ctx) {
-  return this.visitChildren(ctx);
+  return ctx.Identifier().getText();
 };
 
 
@@ -363,13 +363,31 @@ ApexAstBuilder.prototype.visitEnumConstantName = function(ctx) {
 
 // Visit a parse tree produced by apexParser#type.
 ApexAstBuilder.prototype.visitType = function(ctx) {
-  return ctx.getText();
+  if (ctx.classOrInterfaceType()) {
+    return ctx.classOrInterfaceType().accept(this);
+  } else if (ctx.primitiveType()) {
+    return ctx.primitiveType().accept(this);
+  }
 };
 
 
 // Visit a parse tree produced by apexParser#classOrInterfaceType.
 ApexAstBuilder.prototype.visitClassOrInterfaceType = function(ctx) {
-  return this.visitChildren(ctx);
+  if (ctx.Identifier()) {
+    let parameters;
+    if (ctx.typeArguments()) {
+      parameters = ctx.typeArguments().map((argument) => {
+        return argument.accept(this);
+      });
+    }
+    let name = ctx.Identifier().map((identifier) => {
+      return identifier.getText();
+    });
+    return new Ast.TypeNode(name, parameters);
+  } else if (ctx.SET()) {
+    let parameters = ctx.typeArguments().accept(this);
+    return new Ast.TypeNode(ctx.SET().getText(), parameters)
+  }
 };
 
 
@@ -381,13 +399,15 @@ ApexAstBuilder.prototype.visitPrimitiveType = function(ctx) {
 
 // Visit a parse tree produced by apexParser#typeArguments.
 ApexAstBuilder.prototype.visitTypeArguments = function(ctx) {
-  return this.visitChildren(ctx);
+  return ctx.typeArgument().map((argument) => {
+    return argument.accept(this);
+  })
 };
 
 
 // Visit a parse tree produced by apexParser#typeArgument.
 ApexAstBuilder.prototype.visitTypeArgument = function(ctx) {
-  return this.visitChildren(ctx);
+  return ctx.type().getText();
 };
 
 
@@ -405,12 +425,9 @@ ApexAstBuilder.prototype.visitFormalParameters = function(ctx) {
 
 // Visit a parse tree produced by apexParser#formalParameterList.
 ApexAstBuilder.prototype.visitFormalParameterList = function(ctx) {
-  let paramters = ctx.formalParameter().map((parameter) => {
+  return ctx.formalParameter().map((parameter) => {
     return parameter.accept(this);
   });
-  if (ctx.lastFormalParameter()) {
-    ctx.lastFormalParameter().accept(this);
-  }
 };
 
 
@@ -421,7 +438,7 @@ ApexAstBuilder.prototype.visitFormalParameter = function(ctx) {
   });
   let type = ctx.type().accept(this);
   let variableDeclaratorId = ctx.variableDeclaratorId().accept(this);
-  return new Ast.ParameterNode(modifiers,  type,  variableDeclaratorId);
+  return new Ast.ParameterNode(modifiers, type, variableDeclaratorId);
 };
 
 
@@ -760,18 +777,11 @@ ApexAstBuilder.prototype.visitNewExpression = function(ctx) {
 // Visit a parse tree produced by apexParser#MethodInvocation.
 ApexAstBuilder.prototype.visitMethodInvocation = function(ctx) {
   let receiver = ctx.expression().accept(this);
-  let methodName;
-  if (receiver instanceof Ast.NameNode) {
-    // receiver, methodNameの調整
-    methodName = receiver.value.pop();
-  } else if (receiver instanceof Ast.FieldAccessNode) {
-    methodName = receiver.fieldName;
-  }
   let arguments = [];
   if (ctx.expressionList()) {
     arguments = ctx.expressionList().accept(this);
   }
-  return new Ast.MethodInvocationNode(receiver, arguments, methodName);
+  return new Ast.MethodInvocationNode(receiver, arguments, null);
 };
 
 

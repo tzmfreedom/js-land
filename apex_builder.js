@@ -1,11 +1,15 @@
 let Ast = require('./node/ast');
 let ApexClassStore = require('./apexClass').ApexClassStore;
-let NameSpaceStore = require('./apexClass').NameSpaceStore;
 let ApexClass = require('./apexClass').ApexClass;
+let LocalEnvironment = require('./localEnv');
+let ApexClassCreator = require('./apexClassCreator');
+let methodSearcher = require('./methodSearcher');
 
 class ApexBuilder {
   visit(node) {
+    this.pushScope({});
     node.accept(this);
+    this.popScope();
   }
 
   validateModifierDuplication(node) {
@@ -45,40 +49,44 @@ class ApexBuilder {
 
     let staticMethods = {};
     node.staticMethods.forEach((method) => {
-      if (name in staticMethods) {
+      let method_name = method.name;
+      if (method_name in staticMethods) {
         // TODO: check argument
         // TODO: lineno
-        throw `Compile Error: duplicate method name ${name} at line : `
+        throw `Compile Error: duplicate method name ${method_name} at line : `
       }
-      staticMethods[name] = method.accept(this);
+      staticMethods[method_name] = method.accept(this);
     });
 
     let instanceMethods = {};
     node.instanceMethods.forEach((method) => {
-      if (name in instanceMethods) {
+      let method_name = method.name;
+      if (method_name in instanceMethods) {
         // TODO: check argument
         // TODO: lineno
-        throw `Compile Error: duplicate method name ${name} at line : `
+        throw `Compile Error: duplicate method name ${method_name} at line : `
       }
-      instanceMethods[name] = method.accept(this);
+      instanceMethods[method_name] = method.accept(this);
     });
 
     let staticFields = {};
     node.staticFields.forEach((field) => {
-      if (name in staticFields) {
+      let field_name = field.name;
+      if (field_name in staticFields) {
         // TODO: lineno
-        throw `Compile Error: duplicate static field name ${name} at line : `
+        throw `Compile Error: duplicate static field name ${field_name} at line : `
       }
-      staticFields[name] = field.accept(this);
+      staticFields[field_name] = field.accept(this);
     });
 
     let instanceFields = {};
     node.instanceFields.forEach((field) => {
-      if (name in instanceFields) {
+      let field_name = field.name;
+      if (field_name in instanceFields) {
         // TODO: lineno
-        throw `Compile Error: duplicate instance field name ${name} at line : `
+        throw `Compile Error: duplicate instance field name ${field_name} at line : `
       }
-      instanceFields[name] = field.accept(this);
+      instanceFields[field_name] = field.accept(this);
     });
 
     const classInfo = new ApexClass(
@@ -88,16 +96,18 @@ class ApexBuilder {
       instanceFields,
       staticFields,
     );
-    ApexClassStore.register(node.name, classInfo);
+    ApexClassStore.register(classInfo);
   }
 
   visitMethodDeclaration(node) {
     this.validateModifierDuplication(node);
     // returnType Check
-    let returnType = ApexClassStore.get(node.returnType);
-    if (!returnType) {
-      // TODO: lineno
-      throw `Invalid return type ${node.returnType} at line`;
+    if (node.returnType != 'void'){
+      let returnType = ApexClassStore.get(node.returnType);
+      if (!returnType) {
+        // TODO: lineno
+        throw `Invalid return type ${node.returnType} at line`;
+      }
     }
     this.validateParameter(node);
     this.validateStatement(node);
@@ -183,10 +193,15 @@ class ApexBuilder {
 
   visitMethodInvocation(node) {
     let receiver, methodNode;
-    [receiver, methodNode] = this.searchMethod(node);
+    [receiver, methodNode] = methodSearcher.searchMethod(node);
     let env = {
       this: receiver,
     };
+    for (let i = 0; i < methodNode.parameters.length; i++) {
+      let parameter = methodNode.parameters[i];
+      let value = node.parameters[i];
+      env[parameter.name] = value;
+    }
     let parameters = node.parameters.map((parameter) => { return parameter.accept(this); });
 
     this.pushScope(env);
@@ -334,104 +349,6 @@ class ApexBuilder {
 
   popScope() {
     LocalEnvironment.popScope();
-  }
-
-  getValue(key) {
-    return LocalEnvironment.get(key);
-  }
-
-  searchMethod(node) {
-    let methodName = node.methodName;
-
-    if (!(node.receiver instanceof Ast.NameNode)) {
-      let receiverNode = node.receiver.accept(this);
-      let classNode = receiverNode.class;
-      let methodNode = classNode.searchInstanceMethod(methodName);
-      return [receiverNode, methodNode];
-    }
-
-    let names = node.receiver.value;
-    let name = names[0];
-
-    if (this.getValue(name)) {
-      let variable = this.getValue(name);
-      let receiverNode = names.slice(1).reduce((receiver, name) => {
-        if (!receiver) {
-          return;
-        }
-        return receiver.instanceFields[name];
-      }, variable);
-      let methodNode = receiverNode.class.searchInstanceMethod(methodName);
-      if (receiverNode && methodNode) {
-        return [receiverNode, methodNode];
-      }
-    }
-
-    if (this.getValue('this')) {
-      let variable = this.getValue('this');
-      let receiverNode = names.reduce((receiver, name) => {
-        if (!receiver) {
-          return;
-        }
-        return receiver.instanceFields[name];
-      }, variable);
-      let methodNode = receiverNode.class.searchInstanceMethod(methodName);
-      if (receiverNode && methodNode) {
-        return [receiverNode, methodNode];
-      }
-    }
-
-    if (names.length == 1) {
-      let classInfo = ApexClassStore.get(name);
-      if (classInfo) {
-        let methodNode = classInfo.searchStaticMethod(methodName);
-        if (classInfo && methodNode) {
-          return [classInfo, methodNode];
-        }
-      }
-    }
-
-    if (names.length >= 2) {
-      let classInfo = ApexClassStore.get(name);
-      if (classInfo) {
-        let staticFieldName = names[1];
-        let staticField = classInfo.staticFields[staticFieldName];
-        let receiverNode = names.reduce((receiver, name) => {
-          if (!receiver) {
-            return;
-          }
-          return receiver.instanceFields[name];
-        }, staticField);
-        let methodNode = receiverNode.searchInstanceMethod(methodName);
-        if (receiverNode && methodNode) {
-          return [receiverNode, methodNode];
-        }
-      }
-    }
-
-    if (names.length >= 2) {
-      let nameSpace = NameSpaceStore.get(name);
-      let className = names[1];
-      let staticFieldName = names[2];
-      let classNode = nameSpace.classes[className];
-      if (classNode) {
-        let staticField = classNode.searchStaticField(staticFieldName);
-        let receiverNode = names.reduce((receiver, name) => {
-          if (!receiver) {
-            return;
-          }
-          return receiver.instanceFields[name];
-        }, staticField);
-        let methodNode = receiverNode.searchInstanceMethod(methodName);
-        if (receiverNode && methodNode) {
-          return [receiverNode, methodNode];
-        }
-      }
-    }
-  }
-
-  searchField(key) {
-
   }
 }
 

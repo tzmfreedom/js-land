@@ -4,6 +4,8 @@ let LocalEnvironment = require('./localEnv');
 let ApexClass        = require('./apexClass').ApexClass;
 let ApexMethod       = require('./apexClass').ApexMethod;
 let ApexClassStore   = require('./apexClass').ApexClassStore;
+let NameSpaceStore   = require('./apexClass').NameSpaceStore;
+let Ast              = require('./node/ast');
 
 class ApexClassCreator {
   static create() {
@@ -18,22 +20,28 @@ class ApexClassCreator {
         debug: new ApexMethod(
           ['public'],
           'debug',
-          [],
+          [
+            new Ast.ParameterNode(
+              [],
+              new Ast.TypeNode('Object', []),
+              'object'
+            )
+          ],
           [],
           [],
           () => {
-            console.log(LocalEnvironment.currentScope());
             let object = LocalEnvironment.get('object');
             console.log(object.value);
           }
         )
       }
     );
-    ApexClassStore.register('System', apexClass);
+    ApexClassStore.register(apexClass);
   }
 }
 
 ApexClassCreator.create();
+NameSpaceStore.register('System');
 
 module.exports = {
   ApexClassCreator: ApexClassCreator,
