@@ -3,6 +3,7 @@ const ApexParser = require('./apexParser');
 const ApexLexer = require('./apexLexer');
 const ApexInterpreter = require('./apex_interpreter');
 const ApexAstBuilder = require('./ApexAstBuilder');
+const ApexBuilder = require('./apex_builder');
 const util = require('util');
 
 // Create CST with ANTLR
@@ -19,9 +20,11 @@ const visitor = new ApexAstBuilder();
 const top = visitor.visit(tree);
 console.log(util.inspect(top, {depth: 6, colors: true}));
 
+const builder = new ApexBuilder();
 const interpreter = new ApexInterpreter();
 
-const method = top.staticMethods.find((method) => { return method.name == 'action'; });
-method.statements.forEach((statement) => {
-    statement.accept(interpreter);
-});
+builder.visit(top);
+// const method = top.staticMethods.find((method) => { return method.name == 'action'; });
+// method.statements.forEach((statement) => {
+//     statement.accept(interpreter);
+// });

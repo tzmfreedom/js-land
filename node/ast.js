@@ -48,14 +48,15 @@ class IntegerNode {
   }
 }
 
-class ArgumentNode {
-  constructor(type, name) {
+class ParameterNode {
+  constructor(modifiers, type, name) {
+    this.modifiers = modifiers;
     this.type = type;
     this.name = name;
   }
 
   accept(visitor) {
-    visitor.visitArgument(this);
+    visitor.visitParameter(this);
   }
 }
 
@@ -519,7 +520,7 @@ exports.AnnotationNode = AnnotationNode
 exports.ModifierNode = ModifierNode
 exports.ClassNode = ClassNode
 exports.IntegerNode = IntegerNode
-exports.ArgumentNode = ArgumentNode
+exports.ParameterNode = ParameterNode
 exports.ArrayAccessNode = ArrayAccessNode
 exports.BooleanNode = BooleanNode
 exports.BreakNode = BreakNode

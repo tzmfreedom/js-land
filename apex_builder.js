@@ -10,13 +10,15 @@ class ApexBuilder {
 
   validateModifierDuplication(node) {
     let modifiers = [];
-    node.modifiers.map((modifier) => {
-      if (modifiers.includes(modifier.name)){
-        // TODO: lineno
-        throw `Compile Error: duplicate modifier ${name} at line : `
-      }
-      modifiers.push(modifier.name);
-    });
+    if (node.modifiers) {
+      node.modifiers.map((modifier) => {
+        if (modifiers.includes(modifier.name)) {
+          // TODO: lineno
+          throw `Compile Error: duplicate modifier ${name} at line : `
+        }
+        modifiers.push(modifier.name);
+      });
+    }
   }
 
   validateParameter(node) {
@@ -34,9 +36,6 @@ class ApexBuilder {
     node.statements.forEach((statement) => {
       // TypeCheck
       // Variable Type Check
-      // If Boolean
-      // While Boolean
-      // Invalid Operator
       statement.accept(this);
     });
   }
@@ -221,6 +220,14 @@ class ApexBuilder {
     return node;
   }
 
+  visitUnaryOperator(node) {
+    switch(node.op) {
+      case '++':
+      case '--':
+        break;
+    }
+  }
+
   visitBinaryOperator(node) {
     switch(node.op) {
       case '+':
@@ -228,13 +235,56 @@ class ApexBuilder {
       case '*':
       case '/':
       case '%':
+      case '<<<':
+      case '<<':
+      case '>>>':
+      case '>>':
         let left = node.left.accept(this);
         let right = node.right.accept(this);
-        if (left instanceof Ast.IntegerNode || left instanceof Ast.DoubleNode) {
-
+        if (!(left instanceof Ast.IntegerNode) && !(left instanceof Ast.DoubleNode)) {
+          throw `Must be integer or double`;
         }
+        if (!(right instanceof Ast.IntegerNode) && !(right instanceof Ast.DoubleNode)) {
+          throw `Must be integer or double`;
+        }
+        return new Ast.IntegerNode();
+      case '&':
+      case '|':
+      case '^':
+        let left = node.left.accept(this);
+        let right = node.right.accept(this);
+        if (!(left instanceof Ast.IntegerNode)) {
+          throw `Must be integer`;
+        }
+        if (!(right instanceof Ast.IntegerNode)) {
+          throw `Must be integer`;
+        }
+        return new Ast.IntegerNode();
+      case '<':
+      case '>':
+      case '<=':
+      case '>=':
+      case '==':
+      case '===':
+      case '!=':
+      case '!==':
+        let left = node.left.accept(this);
+        let right = node.right.accept(this);
+        return new Ast.BooleanNode();
+      case '+=':
+      case '-=':
+      case '*=':
+      case '/=':
+      case '%=':
+        let left = node.left.accept(this);
+        let right = node.right.accept(this);
+        return node;
+      case '&=':
+      case '|=':
+      case '^=':
+        let left = node.left.accept(this);
+        let right = node.right.accept(this);
         break;
-
     }
   }
 

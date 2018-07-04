@@ -16,7 +16,8 @@ class:
   - staticMethods
 integer:
   - value
-argument:
+parameter:
+  - modifiers
   - type
   - name
 array_access:
