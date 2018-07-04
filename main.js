@@ -5,6 +5,8 @@ const ApexInterpreter = require('./apex_interpreter');
 const ApexAstBuilder = require('./ApexAstBuilder');
 const ApexBuilder = require('./apex_builder');
 const util = require('util');
+const MethodInvocationNode = require('./node/ast').MethodInvocationNode;
+const NameNode = require('./node/ast').NameNode;
 
 // Create CST with ANTLR
 const input = require('fs').readFileSync(process.argv[2], 'utf8');
@@ -18,7 +20,7 @@ const tree = parser.compilationUnit();
 // Create AST from CST with Visitor
 const visitor = new ApexAstBuilder();
 const top = visitor.visit(tree);
-console.log(util.inspect(top, {depth: 6, colors: true}));
+// console.log(util.inspect(top, {depth: 13, colors: true}));
 
 const builder = new ApexBuilder();
 const interpreter = new ApexInterpreter();
@@ -27,9 +29,5 @@ const interpreter = new ApexInterpreter();
 builder.visit(top);
 
 // Execute
-const method = top.staticMethods.find((method) => {
-  return method.name == 'action';
-});
-method.statements.forEach((statement) => {
-  statement.accept(interpreter);
-});
+invokeNode = new MethodInvocationNode(new NameNode(['Hoge', 'action']), [], null);
+interpreter.visit(invokeNode);

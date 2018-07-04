@@ -1,6 +1,7 @@
 var Apex = require('./apexClass');
-var ApexVisitor = require('./apexVisitor');
 var Ast = require('./node/ast');
+let methodSearcher = require('./methodSearcher');
+let LocalEnvironment = require('./localEnv');
 
 class ApexInterpreter {
   visit(node) {
@@ -13,11 +14,11 @@ class ApexInterpreter {
     return node;
   }
 
-  visitInterger(node) {
+  visitInteger(node) {
     return node;
   }
 
-  visitArgument(node) {
+  visitParameter(node) {
     return node;
   }
 
@@ -85,7 +86,7 @@ class ApexInterpreter {
     this.pushScope(env);
     let returnValue;
     if (methodNode.nativeFunction) {
-      // methodNode.nativeFunction.call(this, parameters);
+      methodNode.nativeFunction.call(this, parameters);
     } else {
       methodNode.statements.forEach((statement) => {
         returnValue = statement.accept(this);

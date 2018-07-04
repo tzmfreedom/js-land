@@ -92,11 +92,14 @@ class ApexBuilder {
 
     const classInfo = new ApexClass(
       node.name,
-      instanceMethods,
-      staticMethods,
+      node.superClass,
+      node.implementClasses,
       instanceFields,
       staticFields,
+      instanceMethods,
+      staticMethods,
     );
+
     ApexClassStore.register(classInfo);
   }
 
@@ -130,7 +133,7 @@ class ApexBuilder {
   }
 
   visitInteger(node) {
-    return new Ast.TypeNode('Integer', []);
+    return new Ast.TypeNode(['Integer'], []);
   }
 
   visitParameter(node) {
@@ -142,7 +145,7 @@ class ApexBuilder {
   }
 
   visitBoolean(node) {
-    return new Ast.TypeNode('Boolean', []);
+    return new Ast.TypeNode(['Boolean'], []);
   }
 
   visitBreak(node) {
@@ -162,7 +165,7 @@ class ApexBuilder {
   }
 
   visitDouble(node) {
-    return new Ast.TypeNode('Double', []);
+    return new Ast.TypeNode(['Double'], []);
   }
 
   visitFieldDeclaration(node) {
@@ -227,7 +230,9 @@ class ApexBuilder {
   }
 
   visitName(node) {
-    return methodSearcher.searchField(node);
+    let values = methodSearcher.searchField(node);
+    if (values) return values;
+    throw `Variable not declaration : ${node.value.join('.')}`
   }
 
   visitNew(node) {
@@ -239,7 +244,7 @@ class ApexBuilder {
   }
 
   visitObject(node) {
-    return new Ast.TypeNode(node.classNode.name, node.genericType);
+    return new Ast.TypeNode([node.classNode.name], node.genericType);
   }
 
   visitUnaryOperator(node) {
@@ -307,6 +312,7 @@ class ApexBuilder {
       case '/=':
       case '%=':
         let receiver, key;
+        console.log(node.left);
         [receiver, key] = node.left.accept(this);
         if (key) {
           left = receiver.instanceFields[key].accept(this);
@@ -330,6 +336,11 @@ class ApexBuilder {
     }
   }
 
+  visitCastExpression(node) {
+    // TODO: check extends or implementation
+    return node.type;
+  }
+
   visitReturn(node) {
     return node
   }
@@ -337,11 +348,11 @@ class ApexBuilder {
   visitSoql(node) {
     // TODO: parse node and extract object
     let object = 'Account';
-    return new Ast.TypeNode('List', [object]);
+    return new Ast.TypeNode(['List'], [new Ast.TypeNode([object], [])]);
   }
 
   visitString(node) {
-    return new Ast.TypeNode('String', []);
+    return new Ast.TypeNode(['String'], []);
   }
 
   visitSwitch(node) {
@@ -362,7 +373,9 @@ class ApexBuilder {
       let name, expression;
       [name, expression] = declarator.accept(this);
 
-      if (expression && type.name != expression.name) {
+      if (expression && !this.checkType(type, expression)) {
+        console.log(type);
+        console.log(expression);
         throw `Type not matched : variable => ${type.name}, initializer => ${expression.name}`
       }
       let env = this.currentScope();
@@ -405,6 +418,18 @@ class ApexBuilder {
 
   popScope() {
     LocalEnvironment.popScope();
+  }
+
+  checkType(left, right) {
+    if (right instanceof Ast.NullNode) return true;
+    if (left.name.join('.') != right.name.join('.')) return false;
+    if (!left.parameters || !right.parameters) return true;
+    for (let i = 0; i < left.parameters.length; i++) {
+      let leftParameter = left.parameters[i];
+      let rightParameter = right.parameters[i];
+      if (!this.checkType(leftParameter, rightParameter)) return false;
+    }
+    return true;
   }
 }
 

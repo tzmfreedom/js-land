@@ -173,7 +173,7 @@ ApexAstBuilder.prototype.visitInterfaceDeclaration = function(ctx) {
 
 // Visit a parse tree produced by apexParser#typeList.
 ApexAstBuilder.prototype.visitTypeList = function(ctx) {
-  return this.visitChildren(ctx);
+  return ctx.type().map((type) => { return type.accept(this); });
 };
 
 
@@ -372,11 +372,9 @@ ApexAstBuilder.prototype.visitType = function(ctx) {
 // Visit a parse tree produced by apexParser#classOrInterfaceType.
 ApexAstBuilder.prototype.visitClassOrInterfaceType = function(ctx) {
   if (ctx.Identifier()) {
-    let parameters;
-    if (ctx.typeArguments()) {
-      parameters = ctx.typeArguments().map((argument) => {
-        return argument.accept(this);
-      });
+    let parameters = [];
+    if (ctx.typeArguments() && ctx.typeArguments().length > 0) {
+      parameters = ctx.typeArguments()[0].accept(this);
     }
     let name = ctx.Identifier().map((identifier) => {
       return identifier.getText();
@@ -391,7 +389,7 @@ ApexAstBuilder.prototype.visitClassOrInterfaceType = function(ctx) {
 
 // Visit a parse tree produced by apexParser#primitiveType.
 ApexAstBuilder.prototype.visitPrimitiveType = function(ctx) {
-  return this.visitChildren(ctx);
+  return new Ast.TypeNode([ctx.getText()], []);
 };
 
 
@@ -405,7 +403,7 @@ ApexAstBuilder.prototype.visitTypeArguments = function(ctx) {
 
 // Visit a parse tree produced by apexParser#typeArgument.
 ApexAstBuilder.prototype.visitTypeArgument = function(ctx) {
-  return ctx.type().getText();
+  return ctx.type().accept(this);
 };
 
 
@@ -891,7 +889,7 @@ ApexAstBuilder.prototype.visitExplicitGenericInvocation = function(ctx) {
 
 // Visit a parse tree produced by apexParser#nonWildcardTypeArguments.
 ApexAstBuilder.prototype.visitNonWildcardTypeArguments = function(ctx) {
-  return this.visitChildren(ctx);
+  return ctx.typeList().accept(this);
 };
 
 

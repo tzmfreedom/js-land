@@ -9,19 +9,22 @@ class MethodSearcher {
     if (node.methodName) {
       let receiverNode = node.receiver.accept(visitor);
       let classNode = receiverNode.classNode;
-      let methodNode = this.searchInstanceMethod(classNode, node.methodName);
-      return [receiverNode, methodNode];
+      if (classNode) {
+        let methodNode = this.searchInstanceMethod(classNode, node.methodName);
+        return [receiverNode, methodNode];
+      }
     }
 
     let names = node.receiver.value;
     let name = names[0];
+    let methodName = names[names.length - 1];
 
     if (this.localIncludes(name)) {
       let variable = this.getValue(name);
       let receiverNode = (() => {
         let receiverNode = variable;
         let list = names.slice(1);
-        for (let i = 0; i < list.length; i++) {
+        for (let i = 0; i < list.length - 1; i++) {
           if (!receiverNode) return null;
           receiverNode = receiverNode.instanceFields[list[i]];
         }
@@ -29,7 +32,7 @@ class MethodSearcher {
       })();
 
       if (receiverNode) {
-        let methodNode = this.searchInstanceMethod(receiverNode, node.methodName);
+        let methodNode = this.searchInstanceMethod(receiverNode, methodName);
         if (receiverNode && methodNode) {
           return [receiverNode, methodNode];
         }
@@ -40,15 +43,18 @@ class MethodSearcher {
       let variable = this.getValue('this');
       let receiverNode = (() => {
         let receiverNode = variable;
-        for (let i = 0; i < list.length; i++) {
+        for (let i = 0; i < names.length - 1; i++) {
           if (!receiverNode) return null;
           receiverNode = receiverNode.instanceFields[names[i]];
         }
         return receiverNode;
       })();
-      let methodNode = this.searchInstanceMethod(receiverNode, node.methodName);
-      if (receiverNode && methodNode) {
-        return [receiverNode, methodNode];
+
+      if (receiverNode) {
+        let methodNode = this.searchInstanceMethod(receiverNode, methodName);
+        if (receiverNode && methodNode) {
+          return [receiverNode, methodNode];
+        }
       }
     }
 
@@ -68,7 +74,7 @@ class MethodSearcher {
         let receiverNode = (() => {
           let staticFieldName = names[1];
           let receiverNode = classInfo.staticFields[staticFieldName];
-          for (let i = 2; i < names.length; i++) {
+          for (let i = 2; i < names.length - 1; i++) {
             if (!receiverNode) return null;
             receiverNode = receiverNode.instanceFields[names[i]];
           }
