@@ -470,7 +470,7 @@ ApexAstBuilder.prototype.visitLiteral = function(ctx) {
   if (ctx.IntegerLiteral()) {
     return new Ast.IntegerNode(ctx.IntegerLiteral().getText());
   } else if (ctx.FloatingPointLiteral()) {
-    return new Ast.DoubleNode(ctx.IntegerLiteral().getText());
+    return new Ast.DoubleNode(ctx.FloatingPointLiteral().getText());
   } else if (ctx.StringLiteral()) {
     let text = ctx.StringLiteral().getText();
     return new Ast.StringNode(text.substring(1, text.length - 1));

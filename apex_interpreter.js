@@ -107,6 +107,7 @@ class ApexInterpreter {
   }
 
   visitNull(node) {
+    node.value = null;
     return node;
   }
 
