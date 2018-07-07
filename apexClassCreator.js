@@ -2,7 +2,6 @@
 
 let LocalEnvironment = require('./localEnv');
 let ApexClass        = require('./apexClass').ApexClass;
-let ApexMethod       = require('./apexClass').ApexMethod;
 let ApexClassStore   = require('./apexClass').ApexClassStore;
 let NameSpaceStore   = require('./apexClass').NameSpaceStore;
 let Ast              = require('./node/ast');
@@ -17,26 +16,41 @@ class ApexClassCreator {
       {},
       {},
       {
-        debug: new ApexMethod(
-          ['public'],
-          'debug',
-          [
-            new Ast.ParameterNode(
-              [],
-              new Ast.TypeNode('Object', []),
-              'object'
-            )
-          ],
-          [],
-          [],
-          () => {
-            let object = LocalEnvironment.get('object');
-            console.log(object.value);
-          }
-        )
+        debug: {
+          a: new Ast.MethodDeclarationNode(
+            'debug',
+            [],
+            new Ast.TypeNode(['void'], []),
+            [
+              new Ast.ParameterNode(
+                [],
+                new Ast.TypeNode('Object', []),
+                'object'
+              )
+            ],
+            [],
+            [],
+            () => {
+              let object = LocalEnvironment.get('object');
+              console.log(object.value);
+            }
+          )
+        }
       }
     );
     ApexClassStore.register(apexClass);
+
+    apexClass = new ApexClass(
+      'String',
+      null,
+      [],
+      {},
+      {},
+      {},
+      {}
+    );
+    ApexClassStore.register(apexClass);
+
   }
 }
 

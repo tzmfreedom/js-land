@@ -3,10 +3,11 @@ const ApexParser = require('./apexParser');
 const ApexLexer = require('./apexLexer');
 const ApexInterpreter = require('./apex_interpreter');
 const ApexAstBuilder = require('./ApexAstBuilder');
+const SymbolDeclarator = require('./symbol_declarator');
 const ApexBuilder = require('./apex_builder');
-const util = require('util');
 const MethodInvocationNode = require('./node/ast').MethodInvocationNode;
 const NameNode = require('./node/ast').NameNode;
+require('./apexClassCreator');
 
 // Create CST with ANTLR
 const input = require('fs').readFileSync(process.argv[2], 'utf8');
@@ -22,12 +23,18 @@ const visitor = new ApexAstBuilder();
 const top = visitor.visit(tree);
 // console.log(util.inspect(top, {depth: 13, colors: true}));
 
+const declarator = new SymbolDeclarator();
+const classInfo = declarator.visit(top);
+
 const builder = new ApexBuilder();
-const interpreter = new ApexInterpreter();
 
 // Build
-builder.visit(top);
+builder.visit(classInfo);
 
 // Execute
-invokeNode = new MethodInvocationNode(new NameNode(['Hoge', 'action']), [], null);
+const interpreter = new ApexInterpreter();
+invokeNode = new MethodInvocationNode(
+  new NameNode(['Hoge', 'action']),
+  [],
+);
 interpreter.visit(invokeNode);

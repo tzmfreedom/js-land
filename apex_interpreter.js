@@ -64,47 +64,51 @@ class ApexInterpreter {
 
   visitFor(node) {
     this.pushScope({});
-    let condition = node.forControl.accept(this);
+
+    let forControl = node.forControl;
+    forControl.forInit.accept(this);
+
+    let condition = forControl.expression.accept(this);
     while (condition.value = true) {
-      node.statements.accept(this);
-      condition = node.forControl.accept(this);
+      node.statements.forEach((statement) => {
+        statement.accept(this);
+      });
+      forControl.forUpdate.accept(this);
+      condition = forControl.expression.accept(this);
     }
     this.popScope();
   }
 
+  visitForControl(node) {
+    return node;
+  }
+
   visitIf(node) {
     let condition = node.condition.accept(this);
-    if (condition.value = true) {
+    if (condition.value == true) {
       node.ifStatement.accept(this);
-    } else {
+    } else if (node.elseStatement) {
       node.elseStatement.accept(this);
     }
   }
 
   visitMethodInvocation(node) {
-    let receiver, methodNode;
-    [receiver, methodNode] = methodSearcher.searchMethod(node);
-    let env = {
-      this: receiver,
-    };
-    for (let i = 0; i < methodNode.parameters.length; i++) {
-      let parameter = methodNode.parameters[i];
-      let value = node.parameters[i];
-      env[parameter.name] = value;
+    let searchResult = methodSearcher.searchMethod(node);
+    searchResult.methodNode = searchResult.methodNode[Object.keys(searchResult.methodNode)[0]];
+
+    let env = { this: searchResult.receiverNode };
+    for (let i = 0; i < searchResult.methodNode.parameters.length; i++) {
+      let parameter = searchResult.methodNode.parameters[i];
+      env[parameter.name] = node.parameters[i].accept(this);
     }
     let parameters = node.parameters.map((parameter) => { return parameter.accept(this); });
 
     this.pushScope(env);
     let returnValue;
-    if (methodNode.nativeFunction) {
-      methodNode.nativeFunction.call(this, parameters);
+    if (searchResult.methodNode.nativeFunction) {
+      searchResult.methodNode.nativeFunction.call(this, parameters);
     } else {
-      methodNode.statements.forEach((statement) => {
-        returnValue = statement.accept(this);
-        if (returnValue instanceof Ast.ReturnNode) {
-          return null;
-        }
-      });
+      searchResult.methodNode.statements.accept(this);
     }
     this.popScope();
   }
@@ -137,48 +141,58 @@ class ApexInterpreter {
   }
 
   visitBinaryOperator(node) {
-    let left, right;
+    let left = node.left.accept(this);
+    let right = node.right.accept(this);
     switch(node.type) {
       case '+':
-        return new Ast.IntegerNode(node.left.accept(this) + node.right.accept(this));
+        return new Ast.IntegerNode(left.value + right.value);
       case '-':
-        return new Ast.IntegerNode(node.left.accept(this) - node.right.accept(this));
+        return new Ast.IntegerNode(left.value - right.value);
       case '*':
-        return new Ast.IntegerNode(node.left.accept(this) * node.right.accept(this));
+        return new Ast.IntegerNode(left.value * right.value);
       case '/':
-        return new Ast.IntegerNode(node.left.accept(this) / node.right.accept(this));
+        return new Ast.IntegerNode(left.value / right.value);
       case '%':
-        return new Ast.IntegerNode(node.left.accept(this) % node.right.accept(this));
+        return new Ast.IntegerNode(left.value % right.value);
       case '<<<':
-        return new Ast.IntegerNode(node.left.accept(this) << node.right.accept(this));
+        return new Ast.IntegerNode(left.value << right.value);
       case '<<':
-        return new Ast.IntegerNode(node.left.accept(this) << node.right.accept(this));
+        return new Ast.IntegerNode(left.value << right.value);
       case '>>>':
-        return new Ast.IntegerNode(node.left.accept(this) >> node.right.accept(this));
+        return new Ast.IntegerNode(left.value >> right.value);
       case '>>':
-        return new Ast.IntegerNode(node.left.accept(this) >> node.right.accept(this));
+        return new Ast.IntegerNode(left.value >> right.value);
       case '&':
-        return new Ast.IntegerNode(node.left.accept(this) & node.right.accept(this));
+        return new Ast.IntegerNode(left.value & right.value);
       case '|':
+        return new Ast.IntegerNode(left.value | right.value);
         return new Ast.IntegerNode(node.left.accept(this) | node.right.accept(this));
       case '^':
+        return new Ast.IntegerNode(left.value ^ right.value);
         return new Ast.IntegerNode(node.left.accept(this) ^ node.right.accept(this));
       case '<':
+        return new Ast.IntegerNode(left.value < right.value);
         return new Ast.BooleanNode(node.left.accept(this) < node.right.accept(this));
       case '>':
+        return new Ast.IntegerNode(left.value > right.value);
         return new Ast.BooleanNode(node.left.accept(this) > node.right.accept(this));
       case '<=':
+        return new Ast.IntegerNode(left.value <= right.value);
         return new Ast.BooleanNode(node.left.accept(this) <= node.right.accept(this));
       case '>=':
+        return new Ast.IntegerNode(left.value >= right.value);
         return new Ast.BooleanNode(node.left.accept(this) >= node.right.accept(this));
       case '==':
+        return new Ast.IntegerNode(left.value == right.value);
         return new Ast.BooleanNode(node.left.accept(this) == node.right.accept(this));
       case '===':
+        return new Ast.IntegerNode(left.value == right.value);
         return new Ast.BooleanNode(node.left.accept(this) == node.right.accept(this));
       case '!=':
+        return new Ast.IntegerNode(left.value != right.value);
         return new Ast.BooleanNode(node.left.accept(this) != node.right.accept(this));
       case '!==':
-        return new Ast.BooleanNode(node.left.accept(this) != node.right.accept(this));
+        return new Ast.IntegerNode(left.value != right.value);
       case '=':
       case '+=':
       case '-=':
@@ -238,9 +252,15 @@ class ApexInterpreter {
   visitWhile(node) {
     let condition = node.condition.accept(this);
     while (condition.value == true) {
-      node.statement.accept(this);
+      node.statements.forEach((statement) => {
+        statement.accept(this);
+      });
       condition = node.condition.accept(this);
     }
+  }
+
+  visitBlock(node){
+    node.statements.forEach((statement) => { statement.accept(this); });
   }
 
   pushScope(env) {

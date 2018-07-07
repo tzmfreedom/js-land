@@ -57,8 +57,8 @@ class LocalEnvironment {
     return envStack[envStack.length-1];
   }
 
-  static pushScope(env) {
-    let localEnv = new LocalEnvironment(env, this.currentScope());
+  static pushScope(env, parent) {
+    let localEnv = new LocalEnvironment(env, parent);
     envStack.push(localEnv);
   }
 

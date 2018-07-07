@@ -6,7 +6,7 @@ BASE_CLASS = 'BaseNode'
 def generate_class(class_name, fields)
   puts <<~JS
 class #{class_name}Node {
-  constructor(#{fields.join(', ')}) {
+  constructor(#{fields.push('lineno').join(', ')}) {
 #{fields.map { |field| "    this.#{field} = #{field};" }.join("\n")}
   }
 
@@ -18,7 +18,7 @@ JS
 end
 
 def generate_export(class_name)
-  puts "exports.#{class_name}Node = #{class_name}Node"
+  puts "exports.#{class_name}Node = #{class_name}Node;"
 end
 
 class_names = {}

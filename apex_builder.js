@@ -2,8 +2,8 @@ let Ast = require('./node/ast');
 let ApexClassStore = require('./apexClass').ApexClassStore;
 let ApexClass = require('./apexClass').ApexClass;
 let LocalEnvironment = require('./localEnv');
-let ApexClassCreator = require('./apexClassCreator');
 let methodSearcher = require('./methodSearcher');
+let ApexObject = require('./apexClass').ApexObject;
 
 class ApexBuilder {
   visit(node) {
@@ -36,92 +36,74 @@ class ApexBuilder {
     });
   }
 
-  validateStatement(node) {
-    node.statements.forEach((statement) => {
-      // TypeCheck
-      // Variable Type Check
-      statement.accept(this);
-    });
-  }
-
   visitClass(node) {
     this.validateModifierDuplication(node);
 
-    let staticMethods = {};
-    node.staticMethods.forEach((method) => {
-      let method_name = method.name;
-      if (method_name in staticMethods) {
-        // TODO: check argument
-        // TODO: lineno
-        throw `Compile Error: duplicate method name ${method_name} at line : `
-      }
-      staticMethods[method_name] = method.accept(this);
-    });
+    let staticMethods = node.staticMethods;
 
-    let instanceMethods = {};
-    node.instanceMethods.forEach((method) => {
-      let method_name = method.name;
-      if (method_name in instanceMethods) {
-        // TODO: check argument
-        // TODO: lineno
-        throw `Compile Error: duplicate method name ${method_name} at line : `
-      }
-      instanceMethods[method_name] = method.accept(this);
-    });
-
-    let staticFields = {};
-    node.staticFields.forEach((field) => {
-      let field_name = field.name;
-      if (field_name in staticFields) {
-        // TODO: lineno
-        throw `Compile Error: duplicate static field name ${field_name} at line : `
-      }
-      staticFields[field_name] = field.accept(this);
-    });
-
-    let instanceFields = {};
-    node.instanceFields.forEach((field) => {
-      field.declarators.forEach((declarator) => {
-        if (declarator.name in instanceFields) {
-          // TODO: lineno
-          throw `Compile Error: duplicate instance field name ${declarator.name} at line : `
-        }
-        instanceFields[declarator.name] = declarator.expression.accept(this);
+    Object.keys(staticMethods).forEach((methodName) => {
+      let methods = staticMethods[methodName];
+      Object.keys(methods).forEach((parameterHash) => {
+        let methodNode = methods[parameterHash];
+        let env = {};
+        methodNode.parameters.forEach((parameter) => {
+          env[parameter.name] = parameter.type;
+        });
+        this.pushScope(env, null);
+        methods[parameterHash].accept(this);
+        this.popScope();
       });
     });
 
-    const classInfo = new ApexClass(
-      node.name,
-      node.superClass,
-      node.implementClasses,
-      instanceFields,
-      staticFields,
-      instanceMethods,
-      staticMethods,
-    );
+    let newObject = this.createObject(node.name);
+    let instanceMethods = node.instanceMethods;
+    Object.keys(node.instanceMethods).forEach((methodName) => {
+      let methods = instanceMethods[methodName];
+      Object.keys(methods).forEach((parameterHash) => {
+        let methodNode = methods[parameterHash];
+        let env = { this: newObject };
+        methodNode.parameters.forEach((parameter) => {
+          env[parameter.name] = parameter.type;
+        });
+        this.pushScope(env, null);
+        methods[parameterHash].accept(this);
+        this.popScope();
+      });
+    });
 
-    ApexClassStore.register(classInfo);
+    Object.keys(node.staticFields).forEach((fieldName) => {
+      node.staticFields[fieldName].accept(this);
+    });
+
+    Object.keys(node.instanceFields).forEach((fieldName) => {
+      node.instanceFields[fieldName].accept(this);
+    });
   }
 
   visitMethodDeclaration(node) {
     this.validateModifierDuplication(node);
     // returnType Check
     if (node.returnType != 'void'){
-      let returnType = ApexClassStore.get(node.returnType);
+      let returnType = ApexClassStore.get(node.returnType.name.join('.'));
       if (!returnType) {
         // TODO: lineno
         throw `Invalid return type ${node.returnType} at line`;
       }
     }
     this.validateParameter(node);
-    let env = {};
-    node.parameters.forEach((parameter) => {
-      env[parameter.name] = parameter.type;
-    });
-    this.pushScope(env);
-    this.validateStatement(node);
-    this.popScope();
+
+    node.statements.accept(this);
     return node;
+  }
+
+  createObject(className) {
+    let classInfo = ApexClassStore.get(className);
+    let instanceFields = {};
+    Object.keys(classInfo.instanceFields).forEach((fieldName) => {
+      instanceFields[fieldName] = classInfo.instanceFields[fieldName].expression.accept(this);
+    });
+    const classNode = ApexClassStore.get(className);
+    return new ApexObject(classNode, instanceFields);
   }
 
   visitFieldDeclaration(node) {
@@ -177,13 +159,21 @@ class ApexBuilder {
   }
 
   visitFor(node) {
-    let condition = node.forControl.accept(this);
+    this.pushScope({});
+
+    let forControl = node.forControl;
+    forControl.forInit.accept(this);
+    forControl.forUpdate.forEach((statement) => { statement.accept(this) });
+
+    let condition = forControl.expression.accept(this);
     if (!condition instanceof Ast.BooleanNode) {
       throw `Should be boolean expression`;
     }
     node.statements.forEach((statement) => {
       statement.accept(this);
     });
+
+    this.popScope();
     return node;
   }
 
@@ -192,41 +182,30 @@ class ApexBuilder {
     if (!condition instanceof Ast.BooleanNode) {
       throw `Should be boolean expression`;
     }
-    node.ifStatement.forEach((statement) => {
-      statement.accept(this);
-    });
-    node.elseStatement.forEach((statement) => {
-      statement.accept(this);
-    });
+    node.ifStatement.accept(this);
+    if (node.elseStatement) node.elseStatement.accept(this);
+
     return node;
   }
 
   visitMethodInvocation(node) {
-    let receiver, methodNode;
-    [receiver, methodNode] = methodSearcher.searchMethod(node);
-    let env = {
-      this: receiver,
-    };
-    for (let i = 0; i < methodNode.parameters.length; i++) {
-      let parameter = methodNode.parameters[i];
+    let searchResult = methodSearcher.searchMethod(node);
+    searchResult.methodNode = searchResult.methodNode[Object.keys(searchResult.methodNode)[0]];
+    let env = { this: searchResult.receiverNode };
+    for (let i = 0; i < searchResult.methodNode.parameters.length; i++) {
+      let parameter = searchResult.methodNode.parameters[i];
       let value = node.parameters[i];
       env[parameter.name] = value;
     }
     let parameters = node.parameters.map((parameter) => { return parameter.accept(this); });
 
-    this.pushScope(env);
-    let returnValue;
-    if (methodNode.nativeFunction) {
-      // methodNode.nativeFunction.call(this, parameters);
+    if (searchResult.methodNode.nativeFunction) {
+      return searchResult.methodNode.returnType;
     } else {
-      methodNode.statements.forEach((statement) => {
-        returnValue = statement.accept(this);
-        if (returnValue instanceof Ast.ReturnNode) {
-          return null;
-        }
-      });
+      this.pushScope(env, null);
+      let returnValue = searchResult.methodNode.statements.accept(this);
+      this.popScope();
     }
-    this.popScope();
   }
 
   visitName(node) {
@@ -269,11 +248,13 @@ class ApexBuilder {
       case '>>':
         left = node.left.accept(this);
         right = node.right.accept(this);
-        if (!(left instanceof Ast.IntegerNode) && !(left instanceof Ast.DoubleNode)) {
-          throw `Must be integer or double`;
+        let leftName = left.name.join('.');
+        if (leftName != 'Integer' && leftName != 'Double') {
+          throw `Must be integer or double, but ${left.name}`;
         }
-        if (!(right instanceof Ast.IntegerNode) && !(right instanceof Ast.DoubleNode)) {
-          throw `Must be integer or double`;
+        let rightName = right.name.join('.');
+        if (rightName != 'Integer' && rightName != 'Double') {
+          throw `Must be integer or double, but ${right.name}`;
         }
         return left;
       case '&':
@@ -282,10 +263,10 @@ class ApexBuilder {
         left = node.left.accept(this);
         right = node.right.accept(this);
         if (left.name != 'Integer') {
-          throw `Must be integer`;
+          throw `Must be integer, but ${left.name}`;
         }
         if (right != 'Integer') {
-          throw `Must be integer`;
+          throw `Must be integer, but ${right.name}`;
         }
         if (left.name != right.name) {
           throw `Type not matched : left => ${left.name}, right => ${right.name}`
@@ -301,7 +282,8 @@ class ApexBuilder {
       case '!==':
         left = node.left.accept(this);
         right = node.right.accept(this);
-        if (left.name != right.name) {
+        console.log(left, right)
+        if (left.name.join('.') != right.name.join('.')) {
           throw `Type not matched : left => ${left.name}, right => ${right.name}`
         }
         return left;
@@ -311,13 +293,11 @@ class ApexBuilder {
       case '*=':
       case '/=':
       case '%=':
-        let receiver, key;
-        console.log(node.left);
-        [receiver, key] = node.left.accept(this);
-        if (key) {
-          left = receiver.instanceFields[key].accept(this);
+        let searchResult = node.left.accept(this);
+        if (searchResult.key) {
+          left = searchResult.receiverNode.instanceFields[searchResult.key].accept(this);
         } else {
-          left = this.getValue(receiver);
+          left = this.getValue(searchResult.receiverNode);
         }
         right = node.right.accept(this);
         if (left.name != right.name) {
@@ -370,13 +350,10 @@ class ApexBuilder {
   visitVariableDeclaration(node) {
     let type = node.type;
     node.declarators.forEach((declarator) => {
-      let name, expression;
-      [name, expression] = declarator.accept(this);
+      let decl = declarator.accept(this);
 
-      if (expression && !this.checkType(type, expression)) {
-        console.log(type);
-        console.log(expression);
-        throw `Type not matched : variable => ${type.name}, initializer => ${expression.name}`
+      if (decl.expression && !this.checkType(type, decl.expression)) {
+        throw `Type not matched : variable => ${type.name}, initializer => ${decl.expression.name}`
       }
       let env = this.currentScope();
       env.set(declarator.name, type);
@@ -389,7 +366,7 @@ class ApexBuilder {
     if (this.localIncludes(name)) {
       throw `duplicate variable name ${name}`;
     }
-    return [name, expression];
+    return { name, expression };
   }
 
   visitWhen(node) {
@@ -398,6 +375,12 @@ class ApexBuilder {
 
   visitWhile(node) {
   
+  }
+
+  visitBlock(node) {
+    node.statements.forEach((statement) => {
+      statement.accept(this);
+    });
   }
 
   currentScope() {
@@ -412,8 +395,9 @@ class ApexBuilder {
     return LocalEnvironment.includes(key);
   }
 
-  pushScope(env) {
-    LocalEnvironment.pushScope(env);
+  pushScope(env, parent) {
+    if (parent != null) LocalEnvironment.currentScope();
+    LocalEnvironment.pushScope(env, parent);
   }
 
   popScope() {

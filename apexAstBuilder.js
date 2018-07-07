@@ -467,17 +467,18 @@ ApexAstBuilder.prototype.visitQualifiedName = function(ctx) {
 
 // Visit a parse tree produced by apexParser#literal.
 ApexAstBuilder.prototype.visitLiteral = function(ctx) {
+  const lineNo = ctx.start.line;
   if (ctx.IntegerLiteral()) {
-    return new Ast.IntegerNode(ctx.IntegerLiteral().getText());
+    return new Ast.IntegerNode(parseInt(ctx.IntegerLiteral().getText()), lineNo);
   } else if (ctx.FloatingPointLiteral()) {
-    return new Ast.DoubleNode(ctx.FloatingPointLiteral().getText());
+    return new Ast.DoubleNode(parseFloat(ctx.FloatingPointLiteral().getText()), lineNo);
   } else if (ctx.StringLiteral()) {
     let text = ctx.StringLiteral().getText();
-    return new Ast.StringNode(text.substring(1, text.length - 1));
+    return new Ast.StringNode(text.substring(1, text.length - 1), lineNo);
   } else if (ctx.BooleanLiteral()) {
-    return new Ast.BooleanNode(ctx.BooleanLiteral().getText());
+    return new Ast.BooleanNode(ctx.BooleanLiteral().getText() == 'true', lineNo);
   } else if (ctx.NullLiteral()) {
-    return new Ast.NullNode();
+    return new Ast.NullNode(lineNo);
   }
   throw 'Invalid Literal';
 };
@@ -542,9 +543,10 @@ ApexAstBuilder.prototype.visitElementValueArrayInitializer = function(ctx) {
 
 // Visit a parse tree produced by apexParser#block.
 ApexAstBuilder.prototype.visitBlock = function(ctx) {
-  return ctx.blockStatement().map((statement) => {
+  const statements = ctx.blockStatement().map((statement) => {
     return statement.accept(this);
   });
+  return new Ast.BlockNode(statements);
 };
 
 
@@ -583,17 +585,19 @@ ApexAstBuilder.prototype.visitStatement = function(ctx) {
     return ctx.block().accept(this);
   } else if (ctx.IF()) {
     let condition = ctx.parExpression().accept(this);
-    let if_statement = ctx.statement()[0];
-    let else_statement = ctx.statement().length > 1 ? ctx.statement()[1] : null;
+    let if_statement = ctx.statement()[0].accept(this);
+    let else_statement = ctx.statement().length > 1 ? ctx.statement()[1].accept(this) : null;
     return new Ast.IfNode(condition, if_statement, else_statement);
   } else if (ctx.FOR()) {
     let forControl = ctx.forControl().accept(this);
-    let statement = ctx.statement().accept(this);
+    let statement = ctx.statement().map((statement) => { return statement.accept(this); });
     return new Ast.ForNode(forControl, statement);
   } else if (ctx.WHILE()) {
     let doFlag = ctx.DO() != null;
     let condition = ctx.parExpression().accept(this);
-    let statements = ctx.statement().accept(this);
+    let statements = ctx.statement().map((statement) => {
+      return statement.accept(this)
+    });
     return new Ast.WhileNode(condition, statements, doFlag);
   } else if (ctx.TRY()) {
     let block = ctx.block().accept(this);
@@ -674,7 +678,7 @@ ApexAstBuilder.prototype.visitForControl = function(ctx) {
     let forInit = ctx.forInit().accept(this);
     let expression = ctx.expression().accept(this);
     let forUpdate = ctx.forUpdate().accept(this);
-    return new Ast.ForControl(forInit, expression, forUpdate);
+    return new Ast.ForControlNode(forInit, expression, forUpdate);
   }
 };
 
@@ -759,8 +763,11 @@ ApexAstBuilder.prototype.visitPrimaryExpression = function(ctx) {
 ApexAstBuilder.prototype.visitOpExpression = function(ctx) {
   let op = ctx.op.text;
   let left = ctx.expression()[0].accept(this);
-  let right = ctx.expression()[1].accept(this);
-  return new Ast.BinaryOperatorNode(op, left, right);
+  if (ctx.expression().length > 1) {
+    let right = ctx.expression()[1].accept(this);
+    return new Ast.BinaryOperatorNode(op, left, right);
+  }
+  return new Ast.UnaryOperatorNode(op, left);
 };
 
 
@@ -777,7 +784,7 @@ ApexAstBuilder.prototype.visitMethodInvocation = function(ctx) {
   if (ctx.expressionList()) {
     arguments = ctx.expressionList().accept(this);
   }
-  return new Ast.MethodInvocationNode(receiver, arguments, null);
+  return new Ast.MethodInvocationNode(receiver, arguments, null, null);
 };
 
 

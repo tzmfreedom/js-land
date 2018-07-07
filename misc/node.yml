@@ -89,9 +89,8 @@ method_declaration:
   - statements
   - nativeFunction
 method_invocation:
-  - receiver
+  - nameOrExpression
   - parameters
-  - methodName
 name:
   - value
 new:
@@ -103,6 +102,9 @@ object:
   - genericType
   - instanceFields
   - genericsNode
+unary_operator:
+  - type
+  - expression
 binary_operator:
   - type
   - left
@@ -150,3 +152,5 @@ fieldAccess:
 type:
   - name
   - parameters
+block:
+  - statements

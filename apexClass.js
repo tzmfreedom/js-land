@@ -10,11 +10,16 @@ class ApexClass {
     this.instanceMethods  = instanceMethods;
     this.staticMethods    = staticMethods;
   }
+
+  accept(visitor) {
+    visitor.visitClass(this);
+  }
 }
 
 class ApexMethod {
-  constructor(modifiers, identifier, parameters, throws, statements, nativeFunction) {
+  constructor(modifiers, returnType, identifier, parameters, throws, statements, nativeFunction) {
     this.modifiers      = modifiers;
+    this.returnType     = returnType;
     this.identifier     = identifier;
     this.parameters     = parameters;
     this.throws         = throws;
@@ -33,8 +38,8 @@ class InstanceFieldDeclaration {
 }
 
 class ApexObject {
-  constructor(className, instanceFields) {
-    this.className = className;
+  constructor(classNode, instanceFields) {
+    this.classNode = classNode;
     this.instanceFields = instanceFields;
   }
 }

@@ -1,7 +1,8 @@
 class AnnotationNode {
-  constructor(name, parameters) {
+  constructor(name, parameters, lineno) {
     this.name = name;
     this.parameters = parameters;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -10,8 +11,9 @@ class AnnotationNode {
 }
 
 class ModifierNode {
-  constructor(name) {
+  constructor(name, lineno) {
     this.name = name;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -20,7 +22,7 @@ class ModifierNode {
 }
 
 class ClassNode {
-  constructor(annotations, modifiers, name, superClass, implementClasses, constructor, instanceFields, instanceMethods, staticFields, staticMethods) {
+  constructor(annotations, modifiers, name, superClass, implementClasses, constructor, instanceFields, instanceMethods, staticFields, staticMethods, lineno) {
     this.annotations = annotations;
     this.modifiers = modifiers;
     this.name = name;
@@ -31,6 +33,7 @@ class ClassNode {
     this.instanceMethods = instanceMethods;
     this.staticFields = staticFields;
     this.staticMethods = staticMethods;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -39,8 +42,9 @@ class ClassNode {
 }
 
 class IntegerNode {
-  constructor(value) {
+  constructor(value, lineno) {
     this.value = value;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -49,10 +53,11 @@ class IntegerNode {
 }
 
 class ParameterNode {
-  constructor(modifiers, type, name) {
+  constructor(modifiers, type, name, lineno) {
     this.modifiers = modifiers;
     this.type = type;
     this.name = name;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -61,9 +66,10 @@ class ParameterNode {
 }
 
 class ArrayAccessNode {
-  constructor(receiver, key) {
+  constructor(receiver, key, lineno) {
     this.receiver = receiver;
     this.key = key;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -72,8 +78,9 @@ class ArrayAccessNode {
 }
 
 class BooleanNode {
-  constructor(value) {
+  constructor(value, lineno) {
     this.value = value;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -82,8 +89,8 @@ class BooleanNode {
 }
 
 class BreakNode {
-  constructor() {
-
+  constructor(lineno) {
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -92,8 +99,8 @@ class BreakNode {
 }
 
 class CommentNode {
-  constructor() {
-
+  constructor(lineno) {
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -102,13 +109,14 @@ class CommentNode {
 }
 
 class ConstructorDeclarationNode {
-  constructor(name, modifiers, throws, parameters, statements, nativeFunction) {
+  constructor(name, modifiers, throws, parameters, statements, nativeFunction, lineno) {
     this.name = name;
     this.modifiers = modifiers;
     this.throws = throws;
     this.parameters = parameters;
     this.statements = statements;
     this.nativeFunction = nativeFunction;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -117,8 +125,8 @@ class ConstructorDeclarationNode {
 }
 
 class ContinueNode {
-  constructor() {
-
+  constructor(lineno) {
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -127,9 +135,10 @@ class ContinueNode {
 }
 
 class DmlNode {
-  constructor(type, object) {
+  constructor(type, object, lineno) {
     this.type = type;
     this.object = object;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -138,8 +147,9 @@ class DmlNode {
 }
 
 class DoubleNode {
-  constructor(value) {
+  constructor(value, lineno) {
     this.value = value;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -148,10 +158,11 @@ class DoubleNode {
 }
 
 class FieldDeclarationNode {
-  constructor(type, modifiers, declarators) {
+  constructor(type, modifiers, declarators, lineno) {
     this.type = type;
     this.modifiers = modifiers;
     this.declarators = declarators;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -160,10 +171,11 @@ class FieldDeclarationNode {
 }
 
 class FieldDeclaratorNode {
-  constructor(name, modifiers, expression) {
+  constructor(name, modifiers, expression, lineno) {
     this.name = name;
     this.modifiers = modifiers;
     this.expression = expression;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -172,10 +184,11 @@ class FieldDeclaratorNode {
 }
 
 class TryNode {
-  constructor(block, catchClause, finallyBlock) {
+  constructor(block, catchClause, finallyBlock, lineno) {
     this.block = block;
     this.catchClause = catchClause;
     this.finallyBlock = finallyBlock;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -184,11 +197,12 @@ class TryNode {
 }
 
 class CatchNode {
-  constructor(modifiers, type, identifier, block) {
+  constructor(modifiers, type, identifier, block, lineno) {
     this.modifiers = modifiers;
     this.type = type;
     this.identifier = identifier;
     this.block = block;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -197,8 +211,9 @@ class CatchNode {
 }
 
 class FinallyNode {
-  constructor(block) {
+  constructor(block, lineno) {
     this.block = block;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -207,9 +222,10 @@ class FinallyNode {
 }
 
 class ForNode {
-  constructor(forControl, statements) {
+  constructor(forControl, statements, lineno) {
     this.forControl = forControl;
     this.statements = statements;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -218,11 +234,12 @@ class ForNode {
 }
 
 class ForenumNode {
-  constructor(type, identifier, listExpression, statements) {
+  constructor(type, identifier, listExpression, statements, lineno) {
     this.type = type;
     this.identifier = identifier;
     this.listExpression = listExpression;
     this.statements = statements;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -231,10 +248,11 @@ class ForenumNode {
 }
 
 class ForControlNode {
-  constructor(forInit, expression, forUpdate) {
+  constructor(forInit, expression, forUpdate, lineno) {
     this.forInit = forInit;
     this.expression = expression;
     this.forUpdate = forUpdate;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -243,11 +261,12 @@ class ForControlNode {
 }
 
 class EnhancedForControlNode {
-  constructor(modifiers, type, variableDeclaratorId, expression) {
+  constructor(modifiers, type, variableDeclaratorId, expression, lineno) {
     this.modifiers = modifiers;
     this.type = type;
     this.variableDeclaratorId = variableDeclaratorId;
     this.expression = expression;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -256,10 +275,11 @@ class EnhancedForControlNode {
 }
 
 class IfNode {
-  constructor(condition, ifStatement, elseStatement) {
+  constructor(condition, ifStatement, elseStatement, lineno) {
     this.condition = condition;
     this.ifStatement = ifStatement;
     this.elseStatement = elseStatement;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -268,7 +288,7 @@ class IfNode {
 }
 
 class MethodDeclarationNode {
-  constructor(name, modifiers, returnType, parameters, throws, statements, nativeFunction) {
+  constructor(name, modifiers, returnType, parameters, throws, statements, nativeFunction, lineno) {
     this.name = name;
     this.modifiers = modifiers;
     this.returnType = returnType;
@@ -276,6 +296,7 @@ class MethodDeclarationNode {
     this.throws = throws;
     this.statements = statements;
     this.nativeFunction = nativeFunction;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -284,10 +305,10 @@ class MethodDeclarationNode {
 }
 
 class MethodInvocationNode {
-  constructor(receiver, parameters, methodName) {
-    this.receiver = receiver;
+  constructor(nameOrExpression, parameters, lineno) {
+    this.nameOrExpression = nameOrExpression;
     this.parameters = parameters;
-    this.methodName = methodName;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -296,8 +317,9 @@ class MethodInvocationNode {
 }
 
 class NameNode {
-  constructor(value) {
+  constructor(value, lineno) {
     this.value = value;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -306,9 +328,10 @@ class NameNode {
 }
 
 class NewNode {
-  constructor(className, parameters) {
+  constructor(className, parameters, lineno) {
     this.className = className;
     this.parameters = parameters;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -317,8 +340,8 @@ class NewNode {
 }
 
 class NullNode {
-  constructor() {
-
+  constructor(lineno) {
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -327,11 +350,12 @@ class NullNode {
 }
 
 class ObjectNode {
-  constructor(classNode, genericType, instanceFields, genericsNode) {
+  constructor(classNode, genericType, instanceFields, genericsNode, lineno) {
     this.classNode = classNode;
     this.genericType = genericType;
     this.instanceFields = instanceFields;
     this.genericsNode = genericsNode;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -339,11 +363,24 @@ class ObjectNode {
   }
 }
 
+class UnaryOperatorNode {
+  constructor(type, expression, lineno) {
+    this.type = type;
+    this.expression = expression;
+    this.lineno = lineno;
+  }
+
+  accept(visitor) {
+    return visitor.visitUnaryOperator(this);
+  }
+}
+
 class BinaryOperatorNode {
-  constructor(type, left, right) {
+  constructor(type, left, right, lineno) {
     this.type = type;
     this.left = left;
     this.right = right;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -352,8 +389,9 @@ class BinaryOperatorNode {
 }
 
 class ReturnNode {
-  constructor(expression) {
+  constructor(expression, lineno) {
     this.expression = expression;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -362,8 +400,9 @@ class ReturnNode {
 }
 
 class ThrowNode {
-  constructor(expression) {
+  constructor(expression, lineno) {
     this.expression = expression;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -372,8 +411,9 @@ class ThrowNode {
 }
 
 class SoqlNode {
-  constructor(soql) {
+  constructor(soql, lineno) {
     this.soql = soql;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -382,8 +422,9 @@ class SoqlNode {
 }
 
 class StringNode {
-  constructor(value) {
+  constructor(value, lineno) {
     this.value = value;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -392,9 +433,10 @@ class StringNode {
 }
 
 class SwitchNode {
-  constructor(expression, statements) {
+  constructor(expression, statements, lineno) {
     this.expression = expression;
     this.statements = statements;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -403,11 +445,12 @@ class SwitchNode {
 }
 
 class TriggerNode {
-  constructor(name, object, triggerTimings, statements) {
+  constructor(name, object, triggerTimings, statements, lineno) {
     this.name = name;
     this.object = object;
     this.triggerTimings = triggerTimings;
     this.statements = statements;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -416,9 +459,10 @@ class TriggerNode {
 }
 
 class TriggerTimingNode {
-  constructor(timing, dmm) {
+  constructor(timing, dmm, lineno) {
     this.timing = timing;
     this.dmm = dmm;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -427,10 +471,11 @@ class TriggerTimingNode {
 }
 
 class VariableDeclarationNode {
-  constructor(modifiers, type, declarators) {
+  constructor(modifiers, type, declarators, lineno) {
     this.modifiers = modifiers;
     this.type = type;
     this.declarators = declarators;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -439,9 +484,10 @@ class VariableDeclarationNode {
 }
 
 class VariableDeclaratorNode {
-  constructor(name, expression) {
+  constructor(name, expression, lineno) {
     this.name = name;
     this.expression = expression;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -450,9 +496,10 @@ class VariableDeclaratorNode {
 }
 
 class WhenNode {
-  constructor(condition, statements) {
+  constructor(condition, statements, lineno) {
     this.condition = condition;
     this.statements = statements;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -461,10 +508,11 @@ class WhenNode {
 }
 
 class WhileNode {
-  constructor(condition, statements, doFlag) {
+  constructor(condition, statements, doFlag, lineno) {
     this.condition = condition;
     this.statements = statements;
     this.doFlag = doFlag;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -473,8 +521,8 @@ class WhileNode {
 }
 
 class NothingStatementNode {
-  constructor() {
-
+  constructor(lineno) {
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -483,9 +531,10 @@ class NothingStatementNode {
 }
 
 class CastExpressionNode {
-  constructor(type, expression) {
+  constructor(type, expression, lineno) {
     this.type = type;
     this.expression = expression;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -494,9 +543,10 @@ class CastExpressionNode {
 }
 
 class FieldAccessNode {
-  constructor(expression, fieldName) {
+  constructor(expression, fieldName, lineno) {
     this.expression = expression;
     this.fieldName = fieldName;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -505,9 +555,10 @@ class FieldAccessNode {
 }
 
 class TypeNode {
-  constructor(name, parameters) {
+  constructor(name, parameters, lineno) {
     this.name = name;
     this.parameters = parameters;
+    this.lineno = lineno;
   }
 
   accept(visitor) {
@@ -515,49 +566,62 @@ class TypeNode {
   }
 }
 
+class BlockNode {
+  constructor(statements, lineno) {
+    this.statements = statements;
+    this.lineno = lineno;
+  }
 
-exports.AnnotationNode = AnnotationNode
-exports.ModifierNode = ModifierNode
-exports.ClassNode = ClassNode
-exports.IntegerNode = IntegerNode
-exports.ParameterNode = ParameterNode
-exports.ArrayAccessNode = ArrayAccessNode
-exports.BooleanNode = BooleanNode
-exports.BreakNode = BreakNode
-exports.CommentNode = CommentNode
-exports.ConstructorDeclarationNode = ConstructorDeclarationNode
-exports.ContinueNode = ContinueNode
-exports.DmlNode = DmlNode
-exports.DoubleNode = DoubleNode
-exports.FieldDeclarationNode = FieldDeclarationNode
-exports.FieldDeclaratorNode = FieldDeclaratorNode
-exports.TryNode = TryNode
-exports.CatchNode = CatchNode
-exports.FinallyNode = FinallyNode
-exports.ForNode = ForNode
-exports.ForenumNode = ForenumNode
-exports.ForControlNode = ForControlNode
-exports.EnhancedForControlNode = EnhancedForControlNode
-exports.IfNode = IfNode
-exports.MethodDeclarationNode = MethodDeclarationNode
-exports.MethodInvocationNode = MethodInvocationNode
-exports.NameNode = NameNode
-exports.NewNode = NewNode
-exports.NullNode = NullNode
-exports.ObjectNode = ObjectNode
-exports.BinaryOperatorNode = BinaryOperatorNode
-exports.ReturnNode = ReturnNode
-exports.ThrowNode = ThrowNode
-exports.SoqlNode = SoqlNode
-exports.StringNode = StringNode
-exports.SwitchNode = SwitchNode
-exports.TriggerNode = TriggerNode
-exports.TriggerTimingNode = TriggerTimingNode
-exports.VariableDeclarationNode = VariableDeclarationNode
-exports.VariableDeclaratorNode = VariableDeclaratorNode
-exports.WhenNode = WhenNode
-exports.WhileNode = WhileNode
-exports.NothingStatementNode = NothingStatementNode
-exports.CastExpressionNode = CastExpressionNode
-exports.FieldAccessNode = FieldAccessNode
-exports.TypeNode = TypeNode
+  accept(visitor) {
+    return visitor.visitBlock(this);
+  }
+}
+
+
+exports.AnnotationNode = AnnotationNode;
+exports.ModifierNode = ModifierNode;
+exports.ClassNode = ClassNode;
+exports.IntegerNode = IntegerNode;
+exports.ParameterNode = ParameterNode;
+exports.ArrayAccessNode = ArrayAccessNode;
+exports.BooleanNode = BooleanNode;
+exports.BreakNode = BreakNode;
+exports.CommentNode = CommentNode;
+exports.ConstructorDeclarationNode = ConstructorDeclarationNode;
+exports.ContinueNode = ContinueNode;
+exports.DmlNode = DmlNode;
+exports.DoubleNode = DoubleNode;
+exports.FieldDeclarationNode = FieldDeclarationNode;
+exports.FieldDeclaratorNode = FieldDeclaratorNode;
+exports.TryNode = TryNode;
+exports.CatchNode = CatchNode;
+exports.FinallyNode = FinallyNode;
+exports.ForNode = ForNode;
+exports.ForenumNode = ForenumNode;
+exports.ForControlNode = ForControlNode;
+exports.EnhancedForControlNode = EnhancedForControlNode;
+exports.IfNode = IfNode;
+exports.MethodDeclarationNode = MethodDeclarationNode;
+exports.MethodInvocationNode = MethodInvocationNode;
+exports.NameNode = NameNode;
+exports.NewNode = NewNode;
+exports.NullNode = NullNode;
+exports.ObjectNode = ObjectNode;
+exports.UnaryOperatorNode = UnaryOperatorNode;
+exports.BinaryOperatorNode = BinaryOperatorNode;
+exports.ReturnNode = ReturnNode;
+exports.ThrowNode = ThrowNode;
+exports.SoqlNode = SoqlNode;
+exports.StringNode = StringNode;
+exports.SwitchNode = SwitchNode;
+exports.TriggerNode = TriggerNode;
+exports.TriggerTimingNode = TriggerTimingNode;
+exports.VariableDeclarationNode = VariableDeclarationNode;
+exports.VariableDeclaratorNode = VariableDeclaratorNode;
+exports.WhenNode = WhenNode;
+exports.WhileNode = WhileNode;
+exports.NothingStatementNode = NothingStatementNode;
+exports.CastExpressionNode = CastExpressionNode;
+exports.FieldAccessNode = FieldAccessNode;
+exports.TypeNode = TypeNode;
+exports.BlockNode = BlockNode;
