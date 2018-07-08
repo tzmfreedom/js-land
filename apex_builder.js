@@ -282,8 +282,7 @@ class ApexBuilder {
       case '!==':
         left = node.left.accept(this);
         right = node.right.accept(this);
-        console.log(left, right)
-        if (left.name.join('.') != right.name.join('.')) {
+        if (!left.equals(right)) {
           throw `Type not matched : left => ${left.name}, right => ${right.name}`
         }
         return left;
@@ -300,7 +299,7 @@ class ApexBuilder {
           left = this.getValue(searchResult.receiverNode);
         }
         right = node.right.accept(this);
-        if (left.name != right.name) {
+        if (!left.equals(right)) {
           throw `Type not matched : left => ${left.name}, right => ${right.name}`
         }
         return left;
@@ -356,7 +355,7 @@ class ApexBuilder {
         throw `Type not matched : variable => ${type.name}, initializer => ${decl.expression.name}`
       }
       let env = this.currentScope();
-      env.set(declarator.name, type);
+      env.define(type, declarator.name, type);
     });
   }
 
@@ -388,7 +387,7 @@ class ApexBuilder {
   }
 
   getValue(key) {
-    return LocalEnvironment.get(key);
+    return LocalEnvironment.get(key).value;
   }
 
   localIncludes(key) {
@@ -406,7 +405,7 @@ class ApexBuilder {
 
   checkType(left, right) {
     if (right instanceof Ast.NullNode) return true;
-    if (left.name.join('.') != right.name.join('.')) return false;
+    if (!left.equals(right)) return false;
     if (!left.parameters || !right.parameters) return true;
     for (let i = 0; i < left.parameters.length; i++) {
       let leftParameter = left.parameters[i];

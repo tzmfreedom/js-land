@@ -564,6 +564,10 @@ class TypeNode {
   accept(visitor) {
     return visitor.visitType(this);
   }
+  
+  equals(other) {
+    return this.name.join('.') === other.name.join('.');
+  }
 }
 
 class BlockNode {

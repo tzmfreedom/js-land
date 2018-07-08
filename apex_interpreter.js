@@ -62,6 +62,11 @@ class ApexInterpreter {
   
   }
 
+  visitFieldAccess(node) {
+    console.log(node);
+    return node;
+  }
+
   visitFor(node) {
     this.pushScope({});
 
@@ -104,7 +109,6 @@ class ApexInterpreter {
     let parameters = node.parameters.map((parameter) => { return parameter.accept(this); });
 
     this.pushScope(env);
-    let returnValue;
     if (searchResult.methodNode.nativeFunction) {
       searchResult.methodNode.nativeFunction.call(this, parameters);
     } else {
@@ -114,7 +118,12 @@ class ApexInterpreter {
   }
 
   visitName(node) {
-    return node;
+    let result = methodSearcher.searchField(node);
+    if (result.key) {
+      return result.receiverNode.instanceFields[result.key];
+    } else {
+      return this.getValue(result.receiverNode);
+    }
   }
 
   visitNew(node) {
@@ -138,6 +147,14 @@ class ApexInterpreter {
 
   visitObject(node) {
     return node;
+  }
+
+  visitUnaryOperator(node) {
+    switch(node.op) {
+      case '++':
+      case '--':
+        break;
+    }
   }
 
   visitBinaryOperator(node) {
@@ -202,13 +219,12 @@ class ApexInterpreter {
       case '&=':
       case '|=':
       case '^=':
-        let receiver, key;
-        [receiver, key] = node.left.accept(this);
+        let result = methodSearcher.searchField(node.left);
         right = node.right.accept(this);
-        if (key) {
-          receiver.instanceFields[key] = right;
+        if (result.key) {
+          result.receiverNode.instanceFields[result.key] = right;
         } else {
-          this.setValue(receiver.value.join('.'), right);
+          this.setValue(result.receiverNode, right);
         }
         return right;
     }
@@ -239,14 +255,16 @@ class ApexInterpreter {
   }
 
   visitVariableDeclaration(node) {
-  
-  }
-
-  visitVariableDeclarator(node) {
-  
+    let type = node.type;
+    node.declarators.forEach((declarator) => {
+      let value = declarator.expression.accept(this);
+      let env = this.currentScope();
+      env.define(type, declarator.name, value);
+    });
   }
 
   visitWhen(node) {
+
   }
 
   visitWhile(node) {
@@ -263,6 +281,10 @@ class ApexInterpreter {
     node.statements.forEach((statement) => { statement.accept(this); });
   }
 
+  currentScope() {
+    return LocalEnvironment.currentScope();
+  }
+
   pushScope(env) {
     LocalEnvironment.pushScope(env);
   }
@@ -272,11 +294,11 @@ class ApexInterpreter {
   }
 
   getValue(key) {
-    return LocalEnvironment.get(key);
+    return LocalEnvironment.get(key).value;
   }
 
-  setValue(key) {
-    LocalEnvironment.set(key);
+  setValue(key, value) {
+    LocalEnvironment.set(key, value);
   }
 }
 

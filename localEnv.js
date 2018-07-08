@@ -7,8 +7,15 @@ class LocalEnvironment {
     this.parent = parent;
   }
 
+  define(type, key, value) {
+    this.env[key] = {
+      type: type,
+      value: value,
+    };
+  }
+
   set(key, value) {
-    this.env[key] = value;
+    this.env[key].value = value;
   }
 
   get(key) {

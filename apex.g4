@@ -462,8 +462,8 @@ expression
     |   expression '(' expressionList? ')'                      # MethodInvocation
     |   NEW creator                                             # NewExpression
     |   '(' type ')' expression                                 # CastExpression
-    |   expression op=('++' | '--')                             # OpExpression
-    |   op=('+'|'-'|'++'|'--') expression                       # OpExpression
+    |   expression op=('++' | '--')                             # PostUnaryExpression
+    |   op=('+'|'-'|'++'|'--') expression                       # PreUnaryExpression
     |   op=('~'|'!') expression                                 # OpExpression
     |   expression op=('*'|'/'|'%') expression                  # OpExpression
     |   expression op=('+'|'-') expression                      # OpExpression

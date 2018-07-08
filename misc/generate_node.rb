@@ -4,7 +4,24 @@ require 'yaml'
 
 BASE_CLASS = 'BaseNode'
 def generate_class(class_name, fields)
-  puts <<~JS
+  if class_name == 'Type'
+    puts <<~JS
+class #{class_name}Node {
+  constructor(#{fields.push('lineno').join(', ')}) {
+#{fields.map { |field| "    this.#{field} = #{field};" }.join("\n")}
+  }
+
+  accept(visitor) {
+    return visitor.visit#{class_name}(this);
+  }
+  
+  equals(other) {
+    return this.name.join('.') === other.name.join('.');
+  }
+}
+    JS
+  else
+    puts <<~JS
 class #{class_name}Node {
   constructor(#{fields.push('lineno').join(', ')}) {
 #{fields.map { |field| "    this.#{field} = #{field};" }.join("\n")}
@@ -14,7 +31,8 @@ class #{class_name}Node {
     return visitor.visit#{class_name}(this);
   }
 }
-JS
+    JS
+  end
 end
 
 def generate_export(class_name)

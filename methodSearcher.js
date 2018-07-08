@@ -140,12 +140,12 @@ class MethodSearcher {
 
     // this_field.field...field
     if (this.localIncludes('this')) {
-      let receiver = this.getValue('this');
-      if (names.length == 1 && receiver.instanceFields.includes(name)) {
-        return [receiver, name];
+      let thisReceiverNode = this.getValue('this');
+      if (names.length == 1 && thisReceiverNode.instanceFields.includes(name)) {
+        return { receiverNode: thisReceiverNode, key: name };
       }
-      if (receiver.instanceFields.includes(name)) {
-        let field = receiver.instanceFields[name];
+      if (thisReceiverNode.instanceFields.includes(name)) {
+        let field = thisReceiverNode.instanceFields[name];
         let receiverNode = (() => {
           let receiverNode = field;
           let list = names.slice(1);
