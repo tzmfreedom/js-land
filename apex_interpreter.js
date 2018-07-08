@@ -150,10 +150,33 @@ class ApexInterpreter {
   }
 
   visitUnaryOperator(node) {
-    switch(node.op) {
-      case '++':
-      case '--':
-        break;
+    let result = methodSearcher.searchField(node.expression);
+    let prev, value;
+    if (result.key) {
+      prev = result.receiverNode.instanceFields[result.key];
+      switch(node.type) {
+        case '++':
+          value = prev.value + 1;
+        case '--':
+          value = prev.value - 1;
+      }
+      result.receiverNode.instanceFields[result.key] = new Ast.IntegerNode(value);
+    } else {
+      prev = this.getValue(result.receiverNode);
+      switch(node.type) {
+        case '++':
+          value = prev.value + 1;
+          break;
+        case '--':
+          value = prev.value - 1;
+          break;
+      }
+      this.setValue(result.receiverNode, new Ast.IntegerNode(value));
+    }
+    if (prev) {
+      return new Ast.IntegerNode(value);
+    } else {
+      return prev;
     }
   }
 
@@ -183,33 +206,24 @@ class ApexInterpreter {
         return new Ast.IntegerNode(left.value & right.value);
       case '|':
         return new Ast.IntegerNode(left.value | right.value);
-        return new Ast.IntegerNode(node.left.accept(this) | node.right.accept(this));
       case '^':
         return new Ast.IntegerNode(left.value ^ right.value);
-        return new Ast.IntegerNode(node.left.accept(this) ^ node.right.accept(this));
       case '<':
-        return new Ast.IntegerNode(left.value < right.value);
-        return new Ast.BooleanNode(node.left.accept(this) < node.right.accept(this));
+        return new Ast.BooleanNode(left.value < right.value);
       case '>':
-        return new Ast.IntegerNode(left.value > right.value);
-        return new Ast.BooleanNode(node.left.accept(this) > node.right.accept(this));
+        return new Ast.BooleanNode(left.value > right.value);
       case '<=':
-        return new Ast.IntegerNode(left.value <= right.value);
-        return new Ast.BooleanNode(node.left.accept(this) <= node.right.accept(this));
+        return new Ast.BooleanNode(left.value <= right.value);
       case '>=':
-        return new Ast.IntegerNode(left.value >= right.value);
-        return new Ast.BooleanNode(node.left.accept(this) >= node.right.accept(this));
+        return new Ast.BooleanNode(left.value >= right.value);
       case '==':
-        return new Ast.IntegerNode(left.value == right.value);
-        return new Ast.BooleanNode(node.left.accept(this) == node.right.accept(this));
+        return new Ast.BooleanNode(left.value == right.value);
       case '===':
-        return new Ast.IntegerNode(left.value == right.value);
-        return new Ast.BooleanNode(node.left.accept(this) == node.right.accept(this));
+        return new Ast.BooleanNode(left.value == right.value);
       case '!=':
-        return new Ast.IntegerNode(left.value != right.value);
-        return new Ast.BooleanNode(node.left.accept(this) != node.right.accept(this));
+        return new Ast.BooleanNode(left.value != right.value);
       case '!==':
-        return new Ast.IntegerNode(left.value != right.value);
+        return new Ast.BooleanNode(left.value != right.value);
       case '=':
       case '+=':
       case '-=':
@@ -268,6 +282,7 @@ class ApexInterpreter {
   }
 
   visitWhile(node) {
+    this.pushScope({});
     let condition = node.condition.accept(this);
     while (condition.value == true) {
       node.statements.forEach((statement) => {
@@ -275,6 +290,7 @@ class ApexInterpreter {
       });
       condition = node.condition.accept(this);
     }
+    this.popScope();
   }
 
   visitBlock(node){
@@ -285,8 +301,9 @@ class ApexInterpreter {
     return LocalEnvironment.currentScope();
   }
 
-  pushScope(env) {
-    LocalEnvironment.pushScope(env);
+  pushScope(env, parent) {
+    if (parent !== null) parent = LocalEnvironment.currentScope();
+    LocalEnvironment.pushScope(env, parent);
   }
 
   popScope() {

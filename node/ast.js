@@ -364,9 +364,10 @@ class ObjectNode {
 }
 
 class UnaryOperatorNode {
-  constructor(type, expression, lineno) {
+  constructor(type, expression, isPrefix, lineno) {
     this.type = type;
     this.expression = expression;
+    this.isPrefix = isPrefix;
     this.lineno = lineno;
   }
 

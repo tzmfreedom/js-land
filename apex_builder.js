@@ -227,11 +227,7 @@ class ApexBuilder {
   }
 
   visitUnaryOperator(node) {
-    switch(node.op) {
-      case '++':
-      case '--':
-        break;
-    }
+    return new Ast.TypeNode(['Integer'], []);
   }
 
   visitBinaryOperator(node) {
@@ -395,7 +391,7 @@ class ApexBuilder {
   }
 
   pushScope(env, parent) {
-    if (parent != null) LocalEnvironment.currentScope();
+    if (parent !== null) parent = LocalEnvironment.currentScope();
     LocalEnvironment.pushScope(env, parent);
   }
 

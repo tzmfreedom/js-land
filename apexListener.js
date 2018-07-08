@@ -731,12 +731,30 @@ apexListener.prototype.exitTernalyExpression = function(ctx) {
 };
 
 
+// Enter a parse tree produced by apexParser#PreUnaryExpression.
+apexListener.prototype.enterPreUnaryExpression = function(ctx) {
+};
+
+// Exit a parse tree produced by apexParser#PreUnaryExpression.
+apexListener.prototype.exitPreUnaryExpression = function(ctx) {
+};
+
+
 // Enter a parse tree produced by apexParser#ArrayAccess.
 apexListener.prototype.enterArrayAccess = function(ctx) {
 };
 
 // Exit a parse tree produced by apexParser#ArrayAccess.
 apexListener.prototype.exitArrayAccess = function(ctx) {
+};
+
+
+// Enter a parse tree produced by apexParser#PostUnaryExpression.
+apexListener.prototype.enterPostUnaryExpression = function(ctx) {
+};
+
+// Exit a parse tree produced by apexParser#PostUnaryExpression.
+apexListener.prototype.exitPostUnaryExpression = function(ctx) {
 };
 
 

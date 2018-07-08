@@ -763,11 +763,23 @@ ApexAstBuilder.prototype.visitPrimaryExpression = function(ctx) {
 ApexAstBuilder.prototype.visitOpExpression = function(ctx) {
   let op = ctx.op.text;
   let left = ctx.expression()[0].accept(this);
-  if (ctx.expression().length > 1) {
-    let right = ctx.expression()[1].accept(this);
-    return new Ast.BinaryOperatorNode(op, left, right);
-  }
-  return new Ast.UnaryOperatorNode(op, left);
+  let right = ctx.expression()[1].accept(this);
+  return new Ast.BinaryOperatorNode(op, left, right);
+};
+
+// Visit a parse tree produced by apexParser#PostUnaryExpression.
+ApexAstBuilder.prototype.visitPostUnaryExpression = function(ctx) {
+  let op = ctx.op.text;
+  let expression  = ctx.expression()[0].accept(this);
+  return new Ast.UnaryOperatorNode(op, expression, true);
+};
+
+
+// Visit a parse tree produced by apexParser#PostUnaryExpression.
+ApexAstBuilder.prototype.visitPostUnaryExpression = function(ctx) {
+  let op = ctx.op.text;
+  let expression  = ctx.expression().accept(this);
+  return new Ast.UnaryOperatorNode(op, expression, false);
 };
 
 

@@ -492,8 +492,20 @@ apexVisitor.prototype.visitTernalyExpression = function(ctx) {
 };
 
 
+// Visit a parse tree produced by apexParser#PreUnaryExpression.
+apexVisitor.prototype.visitPreUnaryExpression = function(ctx) {
+  return this.visitChildren(ctx);
+};
+
+
 // Visit a parse tree produced by apexParser#ArrayAccess.
 apexVisitor.prototype.visitArrayAccess = function(ctx) {
+  return this.visitChildren(ctx);
+};
+
+
+// Visit a parse tree produced by apexParser#PostUnaryExpression.
+apexVisitor.prototype.visitPostUnaryExpression = function(ctx) {
   return this.visitChildren(ctx);
 };
 

@@ -8774,6 +8774,7 @@ function ApexDbExpressionShortContext(parser, parent, invokingState) {
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
     this.ruleIndex = apexParser.RULE_apexDbExpressionShort;
+    this.dml = null; // Token
     return this;
 }
 
@@ -8837,9 +8838,10 @@ apexParser.prototype.apexDbExpressionShort = function() {
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 879;
+        localctx.dml = this._input.LT(1);
         _la = this._input.LA(1);
         if(!(((((_la - 58)) & ~0x1f) == 0 && ((1 << (_la - 58)) & ((1 << (apexParser.DB_INSERT - 58)) | (1 << (apexParser.DB_UPSERT - 58)) | (1 << (apexParser.DB_UPDATE - 58)) | (1 << (apexParser.DB_DELETE - 58)) | (1 << (apexParser.DB_UNDELETE - 58)))) !== 0))) {
-        this._errHandler.recoverInline(this);
+            localctx.dml = this._errHandler.recoverInline(this);
         }
         else {
         	this._errHandler.reportMatch(this);
@@ -8993,6 +8995,42 @@ TernalyExpressionContext.prototype.accept = function(visitor) {
 };
 
 
+function PreUnaryExpressionContext(parser, ctx) {
+	ExpressionContext.call(this, parser);
+    this.op = null; // Token;
+    ExpressionContext.prototype.copyFrom.call(this, ctx);
+    return this;
+}
+
+PreUnaryExpressionContext.prototype = Object.create(ExpressionContext.prototype);
+PreUnaryExpressionContext.prototype.constructor = PreUnaryExpressionContext;
+
+apexParser.PreUnaryExpressionContext = PreUnaryExpressionContext;
+
+PreUnaryExpressionContext.prototype.expression = function() {
+    return this.getTypedRuleContext(ExpressionContext,0);
+};
+PreUnaryExpressionContext.prototype.enterRule = function(listener) {
+    if(listener instanceof apexListener ) {
+        listener.enterPreUnaryExpression(this);
+	}
+};
+
+PreUnaryExpressionContext.prototype.exitRule = function(listener) {
+    if(listener instanceof apexListener ) {
+        listener.exitPreUnaryExpression(this);
+	}
+};
+
+PreUnaryExpressionContext.prototype.accept = function(visitor) {
+    if ( visitor instanceof apexVisitor ) {
+        return visitor.visitPreUnaryExpression(this);
+    } else {
+        return visitor.visitChildren(this);
+    }
+};
+
+
 function ArrayAccessContext(parser, ctx) {
 	ExpressionContext.call(this, parser);
     ExpressionContext.prototype.copyFrom.call(this, ctx);
@@ -9029,6 +9067,42 @@ ArrayAccessContext.prototype.exitRule = function(listener) {
 ArrayAccessContext.prototype.accept = function(visitor) {
     if ( visitor instanceof apexVisitor ) {
         return visitor.visitArrayAccess(this);
+    } else {
+        return visitor.visitChildren(this);
+    }
+};
+
+
+function PostUnaryExpressionContext(parser, ctx) {
+	ExpressionContext.call(this, parser);
+    this.op = null; // Token;
+    ExpressionContext.prototype.copyFrom.call(this, ctx);
+    return this;
+}
+
+PostUnaryExpressionContext.prototype = Object.create(ExpressionContext.prototype);
+PostUnaryExpressionContext.prototype.constructor = PostUnaryExpressionContext;
+
+apexParser.PostUnaryExpressionContext = PostUnaryExpressionContext;
+
+PostUnaryExpressionContext.prototype.expression = function() {
+    return this.getTypedRuleContext(ExpressionContext,0);
+};
+PostUnaryExpressionContext.prototype.enterRule = function(listener) {
+    if(listener instanceof apexListener ) {
+        listener.enterPostUnaryExpression(this);
+	}
+};
+
+PostUnaryExpressionContext.prototype.exitRule = function(listener) {
+    if(listener instanceof apexListener ) {
+        listener.exitPostUnaryExpression(this);
+	}
+};
+
+PostUnaryExpressionContext.prototype.accept = function(visitor) {
+    if ( visitor instanceof apexVisitor ) {
+        return visitor.visitPostUnaryExpression(this);
     } else {
         return visitor.visitChildren(this);
     }
@@ -9375,7 +9449,7 @@ apexParser.prototype.expression = function(_p) {
             break;
 
         case 4:
-            localctx = new OpExpressionContext(this, localctx);
+            localctx = new PreUnaryExpressionContext(this, localctx);
             this._ctx = localctx;
             _prevctx = localctx;
             this.state = 893;
@@ -9714,7 +9788,7 @@ apexParser.prototype.expression = function(_p) {
                     break;
 
                 case 17:
-                    localctx = new OpExpressionContext(this, new ExpressionContext(this, _parentctx, _parentState));
+                    localctx = new PostUnaryExpressionContext(this, new ExpressionContext(this, _parentctx, _parentState));
                     this.pushNewRecursionContext(localctx, _startState, apexParser.RULE_expression);
                     this.state = 963;
                     if (!( this.precpred(this._ctx, 16))) {

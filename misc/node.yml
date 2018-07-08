@@ -105,6 +105,7 @@ object:
 unary_operator:
   - type
   - expression
+  - isPrefix
 binary_operator:
   - type
   - left
