@@ -127,6 +127,11 @@ class ApexInterpreter {
   visitNew(node) {
     let newObject = new Ast.ApexObjectNode();
     newObject.classNode = node.typeClassNode;
+    newObject.instanceFields = {};
+    const instanceFields = node.typeClassNode.instanceFields;
+    Object.keys(instanceFields).forEach((fieldName) => {
+      newObject.instanceFields[fieldName] = instanceFields[fieldName].expression.accept(this);
+    });
 
     const parameterHash = methodSearcher.calculateMethodParameterHash(node);
     const constructor = node.typeClassNode.constructors[parameterHash];

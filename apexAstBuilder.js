@@ -799,7 +799,7 @@ ApexAstBuilder.prototype.visitMethodInvocation = function(ctx) {
   if (ctx.expressionList()) {
     arguments = ctx.expressionList().accept(this);
   }
-  return new Ast.MethodInvocationNode(receiver, arguments, null, null, ctx.start.line);
+  return new Ast.MethodInvocationNode(receiver, arguments, ctx.start.line);
 };
 
 

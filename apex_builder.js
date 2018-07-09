@@ -71,11 +71,15 @@ class ApexBuilder {
     });
 
     Object.keys(node.staticFields).forEach((fieldName) => {
-      node.staticFields[fieldName].accept(this);
+      const staticField = node.staticFields[fieldName];
+      // staticField.type;
+      // staticField.expression.accept(this);
     });
 
     Object.keys(node.instanceFields).forEach((fieldName) => {
-      node.instanceFields[fieldName].accept(this);
+      const instanceField = node.instanceFields[fieldName];
+      // instanceField.type;
+      // instanceField.expression.accept(this);
     });
   }
 
@@ -109,12 +113,17 @@ class ApexBuilder {
 
   }
 
+  visitFieldDeclarator(node) {
+
+  }
+
+
   visitAnnotation(node) {
     return node;
   }
 
   visitInteger(node) {
-    return new Ast.TypeNode(['Integer'], []);
+    return node;
   }
 
   visitParameter(node) {
@@ -125,8 +134,12 @@ class ApexBuilder {
   
   }
 
+  visitApexObject(node) {
+    return node;
+  }
+
   visitBoolean(node) {
-    return new Ast.TypeNode(['Boolean'], []);
+    return node;
   }
 
   visitBreak(node) {
@@ -146,15 +159,7 @@ class ApexBuilder {
   }
 
   visitDouble(node) {
-    return new Ast.TypeNode(['Double'], []);
-  }
-
-  visitFieldDeclaration(node) {
-  
-  }
-
-  visitFieldDeclarator(node) {
-  
+    return node;
   }
 
   visitFor(node) {
@@ -216,19 +221,24 @@ class ApexBuilder {
   visitNew(node) {
     const classNode = TypeSearcher.search(node.type);
     node.typeClassNode = classNode;
-    return node.type;
+
+    const instanceFields = {};
+    Object.keys(classNode.instanceFields).map((fieldName) => {
+      const field = classNode.instanceFields[fieldName];
+      instanceFields[fieldName] = {
+        type: field.type,
+        value: field.expression.accept(this),
+      }
+    });
+    return new Ast.ApexObjectNode(classNode, instanceFields);
   }
 
   visitNull(node) {
     return node;
   }
 
-  visitObject(node) {
-    return new Ast.TypeNode([node.classNode.name], node.genericType);
-  }
-
   visitUnaryOperator(node) {
-    return new Ast.TypeNode(['Integer'], []);
+    return new Ast.IntegerNode();
   }
 
   visitBinaryOperator(node) {
@@ -245,13 +255,13 @@ class ApexBuilder {
       case '>>':
         left = node.left.accept(this);
         right = node.right.accept(this);
-        let leftName = left.name.join('.');
-        if (leftName != 'Integer' && leftName != 'Double') {
-          throw `Must be integer or double, but ${left.name}`;
+        let leftType = left.type();
+        if (leftType != 'Integer' && leftType != 'Double') {
+          throw `Must be integer or double, but ${leftType}`;
         }
-        let rightName = right.name.join('.');
-        if (rightName != 'Integer' && rightName != 'Double') {
-          throw `Must be integer or double, but ${right.name}`;
+        let rightType = right.type();
+        if (rightType != 'Integer' && rightType != 'Double') {
+          throw `Must be integer or double, but ${rightType}`;
         }
         return left;
       case '&':
@@ -279,7 +289,7 @@ class ApexBuilder {
       case '!==':
         left = node.left.accept(this);
         right = node.right.accept(this);
-        if (!left.equals(right)) {
+        if (left.type() != right.type()) {
           throw `Type not matched : left => ${left.name}, right => ${right.name}`
         }
         return left;
@@ -291,12 +301,12 @@ class ApexBuilder {
       case '%=':
         let searchResult = node.left.accept(this);
         if (searchResult.key) {
-          left = searchResult.receiverNode.instanceFields[searchResult.key].accept(this);
+          left = searchResult.receiverNode.instanceFields[searchResult.key].type;
         } else {
-          left = EnvManager.getValue(searchResult.receiverNode);
+          left = EnvManager.get(searchResult.receiverNode).type;
         }
         right = node.right.accept(this);
-        if (!left.equals(right)) {
+        if (!this.checkType(left, right)) {
           throw `Type not matched : left => ${left.name}, right => ${right.name}`
         }
         return left;
@@ -314,7 +324,10 @@ class ApexBuilder {
 
   visitCastExpression(node) {
     // TODO: check extends or implementation
-    return node.type;
+    const castType = TypeSearcher.search(node.type);
+    const obj = new Ast.ApexObjectNode();
+    obj.classNode = castType;
+    return obj;
   }
 
   visitReturn(node) {
@@ -323,12 +336,16 @@ class ApexBuilder {
 
   visitSoql(node) {
     // TODO: parse node and extract object
-    let object = 'Account';
-    return new Ast.TypeNode(['List'], [new Ast.TypeNode([object], [])]);
+    const listClassInfo = ApexClassStore.get('List');
+    const objectClassInfo = ApexClassStore.get('Account');
+    const obj = new Ast.ApexObjectNode();
+    obj.classNode = listClassInfo;
+    obj.genericType = objectClassInfo;
+    return obj;
   }
 
   visitString(node) {
-    return new Ast.TypeNode(['String'], []);
+    return new Ast.StringNode();
   }
 
   visitSwitch(node) {
@@ -343,16 +360,20 @@ class ApexBuilder {
   
   }
 
+  visitType(node) {
+    return node;
+  }
+
   visitVariableDeclaration(node) {
     let type = node.type;
     node.declarators.forEach((declarator) => {
       let decl = declarator.accept(this);
 
       if (decl.expression && !this.checkType(type, decl.expression)) {
-        throw `Type not matched : variable => ${type.name}, initializer => ${decl.expression.name}`
+        throw `Type not matched : variable => ${type.name.join('.')}, initializer => ${decl.expression.type()}`
       }
       let env = EnvManager.currentScope();
-      env.define(type, declarator.name, type);
+      env.define(type, declarator.name, decl.expression ? decl.expression.accept(this) : new Ast.NullNode());
     });
   }
 
@@ -382,11 +403,11 @@ class ApexBuilder {
 
   checkType(left, right) {
     if (right instanceof Ast.NullNode) return true;
-    if (!left.equals(right)) return false;
-    if (!left.parameters || !right.parameters) return true;
+    if (left.name.join('.') !== right.type()) return false;
+    if (!left.parameters || !right.genericType) return true;
     for (let i = 0; i < left.parameters.length; i++) {
       let leftParameter = left.parameters[i];
-      let rightParameter = right.parameters[i];
+      let rightParameter = right.genericType[i];
       if (!this.checkType(leftParameter, rightParameter)) return false;
     }
     return true;

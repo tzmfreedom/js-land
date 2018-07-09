@@ -14,22 +14,6 @@ class #{class_name}Node {
   accept(visitor) {
     return visitor.visit#{class_name}(this);
   }
-  
-  equals(other) {
-    return this.name.join('.') === other.name.join('.');
-  }
-}
-    JS
-  elsif class_name == 'ApexObject'
-    puts <<~JS
-class #{class_name}Node {
-  constructor(#{fields.push('lineno').join(', ')}) {
-#{fields.map { |field| "    this.#{field} = #{field};" }.join("\n")}
-  }
-
-  accept(visitor) {
-    return visitor.visit#{class_name}(this);
-  }
 }
     JS
   else
@@ -41,6 +25,10 @@ class #{class_name}Node {
 
   accept(visitor) {
     return visitor.visit#{class_name}(this);
+  }
+
+  type() {
+    return '#{class_name}';
   }
 }
     JS

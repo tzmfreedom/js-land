@@ -26,7 +26,6 @@ class TypeSearcher {
       if (nameSpace && className in nameSpace) {
         return nameSpace[className];
       }
-
       throw 'Undefined Type';
     }
   }

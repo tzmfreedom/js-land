@@ -16,6 +16,10 @@ class EnvManager {
     LocalEnvironment.popScope();
   }
 
+  get(key) {
+    return LocalEnvironment.get(key);
+  }
+
   getValue(key) {
     return LocalEnvironment.get(key).value;
   }

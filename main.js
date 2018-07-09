@@ -8,6 +8,7 @@ const ApexBuilder = require('./apex_builder');
 const MethodInvocationNode = require('./node/ast').MethodInvocationNode;
 const NameNode = require('./node/ast').NameNode;
 require('./apexClassCreator');
+const util = require('util');
 
 // Create CST with ANTLR
 const input = require('fs').readFileSync(process.argv[2], 'utf8');
@@ -21,6 +22,7 @@ const tree = parser.compilationUnit();
 // Create AST from CST with Visitor
 const visitor = new ApexAstBuilder();
 const top = visitor.visit(tree);
+
 // console.log(util.inspect(top, {depth: 13, colors: true}));
 
 const declarator = new SymbolDeclarator();

@@ -12,15 +12,14 @@ class SymbolDeclarator {
 
   visitClass(node) {
     let constructors = {};
-    node.constructor
-      .forEach((method) => {
-        let parameterHash = methodSearcher.calculateMethodParameterHash(method);
-        if (parameterHash in constructors) {
-          // TODO: lineno
-          throw `Compile Error: duplicate method name ${method.name} at line : `
-        }
-        constructors[parameterHash] = method;
-      });
+    node.constructor.forEach((method) => {
+      let parameterHash = methodSearcher.calculateMethodParameterHash(method);
+      if (parameterHash in constructors) {
+        // TODO: lineno
+        throw `Compile Error: duplicate method name ${method.name} at line : `
+      }
+      constructors[parameterHash] = method;
+    });
 
     let staticMethods = {};
     node.staticMethods.forEach((method) => {
@@ -45,27 +44,36 @@ class SymbolDeclarator {
     });
 
     let staticFields = {};
-    node.staticFields.forEach((field) => {
-      let field_name = field.name;
-      if (field_name in staticFields) {
-        // TODO: lineno
-        throw `Compile Error: duplicate static field name ${field_name} at line : `
-      }
-      staticFields[field_name] = field;
-    });
-
-    let instanceFields = {};
-    node.instanceFields.forEach((field) => {
-      field.declarators.forEach((declarator) => {
-        if (declarator.name in instanceFields) {
+    node.staticFields.forEach((declaration) => {
+      declaration.declarators.forEach((declarator) => {
+        let fieldName = declarator.name;
+        if (fieldName in staticFields) {
           // TODO: lineno
-          throw `Compile Error: duplicate instance field name ${declarator.name} at line : `
+          throw `Compile Error: duplicate static field name ${fieldName} at line : `
         }
-        instanceFields[declarator.name] = declarator;
+        staticFields[fieldName] = {
+          type: declaration.type,
+          expression: declarator.expression,
+        };
       });
     });
 
-    let innerClasses = [];
+    let instanceFields = {};
+    node.instanceFields.forEach((declaration) => {
+      declaration.declarators.forEach((declarator) => {
+        let fieldName = declarator.name;
+        if (fieldName in instanceFields) {
+          // TODO: lineno
+          throw `Compile Error: duplicate instance field name ${fieldName} at line : `
+        }
+        instanceFields[fieldName] = {
+          type: declaration.type,
+          expression: declarator.expression,
+        };
+      });
+    });
+
+    let innerClasses = {};
 
     const classInfo = new ApexClass(
       node.name,

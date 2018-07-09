@@ -8,6 +8,10 @@ class AnnotationNode {
   accept(visitor) {
     return visitor.visitAnnotation(this);
   }
+
+  type() {
+    return 'Annotation';
+  }
 }
 
 class ModifierNode {
@@ -18,6 +22,10 @@ class ModifierNode {
 
   accept(visitor) {
     return visitor.visitModifier(this);
+  }
+
+  type() {
+    return 'Modifier';
   }
 }
 
@@ -39,6 +47,10 @@ class ClassNode {
   accept(visitor) {
     return visitor.visitClass(this);
   }
+
+  type() {
+    return 'Class';
+  }
 }
 
 class IntegerNode {
@@ -49,6 +61,10 @@ class IntegerNode {
 
   accept(visitor) {
     return visitor.visitInteger(this);
+  }
+
+  type() {
+    return 'Integer';
   }
 }
 
@@ -63,6 +79,10 @@ class ParameterNode {
   accept(visitor) {
     return visitor.visitParameter(this);
   }
+
+  type() {
+    return 'Parameter';
+  }
 }
 
 class ArrayAccessNode {
@@ -75,6 +95,10 @@ class ArrayAccessNode {
   accept(visitor) {
     return visitor.visitArrayAccess(this);
   }
+
+  type() {
+    return 'ArrayAccess';
+  }
 }
 
 class BooleanNode {
@@ -86,6 +110,10 @@ class BooleanNode {
   accept(visitor) {
     return visitor.visitBoolean(this);
   }
+
+  type() {
+    return 'Boolean';
+  }
 }
 
 class BreakNode {
@@ -96,6 +124,10 @@ class BreakNode {
   accept(visitor) {
     return visitor.visitBreak(this);
   }
+
+  type() {
+    return 'Break';
+  }
 }
 
 class CommentNode {
@@ -105,6 +137,10 @@ class CommentNode {
 
   accept(visitor) {
     return visitor.visitComment(this);
+  }
+
+  type() {
+    return 'Comment';
   }
 }
 
@@ -122,6 +158,10 @@ class ConstructorDeclarationNode {
   accept(visitor) {
     return visitor.visitConstructorDeclaration(this);
   }
+
+  type() {
+    return 'ConstructorDeclaration';
+  }
 }
 
 class ContinueNode {
@@ -131,6 +171,10 @@ class ContinueNode {
 
   accept(visitor) {
     return visitor.visitContinue(this);
+  }
+
+  type() {
+    return 'Continue';
   }
 }
 
@@ -144,6 +188,10 @@ class DmlNode {
   accept(visitor) {
     return visitor.visitDml(this);
   }
+
+  type() {
+    return 'Dml';
+  }
 }
 
 class DoubleNode {
@@ -154,6 +202,10 @@ class DoubleNode {
 
   accept(visitor) {
     return visitor.visitDouble(this);
+  }
+
+  type() {
+    return 'Double';
   }
 }
 
@@ -168,6 +220,10 @@ class FieldDeclarationNode {
   accept(visitor) {
     return visitor.visitFieldDeclaration(this);
   }
+
+  type() {
+    return 'FieldDeclaration';
+  }
 }
 
 class FieldDeclaratorNode {
@@ -181,6 +237,10 @@ class FieldDeclaratorNode {
   accept(visitor) {
     return visitor.visitFieldDeclarator(this);
   }
+
+  type() {
+    return 'FieldDeclarator';
+  }
 }
 
 class TryNode {
@@ -193,6 +253,10 @@ class TryNode {
 
   accept(visitor) {
     return visitor.visitTry(this);
+  }
+
+  type() {
+    return 'Try';
   }
 }
 
@@ -208,6 +272,10 @@ class CatchNode {
   accept(visitor) {
     return visitor.visitCatch(this);
   }
+
+  type() {
+    return 'Catch';
+  }
 }
 
 class FinallyNode {
@@ -218,6 +286,10 @@ class FinallyNode {
 
   accept(visitor) {
     return visitor.visitFinally(this);
+  }
+
+  type() {
+    return 'Finally';
   }
 }
 
@@ -230,6 +302,10 @@ class ForNode {
 
   accept(visitor) {
     return visitor.visitFor(this);
+  }
+
+  type() {
+    return 'For';
   }
 }
 
@@ -245,6 +321,10 @@ class ForenumNode {
   accept(visitor) {
     return visitor.visitForenum(this);
   }
+
+  type() {
+    return 'Forenum';
+  }
 }
 
 class ForControlNode {
@@ -257,6 +337,10 @@ class ForControlNode {
 
   accept(visitor) {
     return visitor.visitForControl(this);
+  }
+
+  type() {
+    return 'ForControl';
   }
 }
 
@@ -272,6 +356,10 @@ class EnhancedForControlNode {
   accept(visitor) {
     return visitor.visitEnhancedForControl(this);
   }
+
+  type() {
+    return 'EnhancedForControl';
+  }
 }
 
 class IfNode {
@@ -284,6 +372,10 @@ class IfNode {
 
   accept(visitor) {
     return visitor.visitIf(this);
+  }
+
+  type() {
+    return 'If';
   }
 }
 
@@ -302,6 +394,10 @@ class MethodDeclarationNode {
   accept(visitor) {
     return visitor.visitMethodDeclaration(this);
   }
+
+  type() {
+    return 'MethodDeclaration';
+  }
 }
 
 class MethodInvocationNode {
@@ -314,6 +410,10 @@ class MethodInvocationNode {
   accept(visitor) {
     return visitor.visitMethodInvocation(this);
   }
+
+  type() {
+    return 'MethodInvocation';
+  }
 }
 
 class NameNode {
@@ -324,6 +424,10 @@ class NameNode {
 
   accept(visitor) {
     return visitor.visitName(this);
+  }
+
+  type() {
+    return 'Name';
   }
 }
 
@@ -337,6 +441,10 @@ class NewNode {
   accept(visitor) {
     return visitor.visitNew(this);
   }
+
+  type() {
+    return 'New';
+  }
 }
 
 class NullNode {
@@ -346,6 +454,10 @@ class NullNode {
 
   accept(visitor) {
     return visitor.visitNull(this);
+  }
+
+  type() {
+    return 'Null';
   }
 }
 
@@ -360,6 +472,10 @@ class ApexObjectNode {
   accept(visitor) {
     return visitor.visitApexObject(this);
   }
+
+  type() {
+    return this.classNode.name;
+  }
 }
 
 class UnaryOperatorNode {
@@ -372,6 +488,10 @@ class UnaryOperatorNode {
 
   accept(visitor) {
     return visitor.visitUnaryOperator(this);
+  }
+
+  type() {
+    return 'UnaryOperator';
   }
 }
 
@@ -386,6 +506,10 @@ class BinaryOperatorNode {
   accept(visitor) {
     return visitor.visitBinaryOperator(this);
   }
+
+  type() {
+    return 'BinaryOperator';
+  }
 }
 
 class ReturnNode {
@@ -396,6 +520,10 @@ class ReturnNode {
 
   accept(visitor) {
     return visitor.visitReturn(this);
+  }
+
+  type() {
+    return 'Return';
   }
 }
 
@@ -408,6 +536,10 @@ class ThrowNode {
   accept(visitor) {
     return visitor.visitThrow(this);
   }
+
+  type() {
+    return 'Throw';
+  }
 }
 
 class SoqlNode {
@@ -418,6 +550,10 @@ class SoqlNode {
 
   accept(visitor) {
     return visitor.visitSoql(this);
+  }
+
+  type() {
+    return 'Soql';
   }
 }
 
@@ -430,6 +566,10 @@ class StringNode {
   accept(visitor) {
     return visitor.visitString(this);
   }
+
+  type() {
+    return 'String';
+  }
 }
 
 class SwitchNode {
@@ -441,6 +581,10 @@ class SwitchNode {
 
   accept(visitor) {
     return visitor.visitSwitch(this);
+  }
+
+  type() {
+    return 'Switch';
   }
 }
 
@@ -456,6 +600,10 @@ class TriggerNode {
   accept(visitor) {
     return visitor.visitTrigger(this);
   }
+
+  type() {
+    return 'Trigger';
+  }
 }
 
 class TriggerTimingNode {
@@ -467,6 +615,10 @@ class TriggerTimingNode {
 
   accept(visitor) {
     return visitor.visitTriggerTiming(this);
+  }
+
+  type() {
+    return 'TriggerTiming';
   }
 }
 
@@ -481,6 +633,10 @@ class VariableDeclarationNode {
   accept(visitor) {
     return visitor.visitVariableDeclaration(this);
   }
+
+  type() {
+    return 'VariableDeclaration';
+  }
 }
 
 class VariableDeclaratorNode {
@@ -493,6 +649,10 @@ class VariableDeclaratorNode {
   accept(visitor) {
     return visitor.visitVariableDeclarator(this);
   }
+
+  type() {
+    return 'VariableDeclarator';
+  }
 }
 
 class WhenNode {
@@ -504,6 +664,10 @@ class WhenNode {
 
   accept(visitor) {
     return visitor.visitWhen(this);
+  }
+
+  type() {
+    return 'When';
   }
 }
 
@@ -518,6 +682,10 @@ class WhileNode {
   accept(visitor) {
     return visitor.visitWhile(this);
   }
+
+  type() {
+    return 'While';
+  }
 }
 
 class NothingStatementNode {
@@ -527,6 +695,10 @@ class NothingStatementNode {
 
   accept(visitor) {
     return visitor.visitNothingStatement(this);
+  }
+
+  type() {
+    return 'NothingStatement';
   }
 }
 
@@ -540,6 +712,10 @@ class CastExpressionNode {
   accept(visitor) {
     return visitor.visitCastExpression(this);
   }
+
+  type() {
+    return 'CastExpression';
+  }
 }
 
 class FieldAccessNode {
@@ -551,6 +727,10 @@ class FieldAccessNode {
 
   accept(visitor) {
     return visitor.visitFieldAccess(this);
+  }
+
+  type() {
+    return 'FieldAccess';
   }
 }
 
@@ -578,6 +758,10 @@ class BlockNode {
 
   accept(visitor) {
     return visitor.visitBlock(this);
+  }
+
+  type() {
+    return 'Block';
   }
 }
 
