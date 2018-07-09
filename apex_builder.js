@@ -1,15 +1,14 @@
-let Ast = require('./node/ast');
-let ApexClassStore = require('./apexClass').ApexClassStore;
-let ApexClass = require('./apexClass').ApexClass;
-let LocalEnvironment = require('./localEnv');
-let methodSearcher = require('./methodSearcher');
-let ApexObject = require('./apexClass').ApexObject;
+const Ast = require('./node/ast');
+const ApexClassStore = require('./apexClass').ApexClassStore;
+const methodSearcher = require('./methodSearcher');
+const EnvManager = require('./envManager');
+const TypeSearcher = require('./typeSearcher');
 
 class ApexBuilder {
   visit(node) {
-    this.pushScope({});
+    EnvManager.pushScope({});
     node.accept(this);
-    this.popScope();
+    EnvManager.popScope();
   }
 
   validateModifierDuplication(node) {
@@ -49,9 +48,9 @@ class ApexBuilder {
         methodNode.parameters.forEach((parameter) => {
           env[parameter.name] = parameter.type;
         });
-        this.pushScope(env, null);
+        EnvManager.pushScope(env, null);
         methods[parameterHash].accept(this);
-        this.popScope();
+        EnvManager.popScope();
       });
     });
 
@@ -65,9 +64,9 @@ class ApexBuilder {
         methodNode.parameters.forEach((parameter) => {
           env[parameter.name] = parameter.type;
         });
-        this.pushScope(env, null);
+        EnvManager.pushScope(env, null);
         methods[parameterHash].accept(this);
-        this.popScope();
+        EnvManager.popScope();
       });
     });
 
@@ -103,7 +102,7 @@ class ApexBuilder {
       instanceFields[fieldName] = classInfo.instanceFields[fieldName].expression.accept(this);
     });
     const classNode = ApexClassStore.get(className);
-    return new ApexObject(classNode, instanceFields);
+    return new Ast.ApexObjectNode(classNode, instanceFields);
   }
 
   visitFieldDeclaration(node) {
@@ -159,7 +158,7 @@ class ApexBuilder {
   }
 
   visitFor(node) {
-    this.pushScope({});
+    EnvManager.pushScope({});
 
     let forControl = node.forControl;
     forControl.forInit.accept(this);
@@ -173,7 +172,7 @@ class ApexBuilder {
       statement.accept(this);
     });
 
-    this.popScope();
+    EnvManager.popScope();
     return node;
   }
 
@@ -202,9 +201,9 @@ class ApexBuilder {
     if (searchResult.methodNode.nativeFunction) {
       return searchResult.methodNode.returnType;
     } else {
-      this.pushScope(env, null);
+      EnvManager.pushScope(env, null);
       let returnValue = searchResult.methodNode.statements.accept(this);
-      this.popScope();
+      EnvManager.popScope();
     }
   }
 
@@ -215,7 +214,9 @@ class ApexBuilder {
   }
 
   visitNew(node) {
-
+    const classNode = TypeSearcher.search(node.type);
+    node.typeClassNode = classNode;
+    return node.type;
   }
 
   visitNull(node) {
@@ -292,7 +293,7 @@ class ApexBuilder {
         if (searchResult.key) {
           left = searchResult.receiverNode.instanceFields[searchResult.key].accept(this);
         } else {
-          left = this.getValue(searchResult.receiverNode);
+          left = EnvManager.getValue(searchResult.receiverNode);
         }
         right = node.right.accept(this);
         if (!left.equals(right)) {
@@ -350,7 +351,7 @@ class ApexBuilder {
       if (decl.expression && !this.checkType(type, decl.expression)) {
         throw `Type not matched : variable => ${type.name}, initializer => ${decl.expression.name}`
       }
-      let env = this.currentScope();
+      let env = EnvManager.currentScope();
       env.define(type, declarator.name, type);
     });
   }
@@ -358,7 +359,7 @@ class ApexBuilder {
   visitVariableDeclarator(node) {
     let name = node.name;
     let expression = node.expression ? node.expression.accept(this) : null;
-    if (this.localIncludes(name)) {
+    if (EnvManager.localIncludes(name)) {
       throw `duplicate variable name ${name}`;
     }
     return { name, expression };
@@ -378,26 +379,6 @@ class ApexBuilder {
     });
   }
 
-  currentScope() {
-    return LocalEnvironment.currentScope();
-  }
-
-  getValue(key) {
-    return LocalEnvironment.get(key).value;
-  }
-
-  localIncludes(key) {
-    return LocalEnvironment.includes(key);
-  }
-
-  pushScope(env, parent) {
-    if (parent !== null) parent = LocalEnvironment.currentScope();
-    LocalEnvironment.pushScope(env, parent);
-  }
-
-  popScope() {
-    LocalEnvironment.popScope();
-  }
 
   checkType(left, right) {
     if (right instanceof Ast.NullNode) return true;

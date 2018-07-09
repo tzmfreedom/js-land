@@ -20,6 +20,18 @@ class #{class_name}Node {
   }
 }
     JS
+  elsif class_name == 'ApexObject'
+    puts <<~JS
+class #{class_name}Node {
+  constructor(#{fields.push('lineno').join(', ')}) {
+#{fields.map { |field| "    this.#{field} = #{field};" }.join("\n")}
+  }
+
+  accept(visitor) {
+    return visitor.visit#{class_name}(this);
+  }
+}
+    JS
   else
     puts <<~JS
 class #{class_name}Node {

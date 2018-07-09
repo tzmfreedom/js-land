@@ -15,6 +15,7 @@ class ApexClassCreator {
       {},
       {},
       {},
+      {},
       {
         debug: {
           a: new Ast.MethodDeclarationNode(
@@ -36,7 +37,8 @@ class ApexClassCreator {
             }
           )
         }
-      }
+      },
+      []
     );
     ApexClassStore.register(apexClass);
 
@@ -47,10 +49,22 @@ class ApexClassCreator {
       {},
       {},
       {},
-      {}
+      {},
+      []
     );
     ApexClassStore.register(apexClass);
 
+    apexClass = new ApexClass(
+      'List',
+      null,
+      [],
+      {},
+      {},
+      {},
+      {},
+      []
+    );
+    ApexClassStore.register(apexClass);
   }
 }
 

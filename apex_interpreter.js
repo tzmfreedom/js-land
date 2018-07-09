@@ -1,14 +1,13 @@
 var Ast = require('./node/ast');
 let methodSearcher = require('./methodSearcher');
-let LocalEnvironment = require('./localEnv');
-let ApexObject = require('./apexClass').ApexObject;
 let ApexClassStore = require('./apexClass').ApexClassStore;
+const EnvManager = require('./envManager');
 
 class ApexInterpreter {
   visit(node) {
-    this.pushScope({});
+    EnvManager.pushScope({});
     node.accept(this);
-    this.popScope();
+    EnvManager.popScope();
   }
 
   visitAnnotation(node) {
@@ -63,12 +62,11 @@ class ApexInterpreter {
   }
 
   visitFieldAccess(node) {
-    console.log(node);
     return node;
   }
 
   visitFor(node) {
-    this.pushScope({});
+    EnvManager.pushScope({});
 
     let forControl = node.forControl;
     forControl.forInit.accept(this);
@@ -81,7 +79,7 @@ class ApexInterpreter {
       forControl.forUpdate.accept(this);
       condition = forControl.expression.accept(this);
     }
-    this.popScope();
+    EnvManager.popScope();
   }
 
   visitForControl(node) {
@@ -108,13 +106,13 @@ class ApexInterpreter {
     }
     let parameters = node.parameters.map((parameter) => { return parameter.accept(this); });
 
-    this.pushScope(env);
+    EnvManager.pushScope(env);
     if (searchResult.methodNode.nativeFunction) {
       searchResult.methodNode.nativeFunction.call(this, parameters);
     } else {
       searchResult.methodNode.statements.accept(this);
     }
-    this.popScope();
+    EnvManager.popScope();
   }
 
   visitName(node) {
@@ -122,30 +120,30 @@ class ApexInterpreter {
     if (result.key) {
       return result.receiverNode.instanceFields[result.key];
     } else {
-      return this.getValue(result.receiverNode);
+      return EnvManager.getValue(result.receiverNode);
     }
   }
 
   visitNew(node) {
-    let classInfo = ApexClassStore.get(node.className);
-    let newObject = new ApexObject();
+    let newObject = new Ast.ApexObjectNode();
+    newObject.classNode = node.typeClassNode;
+
+    const parameterHash = methodSearcher.calculateMethodParameterHash(node);
+    const constructor = node.typeClassNode.constructors[parameterHash];
 
     let env = { this: newObject };
-    for (let i = 0; i < classInfo.parameters.length; i++) {
-      let parameter = classInfo.parameters[i];
+    for (let i = 0; i < constructor.parameters.length; i++) {
+      let parameter = constructor.parameters[i];
       env[parameter.name] = node.parameters[i].accept(this);
     }
-    this.pushScope(env);
-    classInfo.constructor.accept(this);
-    this.popScope();
+    EnvManager.pushScope(env);
+    constructor.statements.accept(this);
+    EnvManager.popScope();
+    return newObject;
   }
 
   visitNull(node) {
     node.value = null;
-    return node;
-  }
-
-  visitObject(node) {
     return node;
   }
 
@@ -162,7 +160,7 @@ class ApexInterpreter {
       }
       result.receiverNode.instanceFields[result.key] = new Ast.IntegerNode(value);
     } else {
-      prev = this.getValue(result.receiverNode);
+      prev = EnvManager.getValue(result.receiverNode);
       switch(node.type) {
         case '++':
           value = prev.value + 1;
@@ -171,7 +169,7 @@ class ApexInterpreter {
           value = prev.value - 1;
           break;
       }
-      this.setValue(result.receiverNode, new Ast.IntegerNode(value));
+      EnvManager.setValue(result.receiverNode, new Ast.IntegerNode(value));
     }
     if (prev) {
       return new Ast.IntegerNode(value);
@@ -238,7 +236,7 @@ class ApexInterpreter {
         if (result.key) {
           result.receiverNode.instanceFields[result.key] = right;
         } else {
-          this.setValue(result.receiverNode, right);
+          EnvManager.setValue(result.receiverNode, right);
         }
         return right;
     }
@@ -272,7 +270,7 @@ class ApexInterpreter {
     let type = node.type;
     node.declarators.forEach((declarator) => {
       let value = declarator.expression.accept(this);
-      let env = this.currentScope();
+      let env = EnvManager.currentScope();
       env.define(type, declarator.name, value);
     });
   }
@@ -282,7 +280,7 @@ class ApexInterpreter {
   }
 
   visitWhile(node) {
-    this.pushScope({});
+    EnvManager.pushScope({});
     let condition = node.condition.accept(this);
     while (condition.value == true) {
       node.statements.forEach((statement) => {
@@ -290,32 +288,11 @@ class ApexInterpreter {
       });
       condition = node.condition.accept(this);
     }
-    this.popScope();
+    EnvManager.popScope();
   }
 
   visitBlock(node){
     node.statements.forEach((statement) => { statement.accept(this); });
-  }
-
-  currentScope() {
-    return LocalEnvironment.currentScope();
-  }
-
-  pushScope(env, parent) {
-    if (parent !== null) parent = LocalEnvironment.currentScope();
-    LocalEnvironment.pushScope(env, parent);
-  }
-
-  popScope() {
-    LocalEnvironment.popScope();
-  }
-
-  getValue(key) {
-    return LocalEnvironment.get(key).value;
-  }
-
-  setValue(key, value) {
-    LocalEnvironment.set(key, value);
   }
 }
 

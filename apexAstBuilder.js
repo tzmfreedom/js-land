@@ -41,7 +41,7 @@ ApexAstBuilder.prototype.visitModifier = function(ctx) {
   if (ctx.classOrInterfaceModifier()) {
     return ctx.classOrInterfaceModifier().accept(this);
   }
-  return new Ast.ModifierNode(ctx.getText());
+  return new Ast.ModifierNode(ctx.getText(), ctx.start.line);
 };
 
 
@@ -50,7 +50,7 @@ ApexAstBuilder.prototype.visitClassOrInterfaceModifier = function(ctx) {
   if (ctx.annotation()) {
     return ctx.annotation().accept(this);
   }
-  return new Ast.ModifierNode(ctx.getText());
+  return new Ast.ModifierNode(ctx.getText(), ctx.start.line);
 };
 
 
@@ -235,7 +235,7 @@ ApexAstBuilder.prototype.visitGenericMethodDeclaration = function(ctx) {
 ApexAstBuilder.prototype.visitConstructorDeclaration = function(ctx) {
   let name = ctx.Identifier().accept(this);
   let formalParameters = ctx.formalParameters().accept(this);
-  let throws = ctx.qualifiedNameList().accept(this);
+  let throws = ctx.qualifiedNameList() ? ctx.qualifiedNameList().accept(this) : [];
   let constructorBody = ctx.constructorBody().accept(this);
   return new Ast.ConstructorDeclarationNode(
     name,
@@ -324,10 +324,10 @@ ApexAstBuilder.prototype.visitVariableDeclarator = function(ctx) {
   if (ctx.variableInitializer()) {
     expression = ctx.variableInitializer().accept(this);
   } else {
-    expression = new Ast.NullNode();
+    expression = new Ast.NullNode(ctx.start.line);
   }
 
-  return new Ast.VariableDeclaratorNode(declaratorId, expression);
+  return new Ast.VariableDeclaratorNode(declaratorId, expression, ctx.start.line);
 };
 
 
@@ -379,17 +379,17 @@ ApexAstBuilder.prototype.visitClassOrInterfaceType = function(ctx) {
     let name = ctx.Identifier().map((identifier) => {
       return identifier.getText();
     });
-    return new Ast.TypeNode(name, parameters);
+    return new Ast.TypeNode(name, parameters, ctx.start.line);
   } else if (ctx.SET()) {
     let parameters = ctx.typeArguments().accept(this);
-    return new Ast.TypeNode(ctx.SET().getText(), parameters)
+    return new Ast.TypeNode(ctx.SET().getText(), parameters, ctx.start.line)
   }
 };
 
 
 // Visit a parse tree produced by apexParser#primitiveType.
 ApexAstBuilder.prototype.visitPrimitiveType = function(ctx) {
-  return new Ast.TypeNode([ctx.getText()], []);
+  return new Ast.TypeNode([ctx.getText()], [], ctx.start.line);
 };
 
 
@@ -409,7 +409,9 @@ ApexAstBuilder.prototype.visitTypeArgument = function(ctx) {
 
 // Visit a parse tree produced by apexParser#qualifiedNameList.
 ApexAstBuilder.prototype.visitQualifiedNameList = function(ctx) {
-  return this.visitChildren(ctx);
+  return ctx.qualifiedName().map((qualifiedName) => {
+    return qualifiedName.accept(this);
+  })
 };
 
 
@@ -434,7 +436,7 @@ ApexAstBuilder.prototype.visitFormalParameter = function(ctx) {
   });
   let type = ctx.type().accept(this);
   let variableDeclaratorId = ctx.variableDeclaratorId().accept(this);
-  return new Ast.ParameterNode(modifiers, type, variableDeclaratorId);
+  return new Ast.ParameterNode(modifiers, type, variableDeclaratorId, ctx.start.line);
 };
 
 
@@ -461,7 +463,7 @@ ApexAstBuilder.prototype.visitQualifiedName = function(ctx) {
   let value = ctx.Identifier().map((identifier) => {
     return identifier.getText();
   });
-  return new Ast.NameNode(value);
+  return new Ast.NameNode(value, ctx.start.line);
 };
 
 
@@ -478,7 +480,7 @@ ApexAstBuilder.prototype.visitLiteral = function(ctx) {
   } else if (ctx.BooleanLiteral()) {
     return new Ast.BooleanNode(ctx.BooleanLiteral().getText() == 'true', lineNo);
   } else if (ctx.NullLiteral()) {
-    return new Ast.NullNode(lineNo);
+    return new Ast.NullNode(lineNo, lineNo);
   }
   throw 'Invalid Literal';
 };
@@ -493,7 +495,7 @@ ApexAstBuilder.prototype.visitAnnotation = function(ctx) {
   } else if (ctx.elementValue()) {
     parameters = ctx.elementValue().accept(this);
   }
-  return new Ast.AnnotationNode(name, parameters);
+  return new Ast.AnnotationNode(name, parameters, ctx.start.line);
 };
 
 
@@ -546,7 +548,7 @@ ApexAstBuilder.prototype.visitBlock = function(ctx) {
   const statements = ctx.blockStatement().map((statement) => {
     return statement.accept(this);
   });
-  return new Ast.BlockNode(statements);
+  return new Ast.BlockNode(statements, ctx.start.line);
 };
 
 
@@ -575,53 +577,54 @@ ApexAstBuilder.prototype.visitLocalVariableDeclaration = function(ctx) {
   });
   let type = ctx.type().accept(this);
   let declarators = ctx.variableDeclarators().accept(this);
-  return new Ast.VariableDeclarationNode(modifiers, type, declarators);
+  return new Ast.VariableDeclarationNode(modifiers, type, declarators, ctx.start.line);
 };
 
 
 // Visit a parse tree produced by apexParser#statement.
 ApexAstBuilder.prototype.visitStatement = function(ctx) {
+  const lineNo = ctx.start.line;
   if (ctx.block()) {
     return ctx.block().accept(this);
   } else if (ctx.IF()) {
     let condition = ctx.parExpression().accept(this);
     let if_statement = ctx.statement()[0].accept(this);
     let else_statement = ctx.statement().length > 1 ? ctx.statement()[1].accept(this) : null;
-    return new Ast.IfNode(condition, if_statement, else_statement);
+    return new Ast.IfNode(condition, if_statement, else_statement, lineNo);
   } else if (ctx.FOR()) {
     let forControl = ctx.forControl().accept(this);
     let statement = ctx.statement().map((statement) => { return statement.accept(this); });
-    return new Ast.ForNode(forControl, statement);
+    return new Ast.ForNode(forControl, statement, lineNo);
   } else if (ctx.WHILE()) {
     let doFlag = ctx.DO() != null;
     let condition = ctx.parExpression().accept(this);
     let statements = ctx.statement().map((statement) => {
       return statement.accept(this)
     });
-    return new Ast.WhileNode(condition, statements, doFlag);
+    return new Ast.WhileNode(condition, statements, doFlag, lineNo);
   } else if (ctx.TRY()) {
     let block = ctx.block().accept(this);
     let catchClause = ctx.catchClause() ? ctx.catchClause().accept(this) : null;
     let finallyBlock = ctx.finallyBlock() ? ctx.finallyBlock().accept(this) : null;
-    return new Ast.TryNode(block, catchClause, finallyBlock);
+    return new Ast.TryNode(block, catchClause, finallyBlock, lineNo);
   } else if (ctx.RETURN()) {
     let expression = ctx.expression().accept(this);
-    return new Ast.ReturnNode(expression);
+    return new Ast.ReturnNode(expression, lineNo);
   } else if (ctx.THROW()) {
     let expression = ctx.expression().accept(this);
-    return new Ast.ThrowNode(expression);
+    return new Ast.ThrowNode(expression, lineNo);
   } else if (ctx.BREAK()) {
     let expression = ctx.expression().accept(this);
-    return new Ast.ReturnNode(expression);
+    return new Ast.ReturnNode(expression, lineNo);
   } else if (ctx.CONTINUE()) {
     let expression = ctx.expression().accept(this);
-    return new Ast.ReturnNode(expression);
+    return new Ast.ReturnNode(expression, lineNo);
   } else if (ctx.statementExpression()) {
     return ctx.statementExpression().accept(this);
   } else if (ctx.apexDbExpression()) {
     return ctx.apexDbExpression().accept(this);
   } else {
-    return new Ast.NothingStatementNode();
+    return new Ast.NothingStatementNode(lineNo);
   }
 };
 
@@ -652,7 +655,7 @@ ApexAstBuilder.prototype.visitCatchClause = function(ctx) {
   let catchType = ctx.catchType().accept(this);
   let block = ctx.block().accept(this);
   let identifier = ctx.Identifier().getText();
-  return new Ast.CatchNode(modifiers, catchType, identifier, block);
+  return new Ast.CatchNode(modifiers, catchType, identifier, block, ctx.start.line);
 };
 
 
@@ -678,7 +681,7 @@ ApexAstBuilder.prototype.visitForControl = function(ctx) {
     let forInit = ctx.forInit().accept(this);
     let expression = ctx.expression().accept(this);
     let forUpdate = ctx.forUpdate().accept(this);
-    return new Ast.ForControlNode(forInit, expression, forUpdate);
+    return new Ast.ForControlNode(forInit, expression, forUpdate, ctx.start.line);
   }
 };
 
@@ -701,7 +704,7 @@ ApexAstBuilder.prototype.visitEnhancedForControl = function(ctx) {
   let type = ctx.type().accept(this);
   let variableDeclaratorId = ctx.variableDeclaratorId().accept(this);
   let expression = ctx.expression().accept(this);
-  return new Ast.EnhancedForControl(modifiers, type, variableDeclaratorId, expression)
+  return new Ast.EnhancedForControl(modifiers, type, variableDeclaratorId, expression, ctx.start.line)
 };
 
 
@@ -742,7 +745,7 @@ ApexAstBuilder.prototype.visitConstantExpression = function(ctx) {
 ApexAstBuilder.prototype.visitApexDbExpressionShort = function(ctx) {
   let dml = ctx.dml().getText();
   let expression = ctx.expression().accept(this);
-  return new Ast.DmlNode(dml, expression);
+  return new Ast.DmlNode(dml, expression, ctx.start.line);
 };
 
 
@@ -764,14 +767,14 @@ ApexAstBuilder.prototype.visitOpExpression = function(ctx) {
   let op = ctx.op.text;
   let left = ctx.expression()[0].accept(this);
   let right = ctx.expression()[1].accept(this);
-  return new Ast.BinaryOperatorNode(op, left, right);
+  return new Ast.BinaryOperatorNode(op, left, right, ctx.start.line);
 };
 
 // Visit a parse tree produced by apexParser#PostUnaryExpression.
 ApexAstBuilder.prototype.visitPostUnaryExpression = function(ctx) {
   let op = ctx.op.text;
   let expression  = ctx.expression()[0].accept(this);
-  return new Ast.UnaryOperatorNode(op, expression, true);
+  return new Ast.UnaryOperatorNode(op, expression, true, ctx.start.line);
 };
 
 
@@ -779,7 +782,7 @@ ApexAstBuilder.prototype.visitPostUnaryExpression = function(ctx) {
 ApexAstBuilder.prototype.visitPostUnaryExpression = function(ctx) {
   let op = ctx.op.text;
   let expression  = ctx.expression().accept(this);
-  return new Ast.UnaryOperatorNode(op, expression, false);
+  return new Ast.UnaryOperatorNode(op, expression, false, ctx.start.line);
 };
 
 
@@ -796,7 +799,7 @@ ApexAstBuilder.prototype.visitMethodInvocation = function(ctx) {
   if (ctx.expressionList()) {
     arguments = ctx.expressionList().accept(this);
   }
-  return new Ast.MethodInvocationNode(receiver, arguments, null, null);
+  return new Ast.MethodInvocationNode(receiver, arguments, null, null, ctx.start.line);
 };
 
 
@@ -805,7 +808,7 @@ ApexAstBuilder.prototype.visitMethodInvocation = function(ctx) {
 ApexAstBuilder.prototype.visitCastExpression = function(ctx) {
   let type = ctx.type().accept(this);
   let expression = ctx.expression().accept(this);
-  return new Ast.CastExpressionNode(type, expression);
+  return new Ast.CastExpressionNode(type, expression, ctx.start.line);
 };
 
 
@@ -820,11 +823,11 @@ ApexAstBuilder.prototype.visitFieldAccess = function(ctx) {
   let expression = ctx.expression().accept(this);
   let fieldName = ctx.Identifier().getText();
   if (expression instanceof Ast.NameNode) {
-    return new Ast.NameNode(expression.value.concat(fieldName))
+    return new Ast.NameNode(expression.value.concat(fieldName), ctx.start.line)
   } else if (expression instanceof Ast.StringNode) {
-    return new Ast.NameNode([expression.value, fieldName])
+    return new Ast.NameNode([expression.value, fieldName], ctx.start.line)
   }
-  return new Ast.FieldAccessNode(expression, fieldName);
+  return new Ast.FieldAccessNode(expression, fieldName, ctx.start.line);
 };
 
 
@@ -833,15 +836,15 @@ ApexAstBuilder.prototype.visitPrimary = function(ctx) {
   if (ctx.expression()) {
     return ctx.expression().accept(this);
   } else if (ctx.THIS()) {
-    return new Ast.NameNode([ctx.THIS().getText()]);
+    return new Ast.NameNode([ctx.THIS().getText()], ctx.start.line);
   } else if (ctx.SUPER()) {
-    return new Ast.NameNode([ctx.SUPER().getText()]);
+    return new Ast.NameNode([ctx.SUPER().getText()], ctx.start.line);
   } else if (ctx.literal()) {
     return ctx.literal().accept(this);
   } else if (ctx.Identifier()) {
-    return new Ast.NameNode([ctx.Identifier().getText()]);
+    return new Ast.NameNode([ctx.Identifier().getText()], ctx.start.line);
   } else if (ctx.SoqlLiteral()) {
-    return new Ast.SoqlNode(ctx.SoqlLiteral().getText());
+    return new Ast.SoqlNode(ctx.SoqlLiteral().getText(), ctx.start.line);
   }
 };
 
@@ -851,9 +854,14 @@ ApexAstBuilder.prototype.visitCreator = function(ctx) {
   if (ctx.nonWildcardTypeArguments()) {
     let createdName = ctx.createdName().accept(this);
     let classCreatorRest = ctx.classCreatorRest().accept(this);
-    return new Ast.NewNode(createdName, classCreatorRest);
+    return new Ast.NewNode(createdName, classCreatorRest, ctx.start.line);
   } else {
-
+    let createdName = ctx.createdName().accept(this);
+    let arrayCreatorRest = ctx.arrayCreatorRest() ? ctx.arrayCreatorRest().accept(this) : null;
+    let classCreatorRest = ctx.classCreatorRest() ? ctx.classCreatorRest().accept(this) : null;
+    let mapCreatorRest = ctx.mapCreatorRest() ? ctx.mapCreatorRest().accept(this) : null;
+    let setCreatorRest = ctx.setCreatorRest() ? ctx.setCreatorRest().accept(this) : null;
+    return new Ast.NewNode(createdName, classCreatorRest, ctx.start.line);
   }
 };
 
@@ -861,11 +869,11 @@ ApexAstBuilder.prototype.visitCreator = function(ctx) {
 // Visit a parse tree produced by apexParser#createdName.
 ApexAstBuilder.prototype.visitCreatedName = function(ctx) {
   if (ctx.Identifier()) {
-    let name = ctx.Identifier().getText();
-    let arguments = ctx.typeArgumentsOrDiamond().map((type) => {
-      return type.accept(this);
+    let name = ctx.Identifier().map((identifier) => {
+      return identifier.getText();
     });
-    return new Ast.TypeNode(name, arguments);
+    let arguments = ctx.typeArgumentsOrDiamond().length > 0 ? ctx.typeArgumentsOrDiamond()[0].accept(this) : null;
+    return new Ast.TypeNode(name, arguments, ctx.start.line);
   }
 };
 
@@ -896,7 +904,7 @@ ApexAstBuilder.prototype.visitSetCreatorRest = function(ctx) {
 
 // Visit a parse tree produced by apexParser#classCreatorRest.
 ApexAstBuilder.prototype.visitClassCreatorRest = function(ctx) {
-  return this.visitChildren(ctx);
+  return ctx.arguments().accept(this);
 };
 
 
@@ -914,7 +922,7 @@ ApexAstBuilder.prototype.visitNonWildcardTypeArguments = function(ctx) {
 
 // Visit a parse tree produced by apexParser#typeArgumentsOrDiamond.
 ApexAstBuilder.prototype.visitTypeArgumentsOrDiamond = function(ctx) {
-  return this.visitChildren(ctx);
+  return ctx.typeArguments().accept(this);
 };
 
 
@@ -938,7 +946,7 @@ ApexAstBuilder.prototype.visitExplicitGenericInvocationSuffix = function(ctx) {
 
 // Visit a parse tree produced by apexParser#arguments.
 ApexAstBuilder.prototype.visitArguments = function(ctx) {
-  return this.visitChildren(ctx);
+  return ctx.expressionList() ? ctx.expressionList().accept(this) : [];
 };
 
 

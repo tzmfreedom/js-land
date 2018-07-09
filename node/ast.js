@@ -328,8 +328,8 @@ class NameNode {
 }
 
 class NewNode {
-  constructor(className, parameters, lineno) {
-    this.className = className;
+  constructor(type, parameters, lineno) {
+    this.type = type;
     this.parameters = parameters;
     this.lineno = lineno;
   }
@@ -349,17 +349,16 @@ class NullNode {
   }
 }
 
-class ObjectNode {
-  constructor(classNode, genericType, instanceFields, genericsNode, lineno) {
+class ApexObjectNode {
+  constructor(classNode, instanceFields, genericType, lineno) {
     this.classNode = classNode;
-    this.genericType = genericType;
     this.instanceFields = instanceFields;
-    this.genericsNode = genericsNode;
+    this.genericType = genericType;
     this.lineno = lineno;
   }
 
   accept(visitor) {
-    return visitor.visitObject(this);
+    return visitor.visitApexObject(this);
   }
 }
 
@@ -611,7 +610,7 @@ exports.MethodInvocationNode = MethodInvocationNode;
 exports.NameNode = NameNode;
 exports.NewNode = NewNode;
 exports.NullNode = NullNode;
-exports.ObjectNode = ObjectNode;
+exports.ApexObjectNode = ApexObjectNode;
 exports.UnaryOperatorNode = UnaryOperatorNode;
 exports.BinaryOperatorNode = BinaryOperatorNode;
 exports.ReturnNode = ReturnNode;

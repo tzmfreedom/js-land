@@ -94,14 +94,13 @@ method_invocation:
 name:
   - value
 new:
-  - className
+  - type
   - parameters
 'null': []
-object:
+apex_object:
   - classNode
-  - genericType
   - instanceFields
-  - genericsNode
+  - genericType
 unary_operator:
   - type
   - expression

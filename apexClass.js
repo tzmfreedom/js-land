@@ -1,14 +1,16 @@
 'use strict';
 
 class ApexClass {
-  constructor(name, superClass, implementClasses, instanceFields, staticFields, instanceMethods, staticMethods) {
+  constructor(name, superClass, implementClasses, constructors, instanceFields, staticFields, instanceMethods, staticMethods, innerClasses) {
     this.name             = name;
     this.superClass       = superClass;
     this.implementClasses = implementClasses;
+    this.constructors     = constructors;
     this.instanceFields   = instanceFields;
     this.staticFields     = staticFields;
     this.instanceMethods  = instanceMethods;
     this.staticMethods    = staticMethods;
+    this.innerClasses     = innerClasses;
   }
 
   accept(visitor) {

@@ -11,6 +11,17 @@ class SymbolDeclarator {
   }
 
   visitClass(node) {
+    let constructors = {};
+    node.constructor
+      .forEach((method) => {
+        let parameterHash = methodSearcher.calculateMethodParameterHash(method);
+        if (parameterHash in constructors) {
+          // TODO: lineno
+          throw `Compile Error: duplicate method name ${method.name} at line : `
+        }
+        constructors[parameterHash] = method;
+      });
+
     let staticMethods = {};
     node.staticMethods.forEach((method) => {
       if (!staticMethods[method.name]) staticMethods[method.name] = {};
@@ -54,14 +65,18 @@ class SymbolDeclarator {
       });
     });
 
+    let innerClasses = [];
+
     const classInfo = new ApexClass(
       node.name,
       node.superClass,
       node.implementClasses,
+      constructors,
       instanceFields,
       staticFields,
       instanceMethods,
       staticMethods,
+      innerClasses,
     );
 
     ApexClassStore.register(classInfo);
