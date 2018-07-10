@@ -60,17 +60,35 @@ class SymbolDeclarator {
 
     let instanceFields = {};
     node.instanceFields.forEach((declaration) => {
-      declaration.declarators.forEach((declarator) => {
-        let fieldName = declarator.name;
+      if (declaration instanceof Ast.PropertyDeclarationNode) {
+        let fieldName = declaration.identifier;
         if (fieldName in instanceFields) {
           // TODO: lineno
           throw `Compile Error: duplicate instance field name ${fieldName} at line : `
         }
         instanceFields[fieldName] = {
           type: declaration.type,
-          expression: declarator.expression,
+          setter: declaration.setter,
+          getter: declaration.getter,
         };
-      });
+        if (declaration.getter_or_setter.type == 'setter') {
+          instanceFields[fieldName].setter = declaration.getter_or_setter.methodBody
+        } else {
+          instanceFields[fieldName].getter = declaration.getter_or_setter.methodBody
+        }
+      } else {
+        declaration.declarators.forEach((declarator) => {
+          let fieldName = declarator.name;
+          if (fieldName in instanceFields) {
+            // TODO: lineno
+            throw `Compile Error: duplicate instance field name ${fieldName} at line : `
+          }
+          instanceFields[fieldName] = {
+            type: declaration.type,
+            expression: declarator.expression,
+          };
+        });
+      }
     });
 
     let innerClasses = {};

@@ -161,5 +161,5 @@ getter_setter:
 property_declaration:
   - modifiers
   - type
-  - declarators
-  - propertyBodyDeclaration
+  - identifier
+  - getter_or_setter

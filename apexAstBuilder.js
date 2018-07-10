@@ -107,6 +107,22 @@ ApexAstBuilder.prototype.visitClassDeclaration = function(ctx) {
       })
     );
   });
+  let instanceProperties = declarations.filter((declaration) => {
+    return (
+      declaration instanceof Ast.PropertyDeclarationNode
+      && declaration.modifiers.some((modifier) => {
+        return modifier.name != 'static';
+      })
+    );
+  });
+  let staticProperties = declarations.filter((declaration) => {
+    return (
+      declaration instanceof Ast.PropertyDeclarationNode
+      && declaration.modifiers.some((modifier) => {
+        return modifier.name == 'static';
+      })
+    );
+  });
   let innerClasses = declarations.filter((declaration) => {
     return declaration instanceof Ast.ClassNode;
   });
@@ -118,9 +134,9 @@ ApexAstBuilder.prototype.visitClassDeclaration = function(ctx) {
     superClass,
     implementClasses,
     constructor,
-    instanceFields,
+    instanceFields.concat(instanceProperties),
     instanceMethods,
-    staticFields,
+    staticFields.concat(staticProperties),
     staticMethods,
     innerClasses,
     ctx.start.line

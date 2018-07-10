@@ -783,11 +783,11 @@ class GetterSetterNode {
 }
 
 class PropertyDeclarationNode {
-  constructor(modifiers, type, declarators, propertyBodyDeclaration, lineno) {
+  constructor(modifiers, type, identifier, getter_or_setter, lineno) {
     this.modifiers = modifiers;
     this.type = type;
-    this.declarators = declarators;
-    this.propertyBodyDeclaration = propertyBodyDeclaration;
+    this.identifier = identifier;
+    this.getter_or_setter = getter_or_setter;
     this.lineno = lineno;
   }
 
