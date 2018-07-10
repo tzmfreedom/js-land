@@ -269,9 +269,9 @@ ApexAstBuilder.prototype.visitFieldDeclaration = function(ctx) {
 // Visit a parse tree produced by apexParser#propertyDeclaration.
 ApexAstBuilder.prototype.visitPropertyDeclaration = function(ctx) {
   const type = ctx.type().accept(this);
-  const variableDeclarators = ctx.variableDeclarators().accept(this);
+  const variableDeclaratorId = ctx.variableDeclarators().accept(this);
   const propertyBodyDeclaration = ctx.propertyBodyDeclaration().accept(this);
-  return null;
+  return new Ast.PropertyDeclarationNode(null, type, variableDeclaratorId, propertyBodyDeclaration);
 };
 
 
@@ -640,21 +640,20 @@ ApexAstBuilder.prototype.visitStatement = function(ctx) {
 // Visit a parse tree produced by apexParser#propertyBlock.
 ApexAstBuilder.prototype.visitPropertyBlock = function(ctx) {
   const modifiers = ctx.modifier().map((modifier) => { return modifier.accept(this); });
-  const getter = ctx.getter() ? ctx.getter().accept(this) : null;
-  const setter = ctx.setter() ? ctx.setter().accept(this) : null;
-  return new Ast.
+  const getter_or_setter = ctx.getter() ? ctx.getter().accept(this) : ctx.setter().accept(this);
+  return new Ast.GetterSetterNode(modifiers, getter_or_setter, ctx.start.line);
 };
 
 
 // Visit a parse tree produced by apexParser#getter.
 ApexAstBuilder.prototype.visitGetter = function(ctx) {
-  return this.visitChildren(ctx);
+  ctx.methodBody() ? ctx.methodBody().accept(this) : null;
 };
 
 
 // Visit a parse tree produced by apexParser#setter.
 ApexAstBuilder.prototype.visitSetter = function(ctx) {
-  return this.visitChildren(ctx);
+  ctx.methodBody() ? ctx.methodBody().accept(this) : null;
 };
 
 

@@ -335,7 +335,7 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u0005\u000e\b\u0002\u01a0\u01a1\u0005,\u0017\u0002\u01a1/\u0003\u0002",
     "\u0002\u0002\u01a2\u01a3\u0005N(\u0002\u01a3\u01a4\u0005B\"\u0002\u01a4",
     "\u01a5\u0007M\u0002\u0002\u01a51\u0003\u0002\u0002\u0002\u01a6\u01a7",
-    "\u0005N(\u0002\u01a7\u01a8\u0005B\"\u0002\u01a8\u01a9\u00054\u001b\u0002",
+    "\u0005N(\u0002\u01a7\u01a8\u0005F$\u0002\u01a8\u01a9\u00054\u001b\u0002",
     "\u01a93\u0003\u0002\u0002\u0002\u01aa\u01ab\u0007I\u0002\u0002\u01ab",
     "\u01ad\u0005\u0080A\u0002\u01ac\u01ae\u0005\u0080A\u0002\u01ad\u01ac",
     "\u0003\u0002\u0002\u0002\u01ad\u01ae\u0003\u0002\u0002\u0002\u01ae\u01af",
@@ -3599,8 +3599,8 @@ PropertyDeclarationContext.prototype.type = function() {
     return this.getTypedRuleContext(TypeContext,0);
 };
 
-PropertyDeclarationContext.prototype.variableDeclarators = function() {
-    return this.getTypedRuleContext(VariableDeclaratorsContext,0);
+PropertyDeclarationContext.prototype.variableDeclaratorId = function() {
+    return this.getTypedRuleContext(VariableDeclaratorIdContext,0);
 };
 
 PropertyDeclarationContext.prototype.propertyBodyDeclaration = function() {
@@ -3641,7 +3641,7 @@ apexParser.prototype.propertyDeclaration = function() {
         this.state = 420;
         this.type();
         this.state = 421;
-        this.variableDeclarators();
+        this.variableDeclaratorId();
         this.state = 422;
         this.propertyBodyDeclaration();
     } catch (re) {

@@ -183,7 +183,7 @@ fieldDeclaration
     ;
 
 propertyDeclaration
-    :   type variableDeclarators propertyBodyDeclaration
+    :   type variableDeclaratorId propertyBodyDeclaration
     ;
 
 propertyBodyDeclaration

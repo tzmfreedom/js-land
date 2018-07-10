@@ -157,3 +157,8 @@ block:
 getter_setter:
   - modifiers
   - methodBody
+property_declaration:
+  - modifiers
+  - type
+  - declarators
+  - propertyBodyDeclaration

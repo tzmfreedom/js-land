@@ -781,6 +781,24 @@ class GetterSetterNode {
   }
 }
 
+class PropertyDeclarationNode {
+  constructor(modifiers, type, declarators, propertyBodyDeclaration, lineno) {
+    this.modifiers = modifiers;
+    this.type = type;
+    this.declarators = declarators;
+    this.propertyBodyDeclaration = propertyBodyDeclaration;
+    this.lineno = lineno;
+  }
+
+  accept(visitor) {
+    return visitor.visitPropertyDeclaration(this);
+  }
+
+  type() {
+    return 'PropertyDeclaration';
+  }
+}
+
 
 exports.AnnotationNode = AnnotationNode;
 exports.ModifierNode = ModifierNode;
@@ -830,3 +848,4 @@ exports.FieldAccessNode = FieldAccessNode;
 exports.TypeNode = TypeNode;
 exports.BlockNode = BlockNode;
 exports.GetterSetterNode = GetterSetterNode;
+exports.PropertyDeclarationNode = PropertyDeclarationNode;
