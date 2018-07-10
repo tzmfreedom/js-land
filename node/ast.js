@@ -765,6 +765,22 @@ class BlockNode {
   }
 }
 
+class GetterSetterNode {
+  constructor(modifiers, methodBody, lineno) {
+    this.modifiers = modifiers;
+    this.methodBody = methodBody;
+    this.lineno = lineno;
+  }
+
+  accept(visitor) {
+    return visitor.visitGetterSetter(this);
+  }
+
+  type() {
+    return 'GetterSetter';
+  }
+}
+
 
 exports.AnnotationNode = AnnotationNode;
 exports.ModifierNode = ModifierNode;
@@ -813,3 +829,4 @@ exports.CastExpressionNode = CastExpressionNode;
 exports.FieldAccessNode = FieldAccessNode;
 exports.TypeNode = TypeNode;
 exports.BlockNode = BlockNode;
+exports.GetterSetterNode = GetterSetterNode;

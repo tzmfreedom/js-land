@@ -107,6 +107,9 @@ ApexAstBuilder.prototype.visitClassDeclaration = function(ctx) {
       })
     );
   });
+  let innerClasses = declarations.filter((declaration) => {
+    return declaration instanceof Ast.ClassNode;
+  });
 
   return new Ast.ClassNode(
     null,
@@ -118,7 +121,9 @@ ApexAstBuilder.prototype.visitClassDeclaration = function(ctx) {
     instanceFields,
     instanceMethods,
     staticFields,
-    staticMethods
+    staticMethods,
+    innerClasses,
+    ctx.start.line
   );
 };
 
@@ -263,13 +268,18 @@ ApexAstBuilder.prototype.visitFieldDeclaration = function(ctx) {
 
 // Visit a parse tree produced by apexParser#propertyDeclaration.
 ApexAstBuilder.prototype.visitPropertyDeclaration = function(ctx) {
-  return this.visitChildren(ctx);
+  const type = ctx.type().accept(this);
+  const variableDeclarators = ctx.variableDeclarators().accept(this);
+  const propertyBodyDeclaration = ctx.propertyBodyDeclaration().accept(this);
+  return null;
 };
 
 
 // Visit a parse tree produced by apexParser#propertyBodyDeclaration.
 ApexAstBuilder.prototype.visitPropertyBodyDeclaration = function(ctx) {
-  return this.visitChildren(ctx);
+  return ctx.propertyBlock().map((propertyBlock) => {
+    propertyBlock.accept(this);
+  });
 };
 
 
@@ -629,7 +639,10 @@ ApexAstBuilder.prototype.visitStatement = function(ctx) {
 
 // Visit a parse tree produced by apexParser#propertyBlock.
 ApexAstBuilder.prototype.visitPropertyBlock = function(ctx) {
-  return this.visitChildren(ctx);
+  const modifiers = ctx.modifier().map((modifier) => { return modifier.accept(this); });
+  const getter = ctx.getter() ? ctx.getter().accept(this) : null;
+  const setter = ctx.setter() ? ctx.setter().accept(this) : null;
+  return new Ast.
 };
 
 

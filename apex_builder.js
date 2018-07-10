@@ -87,7 +87,14 @@ class ApexBuilder {
     this.validateModifierDuplication(node);
     // returnType Check
     if (node.returnType != 'void'){
-      let returnType = ApexClassStore.get(node.returnType.name.join('.'));
+      let returnType;
+      if (node.returnType.name.length == 1) {
+        returnType = ApexClassStore.get(node.returnType.name.join('.'));
+      } else {
+        const names = node.returnType.name;
+        // console.log(ApexClassStore.get(names[0]))
+        returnType = ApexClassStore.get(names[0]).innerClasses[names[1]];
+      }
       if (!returnType) {
         // TODO: lineno
         throw `Invalid return type ${node.returnType} at line ${node.lineno}`;
@@ -102,6 +109,7 @@ class ApexBuilder {
   createObject(className) {
     let classInfo = ApexClassStore.get(className);
     let instanceFields = {};
+    // console.log(classInfo)
     Object.keys(classInfo.instanceFields).forEach((fieldName) => {
       instanceFields[fieldName] = classInfo.instanceFields[fieldName].expression.accept(this);
     });

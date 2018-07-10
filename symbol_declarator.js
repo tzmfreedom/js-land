@@ -72,8 +72,17 @@ class SymbolDeclarator {
         };
       });
     });
+    console.log(instanceFields)
 
     let innerClasses = {};
+    node.innerClasses.forEach((innerClass) => {
+      let innerClassName = innerClass.name;
+      if (innerClassName in innerClasses) {
+        // TODO: lineno
+        throw `Compile Error: duplicate instance field name ${innerClassName} at line : `
+      }
+      innerClasses[innerClassName] = innerClass;
+    });
 
     const classInfo = new ApexClass(
       node.name,
@@ -84,7 +93,7 @@ class SymbolDeclarator {
       staticFields,
       instanceMethods,
       staticMethods,
-      innerClasses,
+      innerClasses
     );
 
     ApexClassStore.register(classInfo);

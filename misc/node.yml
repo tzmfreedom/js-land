@@ -154,3 +154,6 @@ type:
   - parameters
 block:
   - statements
+getter_setter:
+  - modifiers
+  - methodBody
