@@ -17,7 +17,7 @@ class ApexBuilder {
       node.modifiers.map((modifier) => {
         if (modifiers.includes(modifier.name)) {
           // TODO: lineno
-          throw `Compile Error: duplicate modifier ${name} at line : `
+          throw `Compile Error: duplicate modifier ${name} at line ${node.lineno}`
         }
         modifiers.push(modifier.name);
       });
@@ -29,7 +29,7 @@ class ApexBuilder {
     node.parameters.map((parameter) => {
       if (parameters.includes(parameter.name)){
         // TODO: lineno
-        throw `Compile Error: duplicate modifier ${name} at line : `
+        throw `Compile Error: duplicate modifier ${name} at line ${node.lineno}`
       }
       parameters.push(parameter.name);
     });
@@ -90,7 +90,7 @@ class ApexBuilder {
       let returnType = ApexClassStore.get(node.returnType.name.join('.'));
       if (!returnType) {
         // TODO: lineno
-        throw `Invalid return type ${node.returnType} at line`;
+        throw `Invalid return type ${node.returnType} at line ${node.lineno}`;
       }
     }
     this.validateParameter(node);
@@ -171,11 +171,9 @@ class ApexBuilder {
 
     let condition = forControl.expression.accept(this);
     if (!condition instanceof Ast.BooleanNode) {
-      throw `Should be boolean expression`;
+      throw `Should be boolean expression at line ${condition.lineno}`;
     }
-    node.statements.forEach((statement) => {
-      statement.accept(this);
-    });
+    node.statements.accept(this);
 
     EnvManager.popScope();
     return node;
@@ -184,7 +182,7 @@ class ApexBuilder {
   visitIf(node) {
     let condition = node.condition.accept(this);
     if (!condition instanceof Ast.BooleanNode) {
-      throw `Should be boolean expression`;
+      throw `Should be boolean expression at line ${condition.lineno}`;
     }
     node.ifStatement.accept(this);
     if (node.elseStatement) node.elseStatement.accept(this);
@@ -215,7 +213,7 @@ class ApexBuilder {
   visitName(node) {
     let values = methodSearcher.searchField(node);
     if (values) return values;
-    throw `Variable not declaration : ${node.value.join('.')}`
+    throw `Variable not declaration : ${node.value.join('.')} at line ${node.lineno}`
   }
 
   visitNew(node) {
@@ -243,6 +241,28 @@ class ApexBuilder {
 
   visitBinaryOperator(node) {
     let left, right;
+    let leftType, rightType;
+    left = node.left.accept(this);
+    if (node.left instanceof Ast.NameNode) {
+      if (left.key) {
+        leftType = left.receiverNode.instanceFields[left.key].type.toName();
+      } else {
+        leftType = EnvManager.get(left.receiverNode).type.toName();
+      }
+    } else {
+      leftType = left.type();
+    }
+    right = node.right.accept(this);
+    if (node.right instanceof Ast.NameNode) {
+      if (right.key) {
+        rightType = right.receiverNode.instanceFields[right.key].type.toName();
+      } else {
+        rightType = EnvManager.get(right.receiverNode).type.toName();
+      }
+    } else {
+      rightType = right.type();
+    }
+
     switch(node.type) {
       case '+':
       case '-':
@@ -253,30 +273,21 @@ class ApexBuilder {
       case '<<':
       case '>>>':
       case '>>':
-        left = node.left.accept(this);
-        right = node.right.accept(this);
-        let leftType = left.type();
         if (leftType != 'Integer' && leftType != 'Double') {
-          throw `Must be integer or double, but ${leftType}`;
+          throw `Must be integer or double, but ${leftType} at line ${node.lineno}`;
         }
-        let rightType = right.type();
         if (rightType != 'Integer' && rightType != 'Double') {
-          throw `Must be integer or double, but ${rightType}`;
+          throw `Must be integer or double, but ${rightType} at line ${node.lineno}`;
         }
         return left;
       case '&':
       case '|':
       case '^':
-        left = node.left.accept(this);
-        right = node.right.accept(this);
-        if (left.name != 'Integer') {
-          throw `Must be integer, but ${left.name}`;
+        if (leftType != 'Integer') {
+          throw `Must be integer, but ${leftType} at line ${node.lineno}`;
         }
-        if (right != 'Integer') {
-          throw `Must be integer, but ${right.name}`;
-        }
-        if (left.name != right.name) {
-          throw `Type not matched : left => ${left.name}, right => ${right.name}`
+        if (rightType != 'Integer') {
+          throw `Must be integer, but ${rightType} at line ${node.lineno}`;
         }
         return left;
       case '<':
@@ -287,10 +298,8 @@ class ApexBuilder {
       case '===':
       case '!=':
       case '!==':
-        left = node.left.accept(this);
-        right = node.right.accept(this);
-        if (left.type() != right.type()) {
-          throw `Type not matched : left => ${left.name}, right => ${right.name}`
+        if (leftType != rightType) {
+          throw `Type not matched : left => ${leftType}, right => ${rightType} at line ${node.lineno}`
         }
         return left;
       case '=':
@@ -299,24 +308,21 @@ class ApexBuilder {
       case '*=':
       case '/=':
       case '%=':
-        let searchResult = node.left.accept(this);
-        if (searchResult.key) {
-          left = searchResult.receiverNode.instanceFields[searchResult.key].type;
-        } else {
-          left = EnvManager.get(searchResult.receiverNode).type;
-        }
-        right = node.right.accept(this);
-        if (!this.checkType(left, right)) {
-          throw `Type not matched : left => ${left.name}, right => ${right.name}`
+        if (leftType != rightType) {
+          throw `Type not matched : left => ${leftType}, right => ${rightType} at line ${node.lineno}`
         }
         return left;
       case '&=':
       case '|=':
       case '^=':
-        left = node.left.accept(this);
-        right = node.right.accept(this);
-        if (left.name != right.name) {
-          throw `Type not matched : left => ${left.name}, right => ${right.name}`
+        if (leftType != 'Integer') {
+          throw `Must be integer, but ${leftType} at line ${node.lineno}`;
+        }
+        if (rightType != 'Integer') {
+          throw `Must be integer, but ${rightType} at line ${node.lineno}`;
+        }
+        if (leftType != rightType) {
+          throw `Type not matched : left => ${leftType}, right => ${rightType} at line ${node.lineno}`
         }
         return left;
     }
@@ -370,7 +376,7 @@ class ApexBuilder {
       let decl = declarator.accept(this);
 
       if (decl.expression && !this.checkType(type, decl.expression)) {
-        throw `Type not matched : variable => ${type.name.join('.')}, initializer => ${decl.expression.type()}`
+        throw `Type not matched : variable => ${type.name.join('.')}, initializer => ${decl.expression.type()} at line ${node.lineno}`
       }
       let env = EnvManager.currentScope();
       env.define(type, declarator.name, decl.expression ? decl.expression.accept(this) : new Ast.NullNode());
@@ -381,7 +387,7 @@ class ApexBuilder {
     let name = node.name;
     let expression = node.expression ? node.expression.accept(this) : null;
     if (EnvManager.localIncludes(name)) {
-      throw `duplicate variable name ${name}`;
+      throw `duplicate variable name ${name} at line ${node.lineno}`;
     }
     return { name, expression };
   }
@@ -395,11 +401,18 @@ class ApexBuilder {
   }
 
   visitBlock(node) {
-    node.statements.forEach((statement) => {
-      statement.accept(this);
-    });
+    let returnNode;
+    for (let i = 0; i < node.statements.length; i++) {
+      returnNode = node.statements[i].accept(this);
+      if (
+        returnNode instanceof Ast.ReturnNode ||
+        returnNode instanceof Ast.BreakNode ||
+        returnNode instanceof Ast.ContinueNode
+      ) {
+        break;
+      }
+    }
   }
-
 
   checkType(left, right) {
     if (right instanceof Ast.NullNode) return true;

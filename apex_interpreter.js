@@ -1,6 +1,5 @@
 var Ast = require('./node/ast');
 let methodSearcher = require('./methodSearcher');
-let ApexClassStore = require('./apexClass').ApexClassStore;
 const EnvManager = require('./envManager');
 
 class ApexInterpreter {
@@ -72,14 +71,21 @@ class ApexInterpreter {
     forControl.forInit.accept(this);
 
     let condition = forControl.expression.accept(this);
-    while (condition.value = true) {
-      node.statements.forEach((statement) => {
-        statement.accept(this);
-      });
-      forControl.forUpdate.accept(this);
-      condition = forControl.expression.accept(this);
+    let returnNode;
+    while (condition.value == true) {
+      returnNode = node.statements.accept(this);
+      if (
+        returnNode instanceof Ast.ReturnNode ||
+        returnNode instanceof Ast.BreakNode ||
+        returnNode instanceof Ast.ContinueNode
+      ) {
+        break;
+      }
+      forControl.forUpdate.forEach((statement) => { statement.accept(this) });
+      condition = forControl.expression.accept(this)
     }
     EnvManager.popScope();
+    return returnNode;
   }
 
   visitForControl(node) {
@@ -88,11 +94,13 @@ class ApexInterpreter {
 
   visitIf(node) {
     let condition = node.condition.accept(this);
+    let returnNode;
     if (condition.value == true) {
-      node.ifStatement.accept(this);
+      returnNode = node.ifStatement.accept(this);
     } else if (node.elseStatement) {
-      node.elseStatement.accept(this);
+      returnNode = node.elseStatement.accept(this);
     }
+    return returnNode;
   }
 
   visitMethodInvocation(node) {
@@ -107,12 +115,14 @@ class ApexInterpreter {
     let parameters = node.parameters.map((parameter) => { return parameter.accept(this); });
 
     EnvManager.pushScope(env);
+    let returnNode;
     if (searchResult.methodNode.nativeFunction) {
-      searchResult.methodNode.nativeFunction.call(this, parameters);
+      returnNode = searchResult.methodNode.nativeFunction.call(this, parameters);
     } else {
-      searchResult.methodNode.statements.accept(this);
+      returnNode = searchResult.methodNode.statements.accept(this);
     }
     EnvManager.popScope();
+    return returnNode;
   }
 
   visitName(node) {
@@ -248,7 +258,8 @@ class ApexInterpreter {
   }
 
   visitReturn(node) {
-    return node
+    node.value = node.expression.accept(this);
+    return node;
   }
 
   visitSoql(node) {
@@ -287,17 +298,44 @@ class ApexInterpreter {
   visitWhile(node) {
     EnvManager.pushScope({});
     let condition = node.condition.accept(this);
+    let returnNode;
     while (condition.value == true) {
-      node.statements.forEach((statement) => {
-        statement.accept(this);
-      });
+      for (let i = 0; i < node.statements.length; i++) {
+        returnNode = node.statements[i].accept(this);
+        if (
+          returnNode instanceof Ast.ReturnNode ||
+          returnNode instanceof Ast.BreakNode ||
+          returnNode instanceof Ast.ContinueNode
+        ) {
+          break;
+        }
+      }
+      if (
+        returnNode instanceof Ast.ReturnNode ||
+        returnNode instanceof Ast.BreakNode ||
+        returnNode instanceof Ast.ContinueNode
+      ) {
+        break;
+      }
+
       condition = node.condition.accept(this);
     }
     EnvManager.popScope();
+    return returnNode;
   }
 
   visitBlock(node){
-    node.statements.forEach((statement) => { statement.accept(this); });
+    let returnNode;
+    for (let i = 0; i < node.statements.length; i++){
+      returnNode = node.statements[i].accept(this);
+      if (
+        returnNode instanceof Ast.ReturnNode ||
+        returnNode instanceof Ast.BreakNode ||
+        returnNode instanceof Ast.ContinueNode
+      ) {
+        return returnNode;
+      }
+    }
   }
 }
 

@@ -593,7 +593,7 @@ ApexAstBuilder.prototype.visitStatement = function(ctx) {
     return new Ast.IfNode(condition, if_statement, else_statement, lineNo);
   } else if (ctx.FOR()) {
     let forControl = ctx.forControl().accept(this);
-    let statement = ctx.statement().map((statement) => { return statement.accept(this); });
+    let statement = ctx.statement()[0].accept(this);
     return new Ast.ForNode(forControl, statement, lineNo);
   } else if (ctx.WHILE()) {
     let doFlag = ctx.DO() != null;
@@ -704,7 +704,7 @@ ApexAstBuilder.prototype.visitEnhancedForControl = function(ctx) {
   let type = ctx.type().accept(this);
   let variableDeclaratorId = ctx.variableDeclaratorId().accept(this);
   let expression = ctx.expression().accept(this);
-  return new Ast.EnhancedForControl(modifiers, type, variableDeclaratorId, expression, ctx.start.line)
+  return new Ast.EnhancedForControlNode(modifiers, type, variableDeclaratorId, expression, ctx.start.line)
 };
 
 

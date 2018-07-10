@@ -500,6 +500,8 @@ primary
     |   SUPER
     |   literal
     |   Identifier
+    |   GET
+    |   SET
     |   type '.' CLASS
     |   VOID '.' CLASS
     |   nonWildcardTypeArguments (explicitGenericInvocationSuffix | THIS arguments)

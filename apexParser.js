@@ -7,7 +7,7 @@ var apexVisitor = require('./apexVisitor').apexVisitor;
 var grammarFileName = "apex.g4";
 
 var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
-    "\u0003}\u0481\u0004\u0002\t\u0002\u0004\u0003\t\u0003\u0004\u0004\t",
+    "\u0003}\u0483\u0004\u0002\t\u0002\u0004\u0003\t\u0003\u0004\u0004\t",
     "\u0004\u0004\u0005\t\u0005\u0004\u0006\t\u0006\u0004\u0007\t\u0007\u0004",
     "\b\t\b\u0004\t\t\t\u0004\n\t\n\u0004\u000b\t\u000b\u0004\f\t\f\u0004",
     "\r\t\r\u0004\u000e\t\u000e\u0004\u000f\t\u000f\u0004\u0010\t\u0010\u0004",
@@ -127,24 +127,24 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "Q\u0003Q\u0003Q\u0005Q\u03c3\nQ\u0003Q\u0003Q\u0003Q\u0003Q\u0003Q\u0003",
     "Q\u0007Q\u03cb\nQ\fQ\u000eQ\u03ce\u000bQ\u0003R\u0003R\u0003R\u0003",
     "R\u0003R\u0003R\u0003R\u0003R\u0003R\u0003R\u0003R\u0003R\u0003R\u0003",
-    "R\u0003R\u0003R\u0003R\u0003R\u0003R\u0005R\u03e3\nR\u0003R\u0005R\u03e6",
-    "\nR\u0003S\u0003S\u0003S\u0003S\u0003S\u0003S\u0003S\u0003S\u0003S\u0005",
-    "S\u03f1\nS\u0005S\u03f3\nS\u0003T\u0003T\u0005T\u03f7\nT\u0003T\u0003",
-    "T\u0003T\u0005T\u03fc\nT\u0007T\u03fe\nT\fT\u000eT\u0401\u000bT\u0003",
-    "T\u0003T\u0003T\u0005T\u0406\nT\u0003U\u0003U\u0005U\u040a\nU\u0003",
-    "U\u0003U\u0003V\u0003V\u0003V\u0003V\u0007V\u0412\nV\fV\u000eV\u0415",
-    "\u000bV\u0003V\u0003V\u0003V\u0003V\u0003V\u0003V\u0003V\u0007V\u041e",
-    "\nV\fV\u000eV\u0421\u000bV\u0003V\u0003V\u0007V\u0425\nV\fV\u000eV\u0428",
-    "\u000bV\u0005V\u042a\nV\u0003W\u0003W\u0003W\u0005W\u042f\nW\u0003W",
-    "\u0003W\u0003W\u0005W\u0434\nW\u0003W\u0003W\u0003W\u0005W\u0439\nW",
-    "\u0003W\u0003W\u0003W\u0005W\u043e\nW\u0007W\u0440\nW\fW\u000eW\u0443",
-    "\u000bW\u0003W\u0003W\u0003X\u0003X\u0003X\u0005X\u044a\nX\u0003X\u0003",
-    "X\u0003X\u0005X\u044f\nX\u0007X\u0451\nX\fX\u000eX\u0454\u000bX\u0003",
-    "X\u0003X\u0003Y\u0003Y\u0005Y\u045a\nY\u0003Z\u0003Z\u0003Z\u0003[\u0003",
-    "[\u0003[\u0003[\u0003\\\u0003\\\u0003\\\u0005\\\u0466\n\\\u0003]\u0003",
-    "]\u0003]\u0005]\u046b\n]\u0003^\u0003^\u0003^\u0003^\u0005^\u0471\n",
-    "^\u0005^\u0473\n^\u0003_\u0003_\u0003_\u0003_\u0005_\u0479\n_\u0003",
-    "`\u0003`\u0005`\u047d\n`\u0003`\u0003`\u0003`\u0002\u0003\u00a0a\u0002",
+    "R\u0003R\u0003R\u0003R\u0003R\u0003R\u0003R\u0003R\u0005R\u03e5\nR\u0003",
+    "R\u0005R\u03e8\nR\u0003S\u0003S\u0003S\u0003S\u0003S\u0003S\u0003S\u0003",
+    "S\u0003S\u0005S\u03f3\nS\u0005S\u03f5\nS\u0003T\u0003T\u0005T\u03f9",
+    "\nT\u0003T\u0003T\u0003T\u0005T\u03fe\nT\u0007T\u0400\nT\fT\u000eT\u0403",
+    "\u000bT\u0003T\u0003T\u0003T\u0005T\u0408\nT\u0003U\u0003U\u0005U\u040c",
+    "\nU\u0003U\u0003U\u0003V\u0003V\u0003V\u0003V\u0007V\u0414\nV\fV\u000e",
+    "V\u0417\u000bV\u0003V\u0003V\u0003V\u0003V\u0003V\u0003V\u0003V\u0007",
+    "V\u0420\nV\fV\u000eV\u0423\u000bV\u0003V\u0003V\u0007V\u0427\nV\fV\u000e",
+    "V\u042a\u000bV\u0005V\u042c\nV\u0003W\u0003W\u0003W\u0005W\u0431\nW",
+    "\u0003W\u0003W\u0003W\u0005W\u0436\nW\u0003W\u0003W\u0003W\u0005W\u043b",
+    "\nW\u0003W\u0003W\u0003W\u0005W\u0440\nW\u0007W\u0442\nW\fW\u000eW\u0445",
+    "\u000bW\u0003W\u0003W\u0003X\u0003X\u0003X\u0005X\u044c\nX\u0003X\u0003",
+    "X\u0003X\u0005X\u0451\nX\u0007X\u0453\nX\fX\u000eX\u0456\u000bX\u0003",
+    "X\u0003X\u0003Y\u0003Y\u0005Y\u045c\nY\u0003Z\u0003Z\u0003Z\u0003[\u0003",
+    "[\u0003[\u0003[\u0003\\\u0003\\\u0003\\\u0005\\\u0468\n\\\u0003]\u0003",
+    "]\u0003]\u0005]\u046d\n]\u0003^\u0003^\u0003^\u0003^\u0005^\u0473\n",
+    "^\u0005^\u0475\n^\u0003_\u0003_\u0003_\u0003_\u0005_\u047b\n_\u0003",
+    "`\u0003`\u0005`\u047f\n`\u0003`\u0003`\u0003`\u0002\u0003\u00a0a\u0002",
     "\u0004\u0006\b\n\f\u000e\u0010\u0012\u0014\u0016\u0018\u001a\u001c\u001e",
     " \"$&(*,.02468:<>@BDFHJLNPRTVXZ\\^`bdfhjlnprtvxz|~\u0080\u0082\u0084",
     "\u0086\u0088\u008a\u008c\u008e\u0090\u0092\u0094\u0096\u0098\u009a\u009c",
@@ -153,7 +153,7 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u0018\'),,7:AA\n\u0002\n\n\f\f\u000e\u000e\u0014\u0014\u001a\u001a",
     "!!##++\u0004\u0002\u0017\u0017--\u0003\u0002BG\u0003\u0002<@\u0003\u0002",
     "^a\u0003\u0002TU\u0004\u0002bcgg\u0003\u0002`a\u0004\u0002RSYZ\u0004",
-    "\u0002XX[[\u0004\u0002QQhr\u0003\u0002^_\u0002\u04e2\u0002\u00c0\u0003",
+    "\u0002XX[[\u0004\u0002QQhr\u0003\u0002^_\u0002\u04e6\u0002\u00c0\u0003",
     "\u0002\u0002\u0002\u0004\u00d9\u0003\u0002\u0002\u0002\u0006\u00dd\u0003",
     "\u0002\u0002\u0002\b\u00e1\u0003\u0002\u0002\u0002\n\u00e5\u0003\u0002",
     "\u0002\u0002\f\u00e7\u0003\u0002\u0002\u0002\u000e\u00f6\u0003\u0002",
@@ -191,14 +191,14 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u0094\u0361\u0003\u0002\u0002\u0002\u0096\u0365\u0003\u0002\u0002\u0002",
     "\u0098\u036d\u0003\u0002\u0002\u0002\u009a\u036f\u0003\u0002\u0002\u0002",
     "\u009c\u0371\u0003\u0002\u0002\u0002\u009e\u0374\u0003\u0002\u0002\u0002",
-    "\u00a0\u0383\u0003\u0002\u0002\u0002\u00a2\u03e5\u0003\u0002\u0002\u0002",
-    "\u00a4\u03f2\u0003\u0002\u0002\u0002\u00a6\u0405\u0003\u0002\u0002\u0002",
-    "\u00a8\u0407\u0003\u0002\u0002\u0002\u00aa\u040d\u0003\u0002\u0002\u0002",
-    "\u00ac\u042b\u0003\u0002\u0002\u0002\u00ae\u0446\u0003\u0002\u0002\u0002",
-    "\u00b0\u0457\u0003\u0002\u0002\u0002\u00b2\u045b\u0003\u0002\u0002\u0002",
-    "\u00b4\u045e\u0003\u0002\u0002\u0002\u00b6\u0465\u0003\u0002\u0002\u0002",
-    "\u00b8\u046a\u0003\u0002\u0002\u0002\u00ba\u0472\u0003\u0002\u0002\u0002",
-    "\u00bc\u0478\u0003\u0002\u0002\u0002\u00be\u047a\u0003\u0002\u0002\u0002",
+    "\u00a0\u0383\u0003\u0002\u0002\u0002\u00a2\u03e7\u0003\u0002\u0002\u0002",
+    "\u00a4\u03f4\u0003\u0002\u0002\u0002\u00a6\u0407\u0003\u0002\u0002\u0002",
+    "\u00a8\u0409\u0003\u0002\u0002\u0002\u00aa\u040f\u0003\u0002\u0002\u0002",
+    "\u00ac\u042d\u0003\u0002\u0002\u0002\u00ae\u0448\u0003\u0002\u0002\u0002",
+    "\u00b0\u0459\u0003\u0002\u0002\u0002\u00b2\u045d\u0003\u0002\u0002\u0002",
+    "\u00b4\u0460\u0003\u0002\u0002\u0002\u00b6\u0467\u0003\u0002\u0002\u0002",
+    "\u00b8\u046c\u0003\u0002\u0002\u0002\u00ba\u0474\u0003\u0002\u0002\u0002",
+    "\u00bc\u047a\u0003\u0002\u0002\u0002\u00be\u047c\u0003\u0002\u0002\u0002",
     "\u00c0\u00c1\u0005\u0004\u0003\u0002\u00c1\u00c2\u0007\u0002\u0002\u0003",
     "\u00c2\u0003\u0003\u0002\u0002\u0002\u00c3\u00c5\u0005\b\u0005\u0002",
     "\u00c4\u00c3\u0003\u0002\u0002\u0002\u00c5\u00c8\u0003\u0002\u0002\u0002",
@@ -648,109 +648,111 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u0002\u0002\u03cc\u03cd\u0003\u0002\u0002\u0002\u03cd\u00a1\u0003\u0002",
     "\u0002\u0002\u03ce\u03cc\u0003\u0002\u0002\u0002\u03cf\u03d0\u0007H",
     "\u0002\u0002\u03d0\u03d1\u0005\u00a0Q\u0002\u03d1\u03d2\u0007I\u0002",
-    "\u0002\u03d2\u03e6\u0003\u0002\u0002\u0002\u03d3\u03e6\u0007/\u0002",
-    "\u0002\u03d4\u03e6\u0007-\u0002\u0002\u03d5\u03e6\u0005h5\u0002\u03d6",
-    "\u03e6\u0007t\u0002\u0002\u03d7\u03d8\u0005N(\u0002\u03d8\u03d9\u0007",
-    "P\u0002\u0002\u03d9\u03da\u0007\u000f\u0002\u0002\u03da\u03e6\u0003",
-    "\u0002\u0002\u0002\u03db\u03dc\u00074\u0002\u0002\u03dc\u03dd\u0007",
-    "P\u0002\u0002\u03dd\u03e6\u0007\u000f\u0002\u0002\u03de\u03e2\u0005",
-    "\u00b4[\u0002\u03df\u03e3\u0005\u00bc_\u0002\u03e0\u03e1\u0007/\u0002",
-    "\u0002\u03e1\u03e3\u0005\u00be`\u0002\u03e2\u03df\u0003\u0002\u0002",
-    "\u0002\u03e2\u03e0\u0003\u0002\u0002\u0002\u03e3\u03e6\u0003\u0002\u0002",
-    "\u0002\u03e4\u03e6\u0007\u0003\u0002\u0002\u03e5\u03cf\u0003\u0002\u0002",
-    "\u0002\u03e5\u03d3\u0003\u0002\u0002\u0002\u03e5\u03d4\u0003\u0002\u0002",
-    "\u0002\u03e5\u03d5\u0003\u0002\u0002\u0002\u03e5\u03d6\u0003\u0002\u0002",
-    "\u0002\u03e5\u03d7\u0003\u0002\u0002\u0002\u03e5\u03db\u0003\u0002\u0002",
-    "\u0002\u03e5\u03de\u0003\u0002\u0002\u0002\u03e5\u03e4\u0003\u0002\u0002",
-    "\u0002\u03e6\u00a3\u0003\u0002\u0002\u0002\u03e7\u03e8\u0005\u00b4[",
-    "\u0002\u03e8\u03e9\u0005\u00a6T\u0002\u03e9\u03ea\u0005\u00b0Y\u0002",
-    "\u03ea\u03f3\u0003\u0002\u0002\u0002\u03eb\u03f0\u0005\u00a6T\u0002",
-    "\u03ec\u03f1\u0005\u00aaV\u0002\u03ed\u03f1\u0005\u00b0Y\u0002\u03ee",
-    "\u03f1\u0005\u00acW\u0002\u03ef\u03f1\u0005\u00aeX\u0002\u03f0\u03ec",
-    "\u0003\u0002\u0002\u0002\u03f0\u03ed\u0003\u0002\u0002\u0002\u03f0\u03ee",
-    "\u0003\u0002\u0002\u0002\u03f0\u03ef\u0003\u0002\u0002\u0002\u03f1\u03f3",
-    "\u0003\u0002\u0002\u0002\u03f2\u03e7\u0003\u0002\u0002\u0002\u03f2\u03eb",
-    "\u0003\u0002\u0002\u0002\u03f3\u00a5\u0003\u0002\u0002\u0002\u03f4\u03f6",
-    "\u0007t\u0002\u0002\u03f5\u03f7\u0005\u00b6\\\u0002\u03f6\u03f5\u0003",
-    "\u0002\u0002\u0002\u03f6\u03f7\u0003\u0002\u0002\u0002\u03f7\u03ff\u0003",
-    "\u0002\u0002\u0002\u03f8\u03f9\u0007P\u0002\u0002\u03f9\u03fb\u0007",
-    "t\u0002\u0002\u03fa\u03fc\u0005\u00b6\\\u0002\u03fb\u03fa\u0003\u0002",
-    "\u0002\u0002\u03fb\u03fc\u0003\u0002\u0002\u0002\u03fc\u03fe\u0003\u0002",
-    "\u0002\u0002\u03fd\u03f8\u0003\u0002\u0002\u0002\u03fe\u0401\u0003\u0002",
-    "\u0002\u0002\u03ff\u03fd\u0003\u0002\u0002\u0002\u03ff\u0400\u0003\u0002",
-    "\u0002\u0002\u0400\u0406\u0003\u0002\u0002\u0002\u0401\u03ff\u0003\u0002",
-    "\u0002\u0002\u0402\u0406\u0005R*\u0002\u0403\u0404\u0007\u0006\u0002",
-    "\u0002\u0404\u0406\u0005\u00b6\\\u0002\u0405\u03f4\u0003\u0002\u0002",
-    "\u0002\u0405\u0402\u0003\u0002\u0002\u0002\u0405\u0403\u0003\u0002\u0002",
-    "\u0002\u0406\u00a7\u0003\u0002\u0002\u0002\u0407\u0409\u0007t\u0002",
-    "\u0002\u0408\u040a\u0005\u00b8]\u0002\u0409\u0408\u0003\u0002\u0002",
-    "\u0002\u0409\u040a\u0003\u0002\u0002\u0002\u040a\u040b\u0003\u0002\u0002",
-    "\u0002\u040b\u040c\u0005\u00b0Y\u0002\u040c\u00a9\u0003\u0002\u0002",
-    "\u0002\u040d\u0429\u0007L\u0002\u0002\u040e\u0413\u0007M\u0002\u0002",
-    "\u040f\u0410\u0007L\u0002\u0002\u0410\u0412\u0007M\u0002\u0002\u0411",
-    "\u040f\u0003\u0002\u0002\u0002\u0412\u0415\u0003\u0002\u0002\u0002\u0413",
-    "\u0411\u0003\u0002\u0002\u0002\u0413\u0414\u0003\u0002\u0002\u0002\u0414",
-    "\u0416\u0003\u0002\u0002\u0002\u0415\u0413\u0003\u0002\u0002\u0002\u0416",
-    "\u042a\u0005J&\u0002\u0417\u0418\u0005\u00a0Q\u0002\u0418\u041f\u0007",
-    "M\u0002\u0002\u0419\u041a\u0007L\u0002\u0002\u041a\u041b\u0005\u00a0",
-    "Q\u0002\u041b\u041c\u0007M\u0002\u0002\u041c\u041e\u0003\u0002\u0002",
-    "\u0002\u041d\u0419\u0003\u0002\u0002\u0002\u041e\u0421\u0003\u0002\u0002",
-    "\u0002\u041f\u041d\u0003\u0002\u0002\u0002\u041f\u0420\u0003\u0002\u0002",
-    "\u0002\u0420\u0426\u0003\u0002\u0002\u0002\u0421\u041f\u0003\u0002\u0002",
-    "\u0002\u0422\u0423\u0007L\u0002\u0002\u0423\u0425\u0007M\u0002\u0002",
-    "\u0424\u0422\u0003\u0002\u0002\u0002\u0425\u0428\u0003\u0002\u0002\u0002",
-    "\u0426\u0424\u0003\u0002\u0002\u0002\u0426\u0427\u0003\u0002\u0002\u0002",
-    "\u0427\u042a\u0003\u0002\u0002\u0002\u0428\u0426\u0003\u0002\u0002\u0002",
-    "\u0429\u040e\u0003\u0002\u0002\u0002\u0429\u0417\u0003\u0002\u0002\u0002",
-    "\u042a\u00ab\u0003\u0002\u0002\u0002\u042b\u042e\u0007J\u0002\u0002",
-    "\u042c\u042f\u0007t\u0002\u0002\u042d\u042f\u0005\u00a0Q\u0002\u042e",
-    "\u042c\u0003\u0002\u0002\u0002\u042e\u042d\u0003\u0002\u0002\u0002\u042f",
-    "\u0430\u0003\u0002\u0002\u0002\u0430\u0433\u0007s\u0002\u0002\u0431",
-    "\u0434\u0005h5\u0002\u0432\u0434\u0005\u00a0Q\u0002\u0433\u0431\u0003",
-    "\u0002\u0002\u0002\u0433\u0432\u0003\u0002\u0002\u0002\u0434\u0441\u0003",
-    "\u0002\u0002\u0002\u0435\u0438\u0007O\u0002\u0002\u0436\u0439\u0007",
-    "t\u0002\u0002\u0437\u0439\u0005\u00a0Q\u0002\u0438\u0436\u0003\u0002",
-    "\u0002\u0002\u0438\u0437\u0003\u0002\u0002\u0002\u0439\u043a\u0003\u0002",
-    "\u0002\u0002\u043a\u043d\u0007s\u0002\u0002\u043b\u043e\u0005h5\u0002",
-    "\u043c\u043e\u0005\u00a0Q\u0002\u043d\u043b\u0003\u0002\u0002\u0002",
-    "\u043d\u043c\u0003\u0002\u0002\u0002\u043e\u0440\u0003\u0002\u0002\u0002",
-    "\u043f\u0435\u0003\u0002\u0002\u0002\u0440\u0443\u0003\u0002\u0002\u0002",
-    "\u0441\u043f\u0003\u0002\u0002\u0002\u0441\u0442\u0003\u0002\u0002\u0002",
-    "\u0442\u0444\u0003\u0002\u0002\u0002\u0443\u0441\u0003\u0002\u0002\u0002",
-    "\u0444\u0445\u0007K\u0002\u0002\u0445\u00ad\u0003\u0002\u0002\u0002",
-    "\u0446\u0449\u0007J\u0002\u0002\u0447\u044a\u0005h5\u0002\u0448\u044a",
-    "\u0005\u00a0Q\u0002\u0449\u0447\u0003\u0002\u0002\u0002\u0449\u0448",
-    "\u0003\u0002\u0002\u0002\u044a\u0452\u0003\u0002\u0002\u0002\u044b\u044e",
-    "\u0007O\u0002\u0002\u044c\u044f\u0005h5\u0002\u044d\u044f\u0005\u00a0",
-    "Q\u0002\u044e\u044c\u0003\u0002\u0002\u0002\u044e\u044d\u0003\u0002",
-    "\u0002\u0002\u044f\u0451\u0003\u0002\u0002\u0002\u0450\u044b\u0003\u0002",
-    "\u0002\u0002\u0451\u0454\u0003\u0002\u0002\u0002\u0452\u0450\u0003\u0002",
-    "\u0002\u0002\u0452\u0453\u0003\u0002\u0002\u0002\u0453\u0455\u0003\u0002",
-    "\u0002\u0002\u0454\u0452\u0003\u0002\u0002\u0002\u0455\u0456\u0007K",
-    "\u0002\u0002\u0456\u00af\u0003\u0002\u0002\u0002\u0457\u0459\u0005\u00be",
-    "`\u0002\u0458\u045a\u0005 \u0011\u0002\u0459\u0458\u0003\u0002\u0002",
-    "\u0002\u0459\u045a\u0003\u0002\u0002\u0002\u045a\u00b1\u0003\u0002\u0002",
-    "\u0002\u045b\u045c\u0005\u00b4[\u0002\u045c\u045d\u0005\u00bc_\u0002",
-    "\u045d\u00b3\u0003\u0002\u0002\u0002\u045e\u045f\u0007S\u0002\u0002",
-    "\u045f\u0460\u0005\u001e\u0010\u0002\u0460\u0461\u0007R\u0002\u0002",
-    "\u0461\u00b5\u0003\u0002\u0002\u0002\u0462\u0463\u0007S\u0002\u0002",
-    "\u0463\u0466\u0007R\u0002\u0002\u0464\u0466\u0005T+\u0002\u0465\u0462",
-    "\u0003\u0002\u0002\u0002\u0465\u0464\u0003\u0002\u0002\u0002\u0466\u00b7",
-    "\u0003\u0002\u0002\u0002\u0467\u0468\u0007S\u0002\u0002\u0468\u046b",
-    "\u0007R\u0002\u0002\u0469\u046b\u0005\u00b4[\u0002\u046a\u0467\u0003",
-    "\u0002\u0002\u0002\u046a\u0469\u0003\u0002\u0002\u0002\u046b\u00b9\u0003",
-    "\u0002\u0002\u0002\u046c\u0473\u0005\u00be`\u0002\u046d\u046e\u0007",
-    "P\u0002\u0002\u046e\u0470\u0007t\u0002\u0002\u046f\u0471\u0005\u00be",
-    "`\u0002\u0470\u046f\u0003\u0002\u0002\u0002\u0470\u0471\u0003\u0002",
-    "\u0002\u0002\u0471\u0473\u0003\u0002\u0002\u0002\u0472\u046c\u0003\u0002",
-    "\u0002\u0002\u0472\u046d\u0003\u0002\u0002\u0002\u0473\u00bb\u0003\u0002",
-    "\u0002\u0002\u0474\u0475\u0007-\u0002\u0002\u0475\u0479\u0005\u00ba",
-    "^\u0002\u0476\u0477\u0007t\u0002\u0002\u0477\u0479\u0005\u00be`\u0002",
-    "\u0478\u0474\u0003\u0002\u0002\u0002\u0478\u0476\u0003\u0002\u0002\u0002",
-    "\u0479\u00bd\u0003\u0002\u0002\u0002\u047a\u047c\u0007H\u0002\u0002",
-    "\u047b\u047d\u0005\u0096L\u0002\u047c\u047b\u0003\u0002\u0002\u0002",
-    "\u047c\u047d\u0003\u0002\u0002\u0002\u047d\u047e\u0003\u0002\u0002\u0002",
-    "\u047e\u047f\u0007I\u0002\u0002\u047f\u00bf\u0003\u0002\u0002\u0002",
+    "\u0002\u03d2\u03e8\u0003\u0002\u0002\u0002\u03d3\u03e8\u0007/\u0002",
+    "\u0002\u03d4\u03e8\u0007-\u0002\u0002\u03d5\u03e8\u0005h5\u0002\u03d6",
+    "\u03e8\u0007t\u0002\u0002\u03d7\u03e8\u0007\u0007\u0002\u0002\u03d8",
+    "\u03e8\u0007\u0006\u0002\u0002\u03d9\u03da\u0005N(\u0002\u03da\u03db",
+    "\u0007P\u0002\u0002\u03db\u03dc\u0007\u000f\u0002\u0002\u03dc\u03e8",
+    "\u0003\u0002\u0002\u0002\u03dd\u03de\u00074\u0002\u0002\u03de\u03df",
+    "\u0007P\u0002\u0002\u03df\u03e8\u0007\u000f\u0002\u0002\u03e0\u03e4",
+    "\u0005\u00b4[\u0002\u03e1\u03e5\u0005\u00bc_\u0002\u03e2\u03e3\u0007",
+    "/\u0002\u0002\u03e3\u03e5\u0005\u00be`\u0002\u03e4\u03e1\u0003\u0002",
+    "\u0002\u0002\u03e4\u03e2\u0003\u0002\u0002\u0002\u03e5\u03e8\u0003\u0002",
+    "\u0002\u0002\u03e6\u03e8\u0007\u0003\u0002\u0002\u03e7\u03cf\u0003\u0002",
+    "\u0002\u0002\u03e7\u03d3\u0003\u0002\u0002\u0002\u03e7\u03d4\u0003\u0002",
+    "\u0002\u0002\u03e7\u03d5\u0003\u0002\u0002\u0002\u03e7\u03d6\u0003\u0002",
+    "\u0002\u0002\u03e7\u03d7\u0003\u0002\u0002\u0002\u03e7\u03d8\u0003\u0002",
+    "\u0002\u0002\u03e7\u03d9\u0003\u0002\u0002\u0002\u03e7\u03dd\u0003\u0002",
+    "\u0002\u0002\u03e7\u03e0\u0003\u0002\u0002\u0002\u03e7\u03e6\u0003\u0002",
+    "\u0002\u0002\u03e8\u00a3\u0003\u0002\u0002\u0002\u03e9\u03ea\u0005\u00b4",
+    "[\u0002\u03ea\u03eb\u0005\u00a6T\u0002\u03eb\u03ec\u0005\u00b0Y\u0002",
+    "\u03ec\u03f5\u0003\u0002\u0002\u0002\u03ed\u03f2\u0005\u00a6T\u0002",
+    "\u03ee\u03f3\u0005\u00aaV\u0002\u03ef\u03f3\u0005\u00b0Y\u0002\u03f0",
+    "\u03f3\u0005\u00acW\u0002\u03f1\u03f3\u0005\u00aeX\u0002\u03f2\u03ee",
+    "\u0003\u0002\u0002\u0002\u03f2\u03ef\u0003\u0002\u0002\u0002\u03f2\u03f0",
+    "\u0003\u0002\u0002\u0002\u03f2\u03f1\u0003\u0002\u0002\u0002\u03f3\u03f5",
+    "\u0003\u0002\u0002\u0002\u03f4\u03e9\u0003\u0002\u0002\u0002\u03f4\u03ed",
+    "\u0003\u0002\u0002\u0002\u03f5\u00a5\u0003\u0002\u0002\u0002\u03f6\u03f8",
+    "\u0007t\u0002\u0002\u03f7\u03f9\u0005\u00b6\\\u0002\u03f8\u03f7\u0003",
+    "\u0002\u0002\u0002\u03f8\u03f9\u0003\u0002\u0002\u0002\u03f9\u0401\u0003",
+    "\u0002\u0002\u0002\u03fa\u03fb\u0007P\u0002\u0002\u03fb\u03fd\u0007",
+    "t\u0002\u0002\u03fc\u03fe\u0005\u00b6\\\u0002\u03fd\u03fc\u0003\u0002",
+    "\u0002\u0002\u03fd\u03fe\u0003\u0002\u0002\u0002\u03fe\u0400\u0003\u0002",
+    "\u0002\u0002\u03ff\u03fa\u0003\u0002\u0002\u0002\u0400\u0403\u0003\u0002",
+    "\u0002\u0002\u0401\u03ff\u0003\u0002\u0002\u0002\u0401\u0402\u0003\u0002",
+    "\u0002\u0002\u0402\u0408\u0003\u0002\u0002\u0002\u0403\u0401\u0003\u0002",
+    "\u0002\u0002\u0404\u0408\u0005R*\u0002\u0405\u0406\u0007\u0006\u0002",
+    "\u0002\u0406\u0408\u0005\u00b6\\\u0002\u0407\u03f6\u0003\u0002\u0002",
+    "\u0002\u0407\u0404\u0003\u0002\u0002\u0002\u0407\u0405\u0003\u0002\u0002",
+    "\u0002\u0408\u00a7\u0003\u0002\u0002\u0002\u0409\u040b\u0007t\u0002",
+    "\u0002\u040a\u040c\u0005\u00b8]\u0002\u040b\u040a\u0003\u0002\u0002",
+    "\u0002\u040b\u040c\u0003\u0002\u0002\u0002\u040c\u040d\u0003\u0002\u0002",
+    "\u0002\u040d\u040e\u0005\u00b0Y\u0002\u040e\u00a9\u0003\u0002\u0002",
+    "\u0002\u040f\u042b\u0007L\u0002\u0002\u0410\u0415\u0007M\u0002\u0002",
+    "\u0411\u0412\u0007L\u0002\u0002\u0412\u0414\u0007M\u0002\u0002\u0413",
+    "\u0411\u0003\u0002\u0002\u0002\u0414\u0417\u0003\u0002\u0002\u0002\u0415",
+    "\u0413\u0003\u0002\u0002\u0002\u0415\u0416\u0003\u0002\u0002\u0002\u0416",
+    "\u0418\u0003\u0002\u0002\u0002\u0417\u0415\u0003\u0002\u0002\u0002\u0418",
+    "\u042c\u0005J&\u0002\u0419\u041a\u0005\u00a0Q\u0002\u041a\u0421\u0007",
+    "M\u0002\u0002\u041b\u041c\u0007L\u0002\u0002\u041c\u041d\u0005\u00a0",
+    "Q\u0002\u041d\u041e\u0007M\u0002\u0002\u041e\u0420\u0003\u0002\u0002",
+    "\u0002\u041f\u041b\u0003\u0002\u0002\u0002\u0420\u0423\u0003\u0002\u0002",
+    "\u0002\u0421\u041f\u0003\u0002\u0002\u0002\u0421\u0422\u0003\u0002\u0002",
+    "\u0002\u0422\u0428\u0003\u0002\u0002\u0002\u0423\u0421\u0003\u0002\u0002",
+    "\u0002\u0424\u0425\u0007L\u0002\u0002\u0425\u0427\u0007M\u0002\u0002",
+    "\u0426\u0424\u0003\u0002\u0002\u0002\u0427\u042a\u0003\u0002\u0002\u0002",
+    "\u0428\u0426\u0003\u0002\u0002\u0002\u0428\u0429\u0003\u0002\u0002\u0002",
+    "\u0429\u042c\u0003\u0002\u0002\u0002\u042a\u0428\u0003\u0002\u0002\u0002",
+    "\u042b\u0410\u0003\u0002\u0002\u0002\u042b\u0419\u0003\u0002\u0002\u0002",
+    "\u042c\u00ab\u0003\u0002\u0002\u0002\u042d\u0430\u0007J\u0002\u0002",
+    "\u042e\u0431\u0007t\u0002\u0002\u042f\u0431\u0005\u00a0Q\u0002\u0430",
+    "\u042e\u0003\u0002\u0002\u0002\u0430\u042f\u0003\u0002\u0002\u0002\u0431",
+    "\u0432\u0003\u0002\u0002\u0002\u0432\u0435\u0007s\u0002\u0002\u0433",
+    "\u0436\u0005h5\u0002\u0434\u0436\u0005\u00a0Q\u0002\u0435\u0433\u0003",
+    "\u0002\u0002\u0002\u0435\u0434\u0003\u0002\u0002\u0002\u0436\u0443\u0003",
+    "\u0002\u0002\u0002\u0437\u043a\u0007O\u0002\u0002\u0438\u043b\u0007",
+    "t\u0002\u0002\u0439\u043b\u0005\u00a0Q\u0002\u043a\u0438\u0003\u0002",
+    "\u0002\u0002\u043a\u0439\u0003\u0002\u0002\u0002\u043b\u043c\u0003\u0002",
+    "\u0002\u0002\u043c\u043f\u0007s\u0002\u0002\u043d\u0440\u0005h5\u0002",
+    "\u043e\u0440\u0005\u00a0Q\u0002\u043f\u043d\u0003\u0002\u0002\u0002",
+    "\u043f\u043e\u0003\u0002\u0002\u0002\u0440\u0442\u0003\u0002\u0002\u0002",
+    "\u0441\u0437\u0003\u0002\u0002\u0002\u0442\u0445\u0003\u0002\u0002\u0002",
+    "\u0443\u0441\u0003\u0002\u0002\u0002\u0443\u0444\u0003\u0002\u0002\u0002",
+    "\u0444\u0446\u0003\u0002\u0002\u0002\u0445\u0443\u0003\u0002\u0002\u0002",
+    "\u0446\u0447\u0007K\u0002\u0002\u0447\u00ad\u0003\u0002\u0002\u0002",
+    "\u0448\u044b\u0007J\u0002\u0002\u0449\u044c\u0005h5\u0002\u044a\u044c",
+    "\u0005\u00a0Q\u0002\u044b\u0449\u0003\u0002\u0002\u0002\u044b\u044a",
+    "\u0003\u0002\u0002\u0002\u044c\u0454\u0003\u0002\u0002\u0002\u044d\u0450",
+    "\u0007O\u0002\u0002\u044e\u0451\u0005h5\u0002\u044f\u0451\u0005\u00a0",
+    "Q\u0002\u0450\u044e\u0003\u0002\u0002\u0002\u0450\u044f\u0003\u0002",
+    "\u0002\u0002\u0451\u0453\u0003\u0002\u0002\u0002\u0452\u044d\u0003\u0002",
+    "\u0002\u0002\u0453\u0456\u0003\u0002\u0002\u0002\u0454\u0452\u0003\u0002",
+    "\u0002\u0002\u0454\u0455\u0003\u0002\u0002\u0002\u0455\u0457\u0003\u0002",
+    "\u0002\u0002\u0456\u0454\u0003\u0002\u0002\u0002\u0457\u0458\u0007K",
+    "\u0002\u0002\u0458\u00af\u0003\u0002\u0002\u0002\u0459\u045b\u0005\u00be",
+    "`\u0002\u045a\u045c\u0005 \u0011\u0002\u045b\u045a\u0003\u0002\u0002",
+    "\u0002\u045b\u045c\u0003\u0002\u0002\u0002\u045c\u00b1\u0003\u0002\u0002",
+    "\u0002\u045d\u045e\u0005\u00b4[\u0002\u045e\u045f\u0005\u00bc_\u0002",
+    "\u045f\u00b3\u0003\u0002\u0002\u0002\u0460\u0461\u0007S\u0002\u0002",
+    "\u0461\u0462\u0005\u001e\u0010\u0002\u0462\u0463\u0007R\u0002\u0002",
+    "\u0463\u00b5\u0003\u0002\u0002\u0002\u0464\u0465\u0007S\u0002\u0002",
+    "\u0465\u0468\u0007R\u0002\u0002\u0466\u0468\u0005T+\u0002\u0467\u0464",
+    "\u0003\u0002\u0002\u0002\u0467\u0466\u0003\u0002\u0002\u0002\u0468\u00b7",
+    "\u0003\u0002\u0002\u0002\u0469\u046a\u0007S\u0002\u0002\u046a\u046d",
+    "\u0007R\u0002\u0002\u046b\u046d\u0005\u00b4[\u0002\u046c\u0469\u0003",
+    "\u0002\u0002\u0002\u046c\u046b\u0003\u0002\u0002\u0002\u046d\u00b9\u0003",
+    "\u0002\u0002\u0002\u046e\u0475\u0005\u00be`\u0002\u046f\u0470\u0007",
+    "P\u0002\u0002\u0470\u0472\u0007t\u0002\u0002\u0471\u0473\u0005\u00be",
+    "`\u0002\u0472\u0471\u0003\u0002\u0002\u0002\u0472\u0473\u0003\u0002",
+    "\u0002\u0002\u0473\u0475\u0003\u0002\u0002\u0002\u0474\u046e\u0003\u0002",
+    "\u0002\u0002\u0474\u046f\u0003\u0002\u0002\u0002\u0475\u00bb\u0003\u0002",
+    "\u0002\u0002\u0476\u0477\u0007-\u0002\u0002\u0477\u047b\u0005\u00ba",
+    "^\u0002\u0478\u0479\u0007t\u0002\u0002\u0479\u047b\u0005\u00be`\u0002",
+    "\u047a\u0476\u0003\u0002\u0002\u0002\u047a\u0478\u0003\u0002\u0002\u0002",
+    "\u047b\u00bd\u0003\u0002\u0002\u0002\u047c\u047e\u0007H\u0002\u0002",
+    "\u047d\u047f\u0005\u0096L\u0002\u047e\u047d\u0003\u0002\u0002\u0002",
+    "\u047e\u047f\u0003\u0002\u0002\u0002\u047f\u0480\u0003\u0002\u0002\u0002",
+    "\u0480\u0481\u0007I\u0002\u0002\u0481\u00bf\u0003\u0002\u0002\u0002",
     "\u0089\u00c6\u00cd\u00d4\u00d9\u00dd\u00e1\u00e5\u00ea\u00ee\u00f2\u00fc",
     "\u0104\u010b\u0112\u0116\u0119\u011c\u0125\u012b\u0130\u0133\u0139\u013f",
     "\u0143\u014c\u0153\u015c\u0163\u0169\u016d\u0178\u017b\u017f\u0187\u018c",
@@ -760,9 +762,9 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u0294\u0297\u02a0\u02aa\u02b2\u02b5\u02b8\u02c0\u02c8\u02d0\u02dc\u02f2",
     "\u02f5\u02f8\u02fc\u0305\u030a\u0314\u0319\u031e\u0323\u0328\u032f\u033c",
     "\u0344\u0348\u034c\u034e\u0352\u0357\u036a\u0383\u0393\u03c2\u03ca\u03cc",
-    "\u03e2\u03e5\u03f0\u03f2\u03f6\u03fb\u03ff\u0405\u0409\u0413\u041f\u0426",
-    "\u0429\u042e\u0433\u0438\u043d\u0441\u0449\u044e\u0452\u0459\u0465\u046a",
-    "\u0470\u0472\u0478\u047c"].join("");
+    "\u03e4\u03e7\u03f2\u03f4\u03f8\u03fd\u0401\u0407\u040b\u0415\u0421\u0428",
+    "\u042b\u0430\u0435\u043a\u043f\u0443\u044b\u0450\u0454\u045b\u0467\u046c",
+    "\u0472\u0474\u047a\u047e"].join("");
 
 
 var atn = new antlr4.atn.ATNDeserializer().deserialize(serializedATN);
@@ -4705,6 +4707,7 @@ apexParser.prototype.variableInitializer = function() {
             break;
         case apexParser.SoqlLiteral:
         case apexParser.SET:
+        case apexParser.GET:
         case apexParser.BOOLEAN:
         case apexParser.BYTE:
         case apexParser.CHAR:
@@ -4817,7 +4820,7 @@ apexParser.prototype.arrayInitializer = function() {
         this.state = 528;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
-        if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << apexParser.SoqlLiteral) | (1 << apexParser.SET) | (1 << apexParser.BOOLEAN) | (1 << apexParser.BYTE) | (1 << apexParser.CHAR) | (1 << apexParser.DOUBLE) | (1 << apexParser.FLOAT) | (1 << apexParser.INT))) !== 0) || ((((_la - 33)) & ~0x1f) == 0 && ((1 << (_la - 33)) & ((1 << (apexParser.LONG - 33)) | (1 << (apexParser.NEW - 33)) | (1 << (apexParser.SHORT - 33)) | (1 << (apexParser.SUPER - 33)) | (1 << (apexParser.THIS - 33)) | (1 << (apexParser.VOID - 33)) | (1 << (apexParser.IntegerLiteral - 33)))) !== 0) || ((((_la - 65)) & ~0x1f) == 0 && ((1 << (_la - 65)) & ((1 << (apexParser.FloatingPointLiteral - 65)) | (1 << (apexParser.BooleanLiteral - 65)) | (1 << (apexParser.CharacterLiteral - 65)) | (1 << (apexParser.StringLiteral - 65)) | (1 << (apexParser.NullLiteral - 65)) | (1 << (apexParser.LPAREN - 65)) | (1 << (apexParser.LBRACE - 65)) | (1 << (apexParser.LT - 65)) | (1 << (apexParser.BANG - 65)) | (1 << (apexParser.TILDE - 65)) | (1 << (apexParser.INC - 65)) | (1 << (apexParser.DEC - 65)) | (1 << (apexParser.ADD - 65)) | (1 << (apexParser.SUB - 65)))) !== 0) || _la===apexParser.Identifier) {
+        if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << apexParser.SoqlLiteral) | (1 << apexParser.SET) | (1 << apexParser.GET) | (1 << apexParser.BOOLEAN) | (1 << apexParser.BYTE) | (1 << apexParser.CHAR) | (1 << apexParser.DOUBLE) | (1 << apexParser.FLOAT) | (1 << apexParser.INT))) !== 0) || ((((_la - 33)) & ~0x1f) == 0 && ((1 << (_la - 33)) & ((1 << (apexParser.LONG - 33)) | (1 << (apexParser.NEW - 33)) | (1 << (apexParser.SHORT - 33)) | (1 << (apexParser.SUPER - 33)) | (1 << (apexParser.THIS - 33)) | (1 << (apexParser.VOID - 33)) | (1 << (apexParser.IntegerLiteral - 33)))) !== 0) || ((((_la - 65)) & ~0x1f) == 0 && ((1 << (_la - 65)) & ((1 << (apexParser.FloatingPointLiteral - 65)) | (1 << (apexParser.BooleanLiteral - 65)) | (1 << (apexParser.CharacterLiteral - 65)) | (1 << (apexParser.StringLiteral - 65)) | (1 << (apexParser.NullLiteral - 65)) | (1 << (apexParser.LPAREN - 65)) | (1 << (apexParser.LBRACE - 65)) | (1 << (apexParser.LT - 65)) | (1 << (apexParser.BANG - 65)) | (1 << (apexParser.TILDE - 65)) | (1 << (apexParser.INC - 65)) | (1 << (apexParser.DEC - 65)) | (1 << (apexParser.ADD - 65)) | (1 << (apexParser.SUB - 65)))) !== 0) || _la===apexParser.Identifier) {
             this.state = 517;
             this.variableInitializer();
             this.state = 522;
@@ -6679,6 +6682,7 @@ apexParser.prototype.elementValue = function() {
         switch(this._input.LA(1)) {
         case apexParser.SoqlLiteral:
         case apexParser.SET:
+        case apexParser.GET:
         case apexParser.BOOLEAN:
         case apexParser.BYTE:
         case apexParser.CHAR:
@@ -6801,7 +6805,7 @@ apexParser.prototype.elementValueArrayInitializer = function() {
         this.state = 691;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
-        if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << apexParser.SoqlLiteral) | (1 << apexParser.SET) | (1 << apexParser.BOOLEAN) | (1 << apexParser.BYTE) | (1 << apexParser.CHAR) | (1 << apexParser.DOUBLE) | (1 << apexParser.FLOAT) | (1 << apexParser.INT))) !== 0) || ((((_la - 33)) & ~0x1f) == 0 && ((1 << (_la - 33)) & ((1 << (apexParser.LONG - 33)) | (1 << (apexParser.NEW - 33)) | (1 << (apexParser.SHORT - 33)) | (1 << (apexParser.SUPER - 33)) | (1 << (apexParser.THIS - 33)) | (1 << (apexParser.VOID - 33)) | (1 << (apexParser.IntegerLiteral - 33)))) !== 0) || ((((_la - 65)) & ~0x1f) == 0 && ((1 << (_la - 65)) & ((1 << (apexParser.FloatingPointLiteral - 65)) | (1 << (apexParser.BooleanLiteral - 65)) | (1 << (apexParser.CharacterLiteral - 65)) | (1 << (apexParser.StringLiteral - 65)) | (1 << (apexParser.NullLiteral - 65)) | (1 << (apexParser.LPAREN - 65)) | (1 << (apexParser.LBRACE - 65)) | (1 << (apexParser.LT - 65)) | (1 << (apexParser.BANG - 65)) | (1 << (apexParser.TILDE - 65)) | (1 << (apexParser.INC - 65)) | (1 << (apexParser.DEC - 65)) | (1 << (apexParser.ADD - 65)) | (1 << (apexParser.SUB - 65)))) !== 0) || _la===apexParser.Identifier || _la===apexParser.AT) {
+        if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << apexParser.SoqlLiteral) | (1 << apexParser.SET) | (1 << apexParser.GET) | (1 << apexParser.BOOLEAN) | (1 << apexParser.BYTE) | (1 << apexParser.CHAR) | (1 << apexParser.DOUBLE) | (1 << apexParser.FLOAT) | (1 << apexParser.INT))) !== 0) || ((((_la - 33)) & ~0x1f) == 0 && ((1 << (_la - 33)) & ((1 << (apexParser.LONG - 33)) | (1 << (apexParser.NEW - 33)) | (1 << (apexParser.SHORT - 33)) | (1 << (apexParser.SUPER - 33)) | (1 << (apexParser.THIS - 33)) | (1 << (apexParser.VOID - 33)) | (1 << (apexParser.IntegerLiteral - 33)))) !== 0) || ((((_la - 65)) & ~0x1f) == 0 && ((1 << (_la - 65)) & ((1 << (apexParser.FloatingPointLiteral - 65)) | (1 << (apexParser.BooleanLiteral - 65)) | (1 << (apexParser.CharacterLiteral - 65)) | (1 << (apexParser.StringLiteral - 65)) | (1 << (apexParser.NullLiteral - 65)) | (1 << (apexParser.LPAREN - 65)) | (1 << (apexParser.LBRACE - 65)) | (1 << (apexParser.LT - 65)) | (1 << (apexParser.BANG - 65)) | (1 << (apexParser.TILDE - 65)) | (1 << (apexParser.INC - 65)) | (1 << (apexParser.DEC - 65)) | (1 << (apexParser.ADD - 65)) | (1 << (apexParser.SUB - 65)))) !== 0) || _la===apexParser.Identifier || _la===apexParser.AT) {
             this.state = 683;
             this.elementValue();
             this.state = 688;
@@ -6909,7 +6913,7 @@ apexParser.prototype.block = function() {
         this.state = 702;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
-        while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << apexParser.SoqlLiteral) | (1 << apexParser.OVERRIDE) | (1 << apexParser.VIRTUAL) | (1 << apexParser.SET) | (1 << apexParser.ABSTRACT) | (1 << apexParser.BOOLEAN) | (1 << apexParser.BREAK) | (1 << apexParser.BYTE) | (1 << apexParser.CHAR) | (1 << apexParser.CLASS) | (1 << apexParser.CONTINUE) | (1 << apexParser.DO) | (1 << apexParser.DOUBLE) | (1 << apexParser.ENUM) | (1 << apexParser.FINAL) | (1 << apexParser.FLOAT) | (1 << apexParser.FOR) | (1 << apexParser.IF) | (1 << apexParser.INT))) !== 0) || ((((_la - 32)) & ~0x1f) == 0 && ((1 << (_la - 32)) & ((1 << (apexParser.INTERFACE - 32)) | (1 << (apexParser.LONG - 32)) | (1 << (apexParser.NEW - 32)) | (1 << (apexParser.PRIVATE - 32)) | (1 << (apexParser.PROTECTED - 32)) | (1 << (apexParser.PUBLIC - 32)) | (1 << (apexParser.RETURN - 32)) | (1 << (apexParser.SHORT - 32)) | (1 << (apexParser.STATIC - 32)) | (1 << (apexParser.SUPER - 32)) | (1 << (apexParser.THIS - 32)) | (1 << (apexParser.THROW - 32)) | (1 << (apexParser.TRY - 32)) | (1 << (apexParser.VOID - 32)) | (1 << (apexParser.WHILE - 32)) | (1 << (apexParser.GLOBAL - 32)) | (1 << (apexParser.WEBSERVICE - 32)) | (1 << (apexParser.APEX_WITH_SHARING - 32)) | (1 << (apexParser.APEX_WITHOUT_SHARING - 32)) | (1 << (apexParser.DB_INSERT - 32)) | (1 << (apexParser.DB_UPSERT - 32)) | (1 << (apexParser.DB_UPDATE - 32)) | (1 << (apexParser.DB_DELETE - 32)) | (1 << (apexParser.DB_UNDELETE - 32)) | (1 << (apexParser.TESTMETHOD - 32)))) !== 0) || ((((_la - 64)) & ~0x1f) == 0 && ((1 << (_la - 64)) & ((1 << (apexParser.IntegerLiteral - 64)) | (1 << (apexParser.FloatingPointLiteral - 64)) | (1 << (apexParser.BooleanLiteral - 64)) | (1 << (apexParser.CharacterLiteral - 64)) | (1 << (apexParser.StringLiteral - 64)) | (1 << (apexParser.NullLiteral - 64)) | (1 << (apexParser.LPAREN - 64)) | (1 << (apexParser.LBRACE - 64)) | (1 << (apexParser.SEMI - 64)) | (1 << (apexParser.LT - 64)) | (1 << (apexParser.BANG - 64)) | (1 << (apexParser.TILDE - 64)) | (1 << (apexParser.INC - 64)) | (1 << (apexParser.DEC - 64)) | (1 << (apexParser.ADD - 64)) | (1 << (apexParser.SUB - 64)))) !== 0) || _la===apexParser.Identifier || _la===apexParser.AT) {
+        while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << apexParser.SoqlLiteral) | (1 << apexParser.OVERRIDE) | (1 << apexParser.VIRTUAL) | (1 << apexParser.SET) | (1 << apexParser.GET) | (1 << apexParser.ABSTRACT) | (1 << apexParser.BOOLEAN) | (1 << apexParser.BREAK) | (1 << apexParser.BYTE) | (1 << apexParser.CHAR) | (1 << apexParser.CLASS) | (1 << apexParser.CONTINUE) | (1 << apexParser.DO) | (1 << apexParser.DOUBLE) | (1 << apexParser.ENUM) | (1 << apexParser.FINAL) | (1 << apexParser.FLOAT) | (1 << apexParser.FOR) | (1 << apexParser.IF) | (1 << apexParser.INT))) !== 0) || ((((_la - 32)) & ~0x1f) == 0 && ((1 << (_la - 32)) & ((1 << (apexParser.INTERFACE - 32)) | (1 << (apexParser.LONG - 32)) | (1 << (apexParser.NEW - 32)) | (1 << (apexParser.PRIVATE - 32)) | (1 << (apexParser.PROTECTED - 32)) | (1 << (apexParser.PUBLIC - 32)) | (1 << (apexParser.RETURN - 32)) | (1 << (apexParser.SHORT - 32)) | (1 << (apexParser.STATIC - 32)) | (1 << (apexParser.SUPER - 32)) | (1 << (apexParser.THIS - 32)) | (1 << (apexParser.THROW - 32)) | (1 << (apexParser.TRY - 32)) | (1 << (apexParser.VOID - 32)) | (1 << (apexParser.WHILE - 32)) | (1 << (apexParser.GLOBAL - 32)) | (1 << (apexParser.WEBSERVICE - 32)) | (1 << (apexParser.APEX_WITH_SHARING - 32)) | (1 << (apexParser.APEX_WITHOUT_SHARING - 32)) | (1 << (apexParser.DB_INSERT - 32)) | (1 << (apexParser.DB_UPSERT - 32)) | (1 << (apexParser.DB_UPDATE - 32)) | (1 << (apexParser.DB_DELETE - 32)) | (1 << (apexParser.DB_UNDELETE - 32)) | (1 << (apexParser.TESTMETHOD - 32)))) !== 0) || ((((_la - 64)) & ~0x1f) == 0 && ((1 << (_la - 64)) & ((1 << (apexParser.IntegerLiteral - 64)) | (1 << (apexParser.FloatingPointLiteral - 64)) | (1 << (apexParser.BooleanLiteral - 64)) | (1 << (apexParser.CharacterLiteral - 64)) | (1 << (apexParser.StringLiteral - 64)) | (1 << (apexParser.NullLiteral - 64)) | (1 << (apexParser.LPAREN - 64)) | (1 << (apexParser.LBRACE - 64)) | (1 << (apexParser.SEMI - 64)) | (1 << (apexParser.LT - 64)) | (1 << (apexParser.BANG - 64)) | (1 << (apexParser.TILDE - 64)) | (1 << (apexParser.INC - 64)) | (1 << (apexParser.DEC - 64)) | (1 << (apexParser.ADD - 64)) | (1 << (apexParser.SUB - 64)))) !== 0) || _la===apexParser.Identifier || _la===apexParser.AT) {
             this.state = 699;
             this.blockStatement();
             this.state = 704;
@@ -7436,7 +7440,7 @@ apexParser.prototype.statement = function() {
             this.state = 762;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << apexParser.SoqlLiteral) | (1 << apexParser.SET) | (1 << apexParser.BOOLEAN) | (1 << apexParser.BYTE) | (1 << apexParser.CHAR) | (1 << apexParser.DOUBLE) | (1 << apexParser.FLOAT) | (1 << apexParser.INT))) !== 0) || ((((_la - 33)) & ~0x1f) == 0 && ((1 << (_la - 33)) & ((1 << (apexParser.LONG - 33)) | (1 << (apexParser.NEW - 33)) | (1 << (apexParser.SHORT - 33)) | (1 << (apexParser.SUPER - 33)) | (1 << (apexParser.THIS - 33)) | (1 << (apexParser.VOID - 33)) | (1 << (apexParser.IntegerLiteral - 33)))) !== 0) || ((((_la - 65)) & ~0x1f) == 0 && ((1 << (_la - 65)) & ((1 << (apexParser.FloatingPointLiteral - 65)) | (1 << (apexParser.BooleanLiteral - 65)) | (1 << (apexParser.CharacterLiteral - 65)) | (1 << (apexParser.StringLiteral - 65)) | (1 << (apexParser.NullLiteral - 65)) | (1 << (apexParser.LPAREN - 65)) | (1 << (apexParser.LT - 65)) | (1 << (apexParser.BANG - 65)) | (1 << (apexParser.TILDE - 65)) | (1 << (apexParser.INC - 65)) | (1 << (apexParser.DEC - 65)) | (1 << (apexParser.ADD - 65)) | (1 << (apexParser.SUB - 65)))) !== 0) || _la===apexParser.Identifier) {
+            if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << apexParser.SoqlLiteral) | (1 << apexParser.SET) | (1 << apexParser.GET) | (1 << apexParser.BOOLEAN) | (1 << apexParser.BYTE) | (1 << apexParser.CHAR) | (1 << apexParser.DOUBLE) | (1 << apexParser.FLOAT) | (1 << apexParser.INT))) !== 0) || ((((_la - 33)) & ~0x1f) == 0 && ((1 << (_la - 33)) & ((1 << (apexParser.LONG - 33)) | (1 << (apexParser.NEW - 33)) | (1 << (apexParser.SHORT - 33)) | (1 << (apexParser.SUPER - 33)) | (1 << (apexParser.THIS - 33)) | (1 << (apexParser.VOID - 33)) | (1 << (apexParser.IntegerLiteral - 33)))) !== 0) || ((((_la - 65)) & ~0x1f) == 0 && ((1 << (_la - 65)) & ((1 << (apexParser.FloatingPointLiteral - 65)) | (1 << (apexParser.BooleanLiteral - 65)) | (1 << (apexParser.CharacterLiteral - 65)) | (1 << (apexParser.StringLiteral - 65)) | (1 << (apexParser.NullLiteral - 65)) | (1 << (apexParser.LPAREN - 65)) | (1 << (apexParser.LT - 65)) | (1 << (apexParser.BANG - 65)) | (1 << (apexParser.TILDE - 65)) | (1 << (apexParser.INC - 65)) | (1 << (apexParser.DEC - 65)) | (1 << (apexParser.ADD - 65)) | (1 << (apexParser.SUB - 65)))) !== 0) || _la===apexParser.Identifier) {
                 this.state = 761;
                 this.expression(0);
             }
@@ -7490,6 +7494,7 @@ apexParser.prototype.statement = function() {
             break;
         case apexParser.SoqlLiteral:
         case apexParser.SET:
+        case apexParser.GET:
         case apexParser.BOOLEAN:
         case apexParser.BYTE:
         case apexParser.CHAR:
@@ -8175,7 +8180,7 @@ apexParser.prototype.forControl = function() {
             this.state = 834;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << apexParser.SoqlLiteral) | (1 << apexParser.SET) | (1 << apexParser.BOOLEAN) | (1 << apexParser.BYTE) | (1 << apexParser.CHAR) | (1 << apexParser.DOUBLE) | (1 << apexParser.FINAL) | (1 << apexParser.FLOAT) | (1 << apexParser.INT))) !== 0) || ((((_la - 33)) & ~0x1f) == 0 && ((1 << (_la - 33)) & ((1 << (apexParser.LONG - 33)) | (1 << (apexParser.NEW - 33)) | (1 << (apexParser.SHORT - 33)) | (1 << (apexParser.SUPER - 33)) | (1 << (apexParser.THIS - 33)) | (1 << (apexParser.VOID - 33)) | (1 << (apexParser.IntegerLiteral - 33)))) !== 0) || ((((_la - 65)) & ~0x1f) == 0 && ((1 << (_la - 65)) & ((1 << (apexParser.FloatingPointLiteral - 65)) | (1 << (apexParser.BooleanLiteral - 65)) | (1 << (apexParser.CharacterLiteral - 65)) | (1 << (apexParser.StringLiteral - 65)) | (1 << (apexParser.NullLiteral - 65)) | (1 << (apexParser.LPAREN - 65)) | (1 << (apexParser.LT - 65)) | (1 << (apexParser.BANG - 65)) | (1 << (apexParser.TILDE - 65)) | (1 << (apexParser.INC - 65)) | (1 << (apexParser.DEC - 65)) | (1 << (apexParser.ADD - 65)) | (1 << (apexParser.SUB - 65)))) !== 0) || _la===apexParser.Identifier || _la===apexParser.AT) {
+            if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << apexParser.SoqlLiteral) | (1 << apexParser.SET) | (1 << apexParser.GET) | (1 << apexParser.BOOLEAN) | (1 << apexParser.BYTE) | (1 << apexParser.CHAR) | (1 << apexParser.DOUBLE) | (1 << apexParser.FINAL) | (1 << apexParser.FLOAT) | (1 << apexParser.INT))) !== 0) || ((((_la - 33)) & ~0x1f) == 0 && ((1 << (_la - 33)) & ((1 << (apexParser.LONG - 33)) | (1 << (apexParser.NEW - 33)) | (1 << (apexParser.SHORT - 33)) | (1 << (apexParser.SUPER - 33)) | (1 << (apexParser.THIS - 33)) | (1 << (apexParser.VOID - 33)) | (1 << (apexParser.IntegerLiteral - 33)))) !== 0) || ((((_la - 65)) & ~0x1f) == 0 && ((1 << (_la - 65)) & ((1 << (apexParser.FloatingPointLiteral - 65)) | (1 << (apexParser.BooleanLiteral - 65)) | (1 << (apexParser.CharacterLiteral - 65)) | (1 << (apexParser.StringLiteral - 65)) | (1 << (apexParser.NullLiteral - 65)) | (1 << (apexParser.LPAREN - 65)) | (1 << (apexParser.LT - 65)) | (1 << (apexParser.BANG - 65)) | (1 << (apexParser.TILDE - 65)) | (1 << (apexParser.INC - 65)) | (1 << (apexParser.DEC - 65)) | (1 << (apexParser.ADD - 65)) | (1 << (apexParser.SUB - 65)))) !== 0) || _la===apexParser.Identifier || _la===apexParser.AT) {
                 this.state = 833;
                 this.forInit();
             }
@@ -8185,7 +8190,7 @@ apexParser.prototype.forControl = function() {
             this.state = 838;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << apexParser.SoqlLiteral) | (1 << apexParser.SET) | (1 << apexParser.BOOLEAN) | (1 << apexParser.BYTE) | (1 << apexParser.CHAR) | (1 << apexParser.DOUBLE) | (1 << apexParser.FLOAT) | (1 << apexParser.INT))) !== 0) || ((((_la - 33)) & ~0x1f) == 0 && ((1 << (_la - 33)) & ((1 << (apexParser.LONG - 33)) | (1 << (apexParser.NEW - 33)) | (1 << (apexParser.SHORT - 33)) | (1 << (apexParser.SUPER - 33)) | (1 << (apexParser.THIS - 33)) | (1 << (apexParser.VOID - 33)) | (1 << (apexParser.IntegerLiteral - 33)))) !== 0) || ((((_la - 65)) & ~0x1f) == 0 && ((1 << (_la - 65)) & ((1 << (apexParser.FloatingPointLiteral - 65)) | (1 << (apexParser.BooleanLiteral - 65)) | (1 << (apexParser.CharacterLiteral - 65)) | (1 << (apexParser.StringLiteral - 65)) | (1 << (apexParser.NullLiteral - 65)) | (1 << (apexParser.LPAREN - 65)) | (1 << (apexParser.LT - 65)) | (1 << (apexParser.BANG - 65)) | (1 << (apexParser.TILDE - 65)) | (1 << (apexParser.INC - 65)) | (1 << (apexParser.DEC - 65)) | (1 << (apexParser.ADD - 65)) | (1 << (apexParser.SUB - 65)))) !== 0) || _la===apexParser.Identifier) {
+            if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << apexParser.SoqlLiteral) | (1 << apexParser.SET) | (1 << apexParser.GET) | (1 << apexParser.BOOLEAN) | (1 << apexParser.BYTE) | (1 << apexParser.CHAR) | (1 << apexParser.DOUBLE) | (1 << apexParser.FLOAT) | (1 << apexParser.INT))) !== 0) || ((((_la - 33)) & ~0x1f) == 0 && ((1 << (_la - 33)) & ((1 << (apexParser.LONG - 33)) | (1 << (apexParser.NEW - 33)) | (1 << (apexParser.SHORT - 33)) | (1 << (apexParser.SUPER - 33)) | (1 << (apexParser.THIS - 33)) | (1 << (apexParser.VOID - 33)) | (1 << (apexParser.IntegerLiteral - 33)))) !== 0) || ((((_la - 65)) & ~0x1f) == 0 && ((1 << (_la - 65)) & ((1 << (apexParser.FloatingPointLiteral - 65)) | (1 << (apexParser.BooleanLiteral - 65)) | (1 << (apexParser.CharacterLiteral - 65)) | (1 << (apexParser.StringLiteral - 65)) | (1 << (apexParser.NullLiteral - 65)) | (1 << (apexParser.LPAREN - 65)) | (1 << (apexParser.LT - 65)) | (1 << (apexParser.BANG - 65)) | (1 << (apexParser.TILDE - 65)) | (1 << (apexParser.INC - 65)) | (1 << (apexParser.DEC - 65)) | (1 << (apexParser.ADD - 65)) | (1 << (apexParser.SUB - 65)))) !== 0) || _la===apexParser.Identifier) {
                 this.state = 837;
                 this.expression(0);
             }
@@ -8195,7 +8200,7 @@ apexParser.prototype.forControl = function() {
             this.state = 842;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << apexParser.SoqlLiteral) | (1 << apexParser.SET) | (1 << apexParser.BOOLEAN) | (1 << apexParser.BYTE) | (1 << apexParser.CHAR) | (1 << apexParser.DOUBLE) | (1 << apexParser.FLOAT) | (1 << apexParser.INT))) !== 0) || ((((_la - 33)) & ~0x1f) == 0 && ((1 << (_la - 33)) & ((1 << (apexParser.LONG - 33)) | (1 << (apexParser.NEW - 33)) | (1 << (apexParser.SHORT - 33)) | (1 << (apexParser.SUPER - 33)) | (1 << (apexParser.THIS - 33)) | (1 << (apexParser.VOID - 33)) | (1 << (apexParser.IntegerLiteral - 33)))) !== 0) || ((((_la - 65)) & ~0x1f) == 0 && ((1 << (_la - 65)) & ((1 << (apexParser.FloatingPointLiteral - 65)) | (1 << (apexParser.BooleanLiteral - 65)) | (1 << (apexParser.CharacterLiteral - 65)) | (1 << (apexParser.StringLiteral - 65)) | (1 << (apexParser.NullLiteral - 65)) | (1 << (apexParser.LPAREN - 65)) | (1 << (apexParser.LT - 65)) | (1 << (apexParser.BANG - 65)) | (1 << (apexParser.TILDE - 65)) | (1 << (apexParser.INC - 65)) | (1 << (apexParser.DEC - 65)) | (1 << (apexParser.ADD - 65)) | (1 << (apexParser.SUB - 65)))) !== 0) || _la===apexParser.Identifier) {
+            if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << apexParser.SoqlLiteral) | (1 << apexParser.SET) | (1 << apexParser.GET) | (1 << apexParser.BOOLEAN) | (1 << apexParser.BYTE) | (1 << apexParser.CHAR) | (1 << apexParser.DOUBLE) | (1 << apexParser.FLOAT) | (1 << apexParser.INT))) !== 0) || ((((_la - 33)) & ~0x1f) == 0 && ((1 << (_la - 33)) & ((1 << (apexParser.LONG - 33)) | (1 << (apexParser.NEW - 33)) | (1 << (apexParser.SHORT - 33)) | (1 << (apexParser.SUPER - 33)) | (1 << (apexParser.THIS - 33)) | (1 << (apexParser.VOID - 33)) | (1 << (apexParser.IntegerLiteral - 33)))) !== 0) || ((((_la - 65)) & ~0x1f) == 0 && ((1 << (_la - 65)) & ((1 << (apexParser.FloatingPointLiteral - 65)) | (1 << (apexParser.BooleanLiteral - 65)) | (1 << (apexParser.CharacterLiteral - 65)) | (1 << (apexParser.StringLiteral - 65)) | (1 << (apexParser.NullLiteral - 65)) | (1 << (apexParser.LPAREN - 65)) | (1 << (apexParser.LT - 65)) | (1 << (apexParser.BANG - 65)) | (1 << (apexParser.TILDE - 65)) | (1 << (apexParser.INC - 65)) | (1 << (apexParser.DEC - 65)) | (1 << (apexParser.ADD - 65)) | (1 << (apexParser.SUB - 65)))) !== 0) || _la===apexParser.Identifier) {
                 this.state = 841;
                 this.forUpdate();
             }
@@ -9778,7 +9783,7 @@ apexParser.prototype.expression = function(_p) {
                     this.state = 960;
                     this._errHandler.sync(this);
                     _la = this._input.LA(1);
-                    if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << apexParser.SoqlLiteral) | (1 << apexParser.SET) | (1 << apexParser.BOOLEAN) | (1 << apexParser.BYTE) | (1 << apexParser.CHAR) | (1 << apexParser.DOUBLE) | (1 << apexParser.FLOAT) | (1 << apexParser.INT))) !== 0) || ((((_la - 33)) & ~0x1f) == 0 && ((1 << (_la - 33)) & ((1 << (apexParser.LONG - 33)) | (1 << (apexParser.NEW - 33)) | (1 << (apexParser.SHORT - 33)) | (1 << (apexParser.SUPER - 33)) | (1 << (apexParser.THIS - 33)) | (1 << (apexParser.VOID - 33)) | (1 << (apexParser.IntegerLiteral - 33)))) !== 0) || ((((_la - 65)) & ~0x1f) == 0 && ((1 << (_la - 65)) & ((1 << (apexParser.FloatingPointLiteral - 65)) | (1 << (apexParser.BooleanLiteral - 65)) | (1 << (apexParser.CharacterLiteral - 65)) | (1 << (apexParser.StringLiteral - 65)) | (1 << (apexParser.NullLiteral - 65)) | (1 << (apexParser.LPAREN - 65)) | (1 << (apexParser.LT - 65)) | (1 << (apexParser.BANG - 65)) | (1 << (apexParser.TILDE - 65)) | (1 << (apexParser.INC - 65)) | (1 << (apexParser.DEC - 65)) | (1 << (apexParser.ADD - 65)) | (1 << (apexParser.SUB - 65)))) !== 0) || _la===apexParser.Identifier) {
+                    if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << apexParser.SoqlLiteral) | (1 << apexParser.SET) | (1 << apexParser.GET) | (1 << apexParser.BOOLEAN) | (1 << apexParser.BYTE) | (1 << apexParser.CHAR) | (1 << apexParser.DOUBLE) | (1 << apexParser.FLOAT) | (1 << apexParser.INT))) !== 0) || ((((_la - 33)) & ~0x1f) == 0 && ((1 << (_la - 33)) & ((1 << (apexParser.LONG - 33)) | (1 << (apexParser.NEW - 33)) | (1 << (apexParser.SHORT - 33)) | (1 << (apexParser.SUPER - 33)) | (1 << (apexParser.THIS - 33)) | (1 << (apexParser.VOID - 33)) | (1 << (apexParser.IntegerLiteral - 33)))) !== 0) || ((((_la - 65)) & ~0x1f) == 0 && ((1 << (_la - 65)) & ((1 << (apexParser.FloatingPointLiteral - 65)) | (1 << (apexParser.BooleanLiteral - 65)) | (1 << (apexParser.CharacterLiteral - 65)) | (1 << (apexParser.StringLiteral - 65)) | (1 << (apexParser.NullLiteral - 65)) | (1 << (apexParser.LPAREN - 65)) | (1 << (apexParser.LT - 65)) | (1 << (apexParser.BANG - 65)) | (1 << (apexParser.TILDE - 65)) | (1 << (apexParser.INC - 65)) | (1 << (apexParser.DEC - 65)) | (1 << (apexParser.ADD - 65)) | (1 << (apexParser.SUB - 65)))) !== 0) || _la===apexParser.Identifier) {
                         this.state = 959;
                         this.expressionList();
                     }
@@ -9876,6 +9881,14 @@ PrimaryContext.prototype.Identifier = function() {
     return this.getToken(apexParser.Identifier, 0);
 };
 
+PrimaryContext.prototype.GET = function() {
+    return this.getToken(apexParser.GET, 0);
+};
+
+PrimaryContext.prototype.SET = function() {
+    return this.getToken(apexParser.SET, 0);
+};
+
 PrimaryContext.prototype.type = function() {
     return this.getTypedRuleContext(TypeContext,0);
 };
@@ -9934,7 +9947,7 @@ apexParser.prototype.primary = function() {
     var localctx = new PrimaryContext(this, this._ctx, this.state);
     this.enterRule(localctx, 160, apexParser.RULE_primary);
     try {
-        this.state = 995;
+        this.state = 997;
         this._errHandler.sync(this);
         var la_ = this._interp.adaptivePredict(this._input,108,this._ctx);
         switch(la_) {
@@ -9975,39 +9988,51 @@ apexParser.prototype.primary = function() {
         case 6:
             this.enterOuterAlt(localctx, 6);
             this.state = 981;
-            this.type();
-            this.state = 982;
-            this.match(apexParser.DOT);
-            this.state = 983;
-            this.match(apexParser.CLASS);
+            this.match(apexParser.GET);
             break;
 
         case 7:
             this.enterOuterAlt(localctx, 7);
-            this.state = 985;
-            this.match(apexParser.VOID);
-            this.state = 986;
-            this.match(apexParser.DOT);
-            this.state = 987;
-            this.match(apexParser.CLASS);
+            this.state = 982;
+            this.match(apexParser.SET);
             break;
 
         case 8:
             this.enterOuterAlt(localctx, 8);
+            this.state = 983;
+            this.type();
+            this.state = 984;
+            this.match(apexParser.DOT);
+            this.state = 985;
+            this.match(apexParser.CLASS);
+            break;
+
+        case 9:
+            this.enterOuterAlt(localctx, 9);
+            this.state = 987;
+            this.match(apexParser.VOID);
             this.state = 988;
+            this.match(apexParser.DOT);
+            this.state = 989;
+            this.match(apexParser.CLASS);
+            break;
+
+        case 10:
+            this.enterOuterAlt(localctx, 10);
+            this.state = 990;
             this.nonWildcardTypeArguments();
-            this.state = 992;
+            this.state = 994;
             this._errHandler.sync(this);
             switch(this._input.LA(1)) {
             case apexParser.SUPER:
             case apexParser.Identifier:
-                this.state = 989;
+                this.state = 991;
                 this.explicitGenericInvocationSuffix();
                 break;
             case apexParser.THIS:
-                this.state = 990;
+                this.state = 992;
                 this.match(apexParser.THIS);
-                this.state = 991;
+                this.state = 993;
                 this.arguments();
                 break;
             default:
@@ -10015,9 +10040,9 @@ apexParser.prototype.primary = function() {
             }
             break;
 
-        case 9:
-            this.enterOuterAlt(localctx, 9);
-            this.state = 994;
+        case 11:
+            this.enterOuterAlt(localctx, 11);
+            this.state = 996;
             this.match(apexParser.SoqlLiteral);
             break;
 
@@ -10106,16 +10131,16 @@ apexParser.prototype.creator = function() {
     var localctx = new CreatorContext(this, this._ctx, this.state);
     this.enterRule(localctx, 162, apexParser.RULE_creator);
     try {
-        this.state = 1008;
+        this.state = 1010;
         this._errHandler.sync(this);
         switch(this._input.LA(1)) {
         case apexParser.LT:
             this.enterOuterAlt(localctx, 1);
-            this.state = 997;
-            this.nonWildcardTypeArguments();
-            this.state = 998;
-            this.createdName();
             this.state = 999;
+            this.nonWildcardTypeArguments();
+            this.state = 1000;
+            this.createdName();
+            this.state = 1001;
             this.classCreatorRest();
             break;
         case apexParser.SET:
@@ -10129,29 +10154,29 @@ apexParser.prototype.creator = function() {
         case apexParser.SHORT:
         case apexParser.Identifier:
             this.enterOuterAlt(localctx, 2);
-            this.state = 1001;
+            this.state = 1003;
             this.createdName();
-            this.state = 1006;
+            this.state = 1008;
             this._errHandler.sync(this);
             var la_ = this._interp.adaptivePredict(this._input,109,this._ctx);
             switch(la_) {
             case 1:
-                this.state = 1002;
+                this.state = 1004;
                 this.arrayCreatorRest();
                 break;
 
             case 2:
-                this.state = 1003;
+                this.state = 1005;
                 this.classCreatorRest();
                 break;
 
             case 3:
-                this.state = 1004;
+                this.state = 1006;
                 this.mapCreatorRest();
                 break;
 
             case 4:
-                this.state = 1005;
+                this.state = 1007;
                 this.setCreatorRest();
                 break;
 
@@ -10252,38 +10277,38 @@ apexParser.prototype.createdName = function() {
     this.enterRule(localctx, 164, apexParser.RULE_createdName);
     var _la = 0; // Token type
     try {
-        this.state = 1027;
+        this.state = 1029;
         this._errHandler.sync(this);
         switch(this._input.LA(1)) {
         case apexParser.Identifier:
             this.enterOuterAlt(localctx, 1);
-            this.state = 1010;
-            this.match(apexParser.Identifier);
             this.state = 1012;
+            this.match(apexParser.Identifier);
+            this.state = 1014;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
             if(_la===apexParser.LT) {
-                this.state = 1011;
+                this.state = 1013;
                 this.typeArgumentsOrDiamond();
             }
 
-            this.state = 1021;
+            this.state = 1023;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
             while(_la===apexParser.DOT) {
-                this.state = 1014;
+                this.state = 1016;
                 this.match(apexParser.DOT);
-                this.state = 1015;
-                this.match(apexParser.Identifier);
                 this.state = 1017;
+                this.match(apexParser.Identifier);
+                this.state = 1019;
                 this._errHandler.sync(this);
                 _la = this._input.LA(1);
                 if(_la===apexParser.LT) {
-                    this.state = 1016;
+                    this.state = 1018;
                     this.typeArgumentsOrDiamond();
                 }
 
-                this.state = 1023;
+                this.state = 1025;
                 this._errHandler.sync(this);
                 _la = this._input.LA(1);
             }
@@ -10297,14 +10322,14 @@ apexParser.prototype.createdName = function() {
         case apexParser.LONG:
         case apexParser.SHORT:
             this.enterOuterAlt(localctx, 2);
-            this.state = 1024;
+            this.state = 1026;
             this.primitiveType();
             break;
         case apexParser.SET:
             this.enterOuterAlt(localctx, 3);
-            this.state = 1025;
+            this.state = 1027;
             this.match(apexParser.SET);
-            this.state = 1026;
+            this.state = 1028;
             this.typeArgumentsOrDiamond();
             break;
         default:
@@ -10384,17 +10409,17 @@ apexParser.prototype.innerCreator = function() {
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 1029;
-        this.match(apexParser.Identifier);
         this.state = 1031;
+        this.match(apexParser.Identifier);
+        this.state = 1033;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
         if(_la===apexParser.LT) {
-            this.state = 1030;
+            this.state = 1032;
             this.nonWildcardTypeArgumentsOrDiamond();
         }
 
-        this.state = 1033;
+        this.state = 1035;
         this.classCreatorRest();
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
@@ -10473,31 +10498,32 @@ apexParser.prototype.arrayCreatorRest = function() {
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 1035;
+        this.state = 1037;
         this.match(apexParser.LBRACK);
-        this.state = 1063;
+        this.state = 1065;
         this._errHandler.sync(this);
         switch(this._input.LA(1)) {
         case apexParser.RBRACK:
-            this.state = 1036;
+            this.state = 1038;
             this.match(apexParser.RBRACK);
-            this.state = 1041;
+            this.state = 1043;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
             while(_la===apexParser.LBRACK) {
-                this.state = 1037;
+                this.state = 1039;
                 this.match(apexParser.LBRACK);
-                this.state = 1038;
+                this.state = 1040;
                 this.match(apexParser.RBRACK);
-                this.state = 1043;
+                this.state = 1045;
                 this._errHandler.sync(this);
                 _la = this._input.LA(1);
             }
-            this.state = 1044;
+            this.state = 1046;
             this.arrayInitializer();
             break;
         case apexParser.SoqlLiteral:
         case apexParser.SET:
+        case apexParser.GET:
         case apexParser.BOOLEAN:
         case apexParser.BYTE:
         case apexParser.CHAR:
@@ -10525,38 +10551,38 @@ apexParser.prototype.arrayCreatorRest = function() {
         case apexParser.ADD:
         case apexParser.SUB:
         case apexParser.Identifier:
-            this.state = 1045;
+            this.state = 1047;
             this.expression(0);
-            this.state = 1046;
+            this.state = 1048;
             this.match(apexParser.RBRACK);
-            this.state = 1053;
+            this.state = 1055;
             this._errHandler.sync(this);
             var _alt = this._interp.adaptivePredict(this._input,117,this._ctx)
             while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
                 if(_alt===1) {
-                    this.state = 1047;
-                    this.match(apexParser.LBRACK);
-                    this.state = 1048;
-                    this.expression(0);
                     this.state = 1049;
+                    this.match(apexParser.LBRACK);
+                    this.state = 1050;
+                    this.expression(0);
+                    this.state = 1051;
                     this.match(apexParser.RBRACK); 
                 }
-                this.state = 1055;
+                this.state = 1057;
                 this._errHandler.sync(this);
                 _alt = this._interp.adaptivePredict(this._input,117,this._ctx);
             }
 
-            this.state = 1060;
+            this.state = 1062;
             this._errHandler.sync(this);
             var _alt = this._interp.adaptivePredict(this._input,118,this._ctx)
             while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
                 if(_alt===1) {
-                    this.state = 1056;
+                    this.state = 1058;
                     this.match(apexParser.LBRACK);
-                    this.state = 1057;
+                    this.state = 1059;
                     this.match(apexParser.RBRACK); 
                 }
-                this.state = 1062;
+                this.state = 1064;
                 this._errHandler.sync(this);
                 _alt = this._interp.adaptivePredict(this._input,118,this._ctx);
             }
@@ -10661,83 +10687,83 @@ apexParser.prototype.mapCreatorRest = function() {
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 1065;
+        this.state = 1067;
         this.match(apexParser.LBRACE);
-        this.state = 1068;
+        this.state = 1070;
         this._errHandler.sync(this);
         var la_ = this._interp.adaptivePredict(this._input,120,this._ctx);
         switch(la_) {
         case 1:
-            this.state = 1066;
+            this.state = 1068;
             this.match(apexParser.Identifier);
             break;
 
         case 2:
-            this.state = 1067;
+            this.state = 1069;
             this.expression(0);
             break;
 
         }
-        this.state = 1070;
+        this.state = 1072;
         this.match(apexParser.LAMBDA_LIKE);
-        this.state = 1073;
+        this.state = 1075;
         this._errHandler.sync(this);
         var la_ = this._interp.adaptivePredict(this._input,121,this._ctx);
         switch(la_) {
         case 1:
-            this.state = 1071;
+            this.state = 1073;
             this.literal();
             break;
 
         case 2:
-            this.state = 1072;
+            this.state = 1074;
             this.expression(0);
             break;
 
         }
-        this.state = 1087;
+        this.state = 1089;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
         while(_la===apexParser.COMMA) {
-            this.state = 1075;
+            this.state = 1077;
             this.match(apexParser.COMMA);
-            this.state = 1078;
+            this.state = 1080;
             this._errHandler.sync(this);
             var la_ = this._interp.adaptivePredict(this._input,122,this._ctx);
             switch(la_) {
             case 1:
-                this.state = 1076;
+                this.state = 1078;
                 this.match(apexParser.Identifier);
                 break;
 
             case 2:
-                this.state = 1077;
+                this.state = 1079;
                 this.expression(0);
                 break;
 
             }
-            this.state = 1080;
+            this.state = 1082;
             this.match(apexParser.LAMBDA_LIKE);
-            this.state = 1083;
+            this.state = 1085;
             this._errHandler.sync(this);
             var la_ = this._interp.adaptivePredict(this._input,123,this._ctx);
             switch(la_) {
             case 1:
-                this.state = 1081;
+                this.state = 1083;
                 this.literal();
                 break;
 
             case 2:
-                this.state = 1082;
+                this.state = 1084;
                 this.expression(0);
                 break;
 
             }
-            this.state = 1089;
+            this.state = 1091;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
         }
-        this.state = 1090;
+        this.state = 1092;
         this.match(apexParser.RBRACE);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
@@ -10823,49 +10849,49 @@ apexParser.prototype.setCreatorRest = function() {
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 1092;
+        this.state = 1094;
         this.match(apexParser.LBRACE);
-        this.state = 1095;
+        this.state = 1097;
         this._errHandler.sync(this);
         var la_ = this._interp.adaptivePredict(this._input,125,this._ctx);
         switch(la_) {
         case 1:
-            this.state = 1093;
+            this.state = 1095;
             this.literal();
             break;
 
         case 2:
-            this.state = 1094;
+            this.state = 1096;
             this.expression(0);
             break;
 
         }
-        this.state = 1104;
+        this.state = 1106;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
         while(_la===apexParser.COMMA) {
-            this.state = 1097;
+            this.state = 1099;
             this.match(apexParser.COMMA);
-            this.state = 1100;
+            this.state = 1102;
             this._errHandler.sync(this);
             var la_ = this._interp.adaptivePredict(this._input,126,this._ctx);
             switch(la_) {
             case 1:
-                this.state = 1098;
+                this.state = 1100;
                 this.literal();
                 break;
 
             case 2:
-                this.state = 1099;
+                this.state = 1101;
                 this.expression(0);
                 break;
 
             }
-            this.state = 1106;
+            this.state = 1108;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
         }
-        this.state = 1107;
+        this.state = 1109;
         this.match(apexParser.RBRACE);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
@@ -10936,13 +10962,13 @@ apexParser.prototype.classCreatorRest = function() {
     this.enterRule(localctx, 174, apexParser.RULE_classCreatorRest);
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 1109;
-        this.arguments();
         this.state = 1111;
+        this.arguments();
+        this.state = 1113;
         this._errHandler.sync(this);
         var la_ = this._interp.adaptivePredict(this._input,128,this._ctx);
         if(la_===1) {
-            this.state = 1110;
+            this.state = 1112;
             this.classBody();
 
         }
@@ -11015,9 +11041,9 @@ apexParser.prototype.explicitGenericInvocation = function() {
     this.enterRule(localctx, 176, apexParser.RULE_explicitGenericInvocation);
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 1113;
+        this.state = 1115;
         this.nonWildcardTypeArguments();
-        this.state = 1114;
+        this.state = 1116;
         this.explicitGenericInvocationSuffix();
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
@@ -11084,11 +11110,11 @@ apexParser.prototype.nonWildcardTypeArguments = function() {
     this.enterRule(localctx, 178, apexParser.RULE_nonWildcardTypeArguments);
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 1116;
-        this.match(apexParser.LT);
-        this.state = 1117;
-        this.typeList();
         this.state = 1118;
+        this.match(apexParser.LT);
+        this.state = 1119;
+        this.typeList();
+        this.state = 1120;
         this.match(apexParser.GT);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
@@ -11154,21 +11180,21 @@ apexParser.prototype.typeArgumentsOrDiamond = function() {
     var localctx = new TypeArgumentsOrDiamondContext(this, this._ctx, this.state);
     this.enterRule(localctx, 180, apexParser.RULE_typeArgumentsOrDiamond);
     try {
-        this.state = 1123;
+        this.state = 1125;
         this._errHandler.sync(this);
         var la_ = this._interp.adaptivePredict(this._input,129,this._ctx);
         switch(la_) {
         case 1:
             this.enterOuterAlt(localctx, 1);
-            this.state = 1120;
+            this.state = 1122;
             this.match(apexParser.LT);
-            this.state = 1121;
+            this.state = 1123;
             this.match(apexParser.GT);
             break;
 
         case 2:
             this.enterOuterAlt(localctx, 2);
-            this.state = 1122;
+            this.state = 1124;
             this.typeArguments();
             break;
 
@@ -11237,21 +11263,21 @@ apexParser.prototype.nonWildcardTypeArgumentsOrDiamond = function() {
     var localctx = new NonWildcardTypeArgumentsOrDiamondContext(this, this._ctx, this.state);
     this.enterRule(localctx, 182, apexParser.RULE_nonWildcardTypeArgumentsOrDiamond);
     try {
-        this.state = 1128;
+        this.state = 1130;
         this._errHandler.sync(this);
         var la_ = this._interp.adaptivePredict(this._input,130,this._ctx);
         switch(la_) {
         case 1:
             this.enterOuterAlt(localctx, 1);
-            this.state = 1125;
+            this.state = 1127;
             this.match(apexParser.LT);
-            this.state = 1126;
+            this.state = 1128;
             this.match(apexParser.GT);
             break;
 
         case 2:
             this.enterOuterAlt(localctx, 2);
-            this.state = 1127;
+            this.state = 1129;
             this.nonWildcardTypeArguments();
             break;
 
@@ -11324,25 +11350,25 @@ apexParser.prototype.superSuffix = function() {
     var localctx = new SuperSuffixContext(this, this._ctx, this.state);
     this.enterRule(localctx, 184, apexParser.RULE_superSuffix);
     try {
-        this.state = 1136;
+        this.state = 1138;
         this._errHandler.sync(this);
         switch(this._input.LA(1)) {
         case apexParser.LPAREN:
             this.enterOuterAlt(localctx, 1);
-            this.state = 1130;
+            this.state = 1132;
             this.arguments();
             break;
         case apexParser.DOT:
             this.enterOuterAlt(localctx, 2);
-            this.state = 1131;
+            this.state = 1133;
             this.match(apexParser.DOT);
-            this.state = 1132;
-            this.match(apexParser.Identifier);
             this.state = 1134;
+            this.match(apexParser.Identifier);
+            this.state = 1136;
             this._errHandler.sync(this);
             var la_ = this._interp.adaptivePredict(this._input,131,this._ctx);
             if(la_===1) {
-                this.state = 1133;
+                this.state = 1135;
                 this.arguments();
 
             }
@@ -11426,21 +11452,21 @@ apexParser.prototype.explicitGenericInvocationSuffix = function() {
     var localctx = new ExplicitGenericInvocationSuffixContext(this, this._ctx, this.state);
     this.enterRule(localctx, 186, apexParser.RULE_explicitGenericInvocationSuffix);
     try {
-        this.state = 1142;
+        this.state = 1144;
         this._errHandler.sync(this);
         switch(this._input.LA(1)) {
         case apexParser.SUPER:
             this.enterOuterAlt(localctx, 1);
-            this.state = 1138;
+            this.state = 1140;
             this.match(apexParser.SUPER);
-            this.state = 1139;
+            this.state = 1141;
             this.superSuffix();
             break;
         case apexParser.Identifier:
             this.enterOuterAlt(localctx, 2);
-            this.state = 1140;
+            this.state = 1142;
             this.match(apexParser.Identifier);
-            this.state = 1141;
+            this.state = 1143;
             this.arguments();
             break;
         default:
@@ -11512,17 +11538,17 @@ apexParser.prototype.arguments = function() {
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 1144;
-        this.match(apexParser.LPAREN);
         this.state = 1146;
+        this.match(apexParser.LPAREN);
+        this.state = 1148;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
-        if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << apexParser.SoqlLiteral) | (1 << apexParser.SET) | (1 << apexParser.BOOLEAN) | (1 << apexParser.BYTE) | (1 << apexParser.CHAR) | (1 << apexParser.DOUBLE) | (1 << apexParser.FLOAT) | (1 << apexParser.INT))) !== 0) || ((((_la - 33)) & ~0x1f) == 0 && ((1 << (_la - 33)) & ((1 << (apexParser.LONG - 33)) | (1 << (apexParser.NEW - 33)) | (1 << (apexParser.SHORT - 33)) | (1 << (apexParser.SUPER - 33)) | (1 << (apexParser.THIS - 33)) | (1 << (apexParser.VOID - 33)) | (1 << (apexParser.IntegerLiteral - 33)))) !== 0) || ((((_la - 65)) & ~0x1f) == 0 && ((1 << (_la - 65)) & ((1 << (apexParser.FloatingPointLiteral - 65)) | (1 << (apexParser.BooleanLiteral - 65)) | (1 << (apexParser.CharacterLiteral - 65)) | (1 << (apexParser.StringLiteral - 65)) | (1 << (apexParser.NullLiteral - 65)) | (1 << (apexParser.LPAREN - 65)) | (1 << (apexParser.LT - 65)) | (1 << (apexParser.BANG - 65)) | (1 << (apexParser.TILDE - 65)) | (1 << (apexParser.INC - 65)) | (1 << (apexParser.DEC - 65)) | (1 << (apexParser.ADD - 65)) | (1 << (apexParser.SUB - 65)))) !== 0) || _la===apexParser.Identifier) {
-            this.state = 1145;
+        if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << apexParser.SoqlLiteral) | (1 << apexParser.SET) | (1 << apexParser.GET) | (1 << apexParser.BOOLEAN) | (1 << apexParser.BYTE) | (1 << apexParser.CHAR) | (1 << apexParser.DOUBLE) | (1 << apexParser.FLOAT) | (1 << apexParser.INT))) !== 0) || ((((_la - 33)) & ~0x1f) == 0 && ((1 << (_la - 33)) & ((1 << (apexParser.LONG - 33)) | (1 << (apexParser.NEW - 33)) | (1 << (apexParser.SHORT - 33)) | (1 << (apexParser.SUPER - 33)) | (1 << (apexParser.THIS - 33)) | (1 << (apexParser.VOID - 33)) | (1 << (apexParser.IntegerLiteral - 33)))) !== 0) || ((((_la - 65)) & ~0x1f) == 0 && ((1 << (_la - 65)) & ((1 << (apexParser.FloatingPointLiteral - 65)) | (1 << (apexParser.BooleanLiteral - 65)) | (1 << (apexParser.CharacterLiteral - 65)) | (1 << (apexParser.StringLiteral - 65)) | (1 << (apexParser.NullLiteral - 65)) | (1 << (apexParser.LPAREN - 65)) | (1 << (apexParser.LT - 65)) | (1 << (apexParser.BANG - 65)) | (1 << (apexParser.TILDE - 65)) | (1 << (apexParser.INC - 65)) | (1 << (apexParser.DEC - 65)) | (1 << (apexParser.ADD - 65)) | (1 << (apexParser.SUB - 65)))) !== 0) || _la===apexParser.Identifier) {
+            this.state = 1147;
             this.expressionList();
         }
 
-        this.state = 1148;
+        this.state = 1150;
         this.match(apexParser.RPAREN);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {

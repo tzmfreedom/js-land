@@ -745,8 +745,8 @@ class TypeNode {
     return visitor.visitType(this);
   }
   
-  equals(other) {
-    return this.name.join('.') === other.name.join('.');
+  toName(other) {
+    return this.name.join('.');
   }
 }
 
