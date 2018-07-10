@@ -30,7 +30,7 @@ class ModifierNode {
 }
 
 class ClassNode {
-  constructor(annotations, modifiers, name, superClass, implementClasses, constructor, instanceFields, instanceMethods, staticFields, staticMethods, lineno) {
+  constructor(annotations, modifiers, name, superClass, implementClasses, constructor, instanceFields, instanceMethods, staticFields, staticMethods, innerClasses, lineno) {
     this.annotations = annotations;
     this.modifiers = modifiers;
     this.name = name;
@@ -41,6 +41,7 @@ class ClassNode {
     this.instanceMethods = instanceMethods;
     this.staticFields = staticFields;
     this.staticMethods = staticMethods;
+    this.innerClasses = innerClasses;
     this.lineno = lineno;
   }
 

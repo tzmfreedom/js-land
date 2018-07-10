@@ -269,7 +269,7 @@ ApexAstBuilder.prototype.visitFieldDeclaration = function(ctx) {
 // Visit a parse tree produced by apexParser#propertyDeclaration.
 ApexAstBuilder.prototype.visitPropertyDeclaration = function(ctx) {
   const type = ctx.type().accept(this);
-  const variableDeclaratorId = ctx.variableDeclarators().accept(this);
+  const variableDeclaratorId = ctx.variableDeclaratorId().accept(this);
   const propertyBodyDeclaration = ctx.propertyBodyDeclaration().accept(this);
   return new Ast.PropertyDeclarationNode(null, type, variableDeclaratorId, propertyBodyDeclaration);
 };

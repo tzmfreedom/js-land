@@ -72,7 +72,6 @@ class SymbolDeclarator {
         };
       });
     });
-    console.log(instanceFields)
 
     let innerClasses = {};
     node.innerClasses.forEach((innerClass) => {
