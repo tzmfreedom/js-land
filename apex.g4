@@ -314,7 +314,6 @@ qualifiedName
 literal
     :   IntegerLiteral
     |   FloatingPointLiteral
-    |   CharacterLiteral
     |   StringLiteral
     |   BooleanLiteral
     |   NullLiteral
@@ -455,8 +454,8 @@ apexDbExpression
 	;
 	
 expression
-    :   primary                                                   # PrimaryExpression
-    |   expression '.' Identifier                                 # FieldAccess
+    :   primary                                                 # PrimaryExpression
+    |   expression '.' accessor                               # FieldAccess
     |   expression '.' explicitGenericInvocation                # OpExpression
     |   expression '[' expression ']'                           # ArrayAccess
     |   expression '(' expressionList? ')'                      # MethodInvocation
@@ -464,7 +463,7 @@ expression
     |   '(' type ')' expression                                 # CastExpression
     |   expression op=('++' | '--')                             # PostUnaryExpression
     |   op=('+'|'-'|'++'|'--') expression                       # PreUnaryExpression
-    |   op=('~'|'!') expression                                 # OpExpression
+    |   op=('~'|'!') expression                                 # UnaryExpression
     |   expression op=('*'|'/'|'%') expression                  # OpExpression
     |   expression op=('+'|'-') expression                      # OpExpression
     |   expression ('<' '<' | '>' '>' '>' | '>' '>') expression # ShiftExpression
@@ -500,8 +499,6 @@ primary
     |   SUPER
     |   literal
     |   Identifier
-    |   GET
-    |   SET
     |   type '.' CLASS
     |   VOID '.' CLASS
     |   nonWildcardTypeArguments (explicitGenericInvocationSuffix | THIS arguments)
@@ -574,6 +571,11 @@ arguments
     :   '(' expressionList? ')'
     ;
 
+accessor
+    :   Identifier
+    |   GET
+    |   SET
+    ;
 // Apex - SOQL literal
 
 SoqlLiteral
@@ -855,18 +857,6 @@ BinaryExponentIndicator
 BooleanLiteral
     :   'true'
     |   'false'
-    ;
-
-// ?3.10.4 Character Literals
-
-CharacterLiteral
-    :   QUOTE SingleCharacter QUOTE
-    |   QUOTE EscapeSequence QUOTE
-    ;
-
-fragment
-SingleCharacter
-    :   ~['\\]
     ;
 
 // ?3.10.5 String Literals

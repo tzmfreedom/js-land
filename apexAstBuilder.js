@@ -614,11 +614,9 @@ ApexAstBuilder.prototype.visitStatement = function(ctx) {
     let expression = ctx.expression().accept(this);
     return new Ast.ThrowNode(expression, lineNo);
   } else if (ctx.BREAK()) {
-    let expression = ctx.expression().accept(this);
-    return new Ast.ReturnNode(expression, lineNo);
+    return new Ast.BreakNode(lineNo);
   } else if (ctx.CONTINUE()) {
-    let expression = ctx.expression().accept(this);
-    return new Ast.ReturnNode(expression, lineNo);
+    return new Ast.ContinueNode(lineNo);
   } else if (ctx.statementExpression()) {
     return ctx.statementExpression().accept(this);
   } else if (ctx.apexDbExpression()) {
@@ -743,7 +741,7 @@ ApexAstBuilder.prototype.visitConstantExpression = function(ctx) {
 
 // Visit a parse tree produced by apexParser#apexDbExpressionShort.
 ApexAstBuilder.prototype.visitApexDbExpressionShort = function(ctx) {
-  let dml = ctx.dml().getText();
+  let dml = ctx.dml.text;
   let expression = ctx.expression().accept(this);
   return new Ast.DmlNode(dml, expression, ctx.start.line);
 };
@@ -773,10 +771,15 @@ ApexAstBuilder.prototype.visitOpExpression = function(ctx) {
 // Visit a parse tree produced by apexParser#PostUnaryExpression.
 ApexAstBuilder.prototype.visitPostUnaryExpression = function(ctx) {
   let op = ctx.op.text;
-  let expression  = ctx.expression()[0].accept(this);
+  let expression  = ctx.expression().accept(this);
   return new Ast.UnaryOperatorNode(op, expression, true, ctx.start.line);
 };
 
+ApexAstBuilder.prototype.visitUnaryExpression = function(ctx) {
+  let op = ctx.op.text;
+  let expression  = ctx.expression().accept(this);
+  return new Ast.UnaryOperatorNode(op, expression, true, ctx.start.line);
+};
 
 // Visit a parse tree produced by apexParser#PostUnaryExpression.
 ApexAstBuilder.prototype.visitPostUnaryExpression = function(ctx) {
@@ -821,7 +824,7 @@ ApexAstBuilder.prototype.visitShiftExpression = function(ctx) {
 // Visit a parse tree produced by apexParser#FieldAccess.
 ApexAstBuilder.prototype.visitFieldAccess = function(ctx) {
   let expression = ctx.expression().accept(this);
-  let fieldName = ctx.Identifier().getText();
+  let fieldName = ctx.accessor().getText();
   if (expression instanceof Ast.NameNode) {
     return new Ast.NameNode(expression.value.concat(fieldName), ctx.start.line)
   } else if (expression instanceof Ast.StringNode) {

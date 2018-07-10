@@ -29,7 +29,7 @@ classes.forEach((classInfo) => {
 run('Hoge', 'action');
 
 function readFile(fileName) {
-  console.log(`Start ReadFile: ${fileName}`);
+  // console.log(`Start ReadFile: ${fileName}`);
   const input = fs.readFileSync(fileName, 'utf8');
   const chars = new antlr4.InputStream(input);
   const lexer = new ApexLexer.apexLexer(chars);
@@ -47,7 +47,7 @@ function readFile(fileName) {
 // console.log(util.inspect(top, {depth: 13, colors: true}));
 
     const declarator = new SymbolDeclarator();
-    console.log(`End ReadFile: ${fileName}`);
+    // console.log(`End ReadFile: ${fileName}`);
     return declarator.visit(top);
   } catch (e) {
     console.log(e);
@@ -55,8 +55,10 @@ function readFile(fileName) {
 }
 
 function build(classInfo) {
+  console.log(`Start Build: ${classInfo.name}`);
   const builder = new ApexBuilder();
   builder.visit(classInfo);
+  console.log(`End Build: ${classInfo.name}`);
 }
 
 function run(className, actionName) {

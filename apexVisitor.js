@@ -528,6 +528,12 @@ apexVisitor.prototype.visitNewExpression = function(ctx) {
 };
 
 
+// Visit a parse tree produced by apexParser#UnaryExpression.
+apexVisitor.prototype.visitUnaryExpression = function(ctx) {
+  return this.visitChildren(ctx);
+};
+
+
 // Visit a parse tree produced by apexParser#MethodInvocation.
 apexVisitor.prototype.visitMethodInvocation = function(ctx) {
   return this.visitChildren(ctx);
@@ -638,6 +644,12 @@ apexVisitor.prototype.visitExplicitGenericInvocationSuffix = function(ctx) {
 
 // Visit a parse tree produced by apexParser#arguments.
 apexVisitor.prototype.visitArguments = function(ctx) {
+  return this.visitChildren(ctx);
+};
+
+
+// Visit a parse tree produced by apexParser#accessor.
+apexVisitor.prototype.visitAccessor = function(ctx) {
   return this.visitChildren(ctx);
 };
 

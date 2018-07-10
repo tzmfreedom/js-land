@@ -785,6 +785,15 @@ apexListener.prototype.exitNewExpression = function(ctx) {
 };
 
 
+// Enter a parse tree produced by apexParser#UnaryExpression.
+apexListener.prototype.enterUnaryExpression = function(ctx) {
+};
+
+// Exit a parse tree produced by apexParser#UnaryExpression.
+apexListener.prototype.exitUnaryExpression = function(ctx) {
+};
+
+
 // Enter a parse tree produced by apexParser#MethodInvocation.
 apexListener.prototype.enterMethodInvocation = function(ctx) {
 };
@@ -953,6 +962,15 @@ apexListener.prototype.enterArguments = function(ctx) {
 
 // Exit a parse tree produced by apexParser#arguments.
 apexListener.prototype.exitArguments = function(ctx) {
+};
+
+
+// Enter a parse tree produced by apexParser#accessor.
+apexListener.prototype.enterAccessor = function(ctx) {
+};
+
+// Exit a parse tree produced by apexParser#accessor.
+apexListener.prototype.exitAccessor = function(ctx) {
 };
 
 
