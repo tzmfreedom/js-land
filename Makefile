@@ -1,6 +1,6 @@
 .PHONY: run
 run:
-	@node main.js examples/sample3.cls
+	@time node main.js examples/sample3.cls
 
 .PHONY:debug
 debug:

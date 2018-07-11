@@ -26,10 +26,6 @@ class #{class_name}Node {
   accept(visitor) {
     return visitor.visit#{class_name}(this);
   }
-
-  type() {
-    return '#{class_name}';
-  }
 }
     JS
   end

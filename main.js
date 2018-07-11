@@ -7,8 +7,6 @@ const SymbolDeclarator = require('./symbol_declarator');
 const ApexBuilder = require('./apex_builder');
 const MethodInvocationNode = require('./node/ast').MethodInvocationNode;
 const NameNode = require('./node/ast').NameNode;
-require('./apexClassCreator');
-const util = require('util');
 const fs = require('fs');
 
 // Create CST with ANTLR

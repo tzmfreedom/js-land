@@ -111,7 +111,20 @@ class ApexBuilder {
     let instanceFields = {};
     // console.log(classInfo)
     Object.keys(classInfo.instanceFields).forEach((fieldName) => {
-      instanceFields[fieldName] = classInfo.instanceFields[fieldName].expression.accept(this);
+      let field = classInfo.instanceFields[fieldName]
+      if (field.expression) {
+        instanceFields[fieldName] = {
+          type: field.type,
+          value: field.expression.accept(this),
+        };
+      } else {
+        instanceFields[fieldName] = {
+          type: field.type,
+          value: new Ast.NullNode(),
+          setter: field.setter,
+          getter: field.getter,
+        };
+      }
     });
     const classNode = ApexClassStore.get(className);
     return new Ast.ApexObjectNode(classNode, instanceFields);
@@ -124,7 +137,6 @@ class ApexBuilder {
   visitFieldDeclarator(node) {
 
   }
-
 
   visitAnnotation(node) {
     return node;
@@ -220,6 +232,7 @@ class ApexBuilder {
 
   visitName(node) {
     let values = methodSearcher.searchField(node);
+    console.log(EnvManager.currentScope().env.this);
     if (values) return values;
     throw `Variable not declaration : ${node.value.join('.')} at line ${node.lineno}`
   }
@@ -231,9 +244,18 @@ class ApexBuilder {
     const instanceFields = {};
     Object.keys(classNode.instanceFields).map((fieldName) => {
       const field = classNode.instanceFields[fieldName];
-      instanceFields[fieldName] = {
-        type: field.type,
-        value: field.expression.accept(this),
+      if (field.expression) {
+        instanceFields[fieldName] = {
+          type: field.type,
+          value: field.expression.accept(this),
+        }
+      } else {
+        instanceFields[fieldName] = {
+          type: field.type,
+          value: new Ast.NullNode(),
+          setter: field.setter,
+          getter: field.getter,
+        }
       }
     });
     return new Ast.ApexObjectNode(classNode, instanceFields);
