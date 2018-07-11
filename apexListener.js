@@ -65,33 +65,6 @@ apexListener.prototype.exitClassDeclaration = function(ctx) {
 };
 
 
-// Enter a parse tree produced by apexParser#typeParameters.
-apexListener.prototype.enterTypeParameters = function(ctx) {
-};
-
-// Exit a parse tree produced by apexParser#typeParameters.
-apexListener.prototype.exitTypeParameters = function(ctx) {
-};
-
-
-// Enter a parse tree produced by apexParser#typeParameter.
-apexListener.prototype.enterTypeParameter = function(ctx) {
-};
-
-// Exit a parse tree produced by apexParser#typeParameter.
-apexListener.prototype.exitTypeParameter = function(ctx) {
-};
-
-
-// Enter a parse tree produced by apexParser#typeBound.
-apexListener.prototype.enterTypeBound = function(ctx) {
-};
-
-// Exit a parse tree produced by apexParser#typeBound.
-apexListener.prototype.exitTypeBound = function(ctx) {
-};
-
-
 // Enter a parse tree produced by apexParser#enumDeclaration.
 apexListener.prototype.enterEnumDeclaration = function(ctx) {
 };
@@ -191,30 +164,12 @@ apexListener.prototype.exitMethodDeclaration = function(ctx) {
 };
 
 
-// Enter a parse tree produced by apexParser#genericMethodDeclaration.
-apexListener.prototype.enterGenericMethodDeclaration = function(ctx) {
-};
-
-// Exit a parse tree produced by apexParser#genericMethodDeclaration.
-apexListener.prototype.exitGenericMethodDeclaration = function(ctx) {
-};
-
-
 // Enter a parse tree produced by apexParser#constructorDeclaration.
 apexListener.prototype.enterConstructorDeclaration = function(ctx) {
 };
 
 // Exit a parse tree produced by apexParser#constructorDeclaration.
 apexListener.prototype.exitConstructorDeclaration = function(ctx) {
-};
-
-
-// Enter a parse tree produced by apexParser#genericConstructorDeclaration.
-apexListener.prototype.enterGenericConstructorDeclaration = function(ctx) {
-};
-
-// Exit a parse tree produced by apexParser#genericConstructorDeclaration.
-apexListener.prototype.exitGenericConstructorDeclaration = function(ctx) {
 };
 
 
@@ -287,15 +242,6 @@ apexListener.prototype.enterInterfaceMethodDeclaration = function(ctx) {
 
 // Exit a parse tree produced by apexParser#interfaceMethodDeclaration.
 apexListener.prototype.exitInterfaceMethodDeclaration = function(ctx) {
-};
-
-
-// Enter a parse tree produced by apexParser#genericInterfaceMethodDeclaration.
-apexListener.prototype.enterGenericInterfaceMethodDeclaration = function(ctx) {
-};
-
-// Exit a parse tree produced by apexParser#genericInterfaceMethodDeclaration.
-apexListener.prototype.exitGenericInterfaceMethodDeclaration = function(ctx) {
 };
 
 

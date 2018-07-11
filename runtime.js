@@ -1,12 +1,9 @@
-'use strict'
+'use strict';
 
-let envStack = [];
-
-let LocalEnvironment = require('./localEnv');
-let ApexClass        = require('./apexClass').ApexClass;
-let ApexClassStore   = require('./apexClass').ApexClassStore;
-let NameSpaceStore   = require('./apexClass').NameSpaceStore;
-let Ast              = require('./node/ast');
+const LocalEnvironment = require('./localEnv');
+const ApexClass        = require('./apexClass').ApexClass;
+const NameSpaceStore   = require('./apexClass').NameSpaceStore;
+const Ast              = require('./node/ast');
 
 NameSpaceStore.register('System');
 
@@ -199,6 +196,90 @@ const ApexTime = new ApexClass(
   []
 );
 NameSpaceStore.registerClass('System', ApexTime);
+
+const ApexMap = new ApexClass(
+  'Map',
+  null,
+  [],
+  {},
+  {},
+  {},
+  {},
+  []
+);
+NameSpaceStore.registerClass('System', ApexMap);
+
+const ApexHttpRequest = new ApexClass(
+  'HttpRequest',
+  null,
+  [],
+  {},
+  {},
+  {},
+  {},
+  []
+);
+NameSpaceStore.registerClass('System', ApexHttpRequest);
+
+const ApexHTTPResponse = new ApexClass(
+  'HTTPResponse',
+  null,
+  [],
+  {},
+  {},
+  {},
+  {},
+  []
+);
+NameSpaceStore.registerClass('System', ApexHTTPResponse);
+
+const ApexXmlStreamWriter = new ApexClass(
+  'Xmlstreamwriter',
+  null,
+  [],
+  {},
+  {},
+  {},
+  {},
+  []
+);
+NameSpaceStore.registerClass('System', ApexXmlStreamWriter);
+
+const ApexXmlStreamReader = new ApexClass(
+  'Xmlstreamreader',
+  null,
+  [],
+  {},
+  {},
+  {},
+  {},
+  []
+);
+NameSpaceStore.registerClass('System', ApexXmlStreamReader);
+
+const ApexPageReference = new ApexClass(
+  'PageReference',
+  null,
+  [],
+  {},
+  {},
+  {},
+  {},
+  []
+);
+NameSpaceStore.registerClass('System', ApexPageReference);
+
+const ApexHttp = new ApexClass(
+  'Http',
+  null,
+  [],
+  {},
+  {},
+  {},
+  {},
+  []
+);
+NameSpaceStore.registerClass('System', ApexHttp);
 
 module.exports = {
   System: ApexSystem,

@@ -5,8 +5,10 @@ const ApexInterpreter = require('./apex_interpreter');
 const ApexAstBuilder = require('./ApexAstBuilder');
 const SymbolDeclarator = require('./symbol_declarator');
 const ApexBuilder = require('./apex_builder');
+const TypeBuilder = require('./type_builder');
 const MethodInvocationNode = require('./node/ast').MethodInvocationNode;
 const NameNode = require('./node/ast').NameNode;
+const util = require('util');
 const fs = require('fs');
 
 // Create CST with ANTLR
@@ -54,8 +56,11 @@ function readFile(fileName) {
 
 function build(classInfo) {
   console.log(`Start Build: ${classInfo.name}`);
-  const builder = new ApexBuilder();
-  builder.visit(classInfo);
+  // const builder = new ApexBuilder();
+  const typeBuilder = new TypeBuilder();
+  typeBuilder.visit(classInfo);
+  const apexBuilder = new ApexBuilder();
+  apexBuilder.visit(classInfo);
   console.log(`End Build: ${classInfo.name}`);
 }
 

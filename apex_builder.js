@@ -2,7 +2,7 @@ const Ast = require('./node/ast');
 const ApexClassStore = require('./apexClass').ApexClassStore;
 const methodSearcher = require('./methodSearcher');
 const EnvManager = require('./envManager');
-const TypeSearcher = require('./typeSearcher');
+const Runtime = require('./runtime');
 
 class ApexBuilder {
   visit(node) {
@@ -46,7 +46,7 @@ class ApexBuilder {
         let methodNode = methods[parameterHash];
         let env = {};
         methodNode.parameters.forEach((parameter) => {
-          env[parameter.name] = parameter.type;
+          env[parameter.name] = { type: parameter.type };
         });
         EnvManager.pushScope(env, null);
         methods[parameterHash].accept(this);
@@ -62,7 +62,7 @@ class ApexBuilder {
         let methodNode = methods[parameterHash];
         let env = { this: newObject };
         methodNode.parameters.forEach((parameter) => {
-          env[parameter.name] = parameter.type;
+          env[parameter.name] = { type: parameter.type };
         });
         EnvManager.pushScope(env, null);
         methods[parameterHash].accept(this);
@@ -72,38 +72,27 @@ class ApexBuilder {
 
     Object.keys(node.staticFields).forEach((fieldName) => {
       const staticField = node.staticFields[fieldName];
-      // staticField.type;
-      // staticField.expression.accept(this);
+      const expressionType = staticField.expression.accept(this).type.classNode;
+      if (staticField.type.classNode != expressionType) {
+        throw `Invalid type ${expressionType.name} at line ${node.lineno}`;
+      }
     });
 
     Object.keys(node.instanceFields).forEach((fieldName) => {
       const instanceField = node.instanceFields[fieldName];
-      // instanceField.type;
-      // instanceField.expression.accept(this);
+      const expressionType = staticField.expression.accept(this).type.classNode;
+      if (instanceField.type.classNode != expressionType) {
+        throw `Invalid type ${expressionType.name} at line ${node.lineno}`;
+      }
     });
   }
 
   visitMethodDeclaration(node) {
     this.validateModifierDuplication(node);
-    // returnType Check
-    if (node.returnType != 'void'){
-      let returnType;
-      if (node.returnType.name.length == 1) {
-        returnType = ApexClassStore.get(node.returnType.name.join('.'));
-      } else {
-        const names = node.returnType.name;
-        // console.log(ApexClassStore.get(names[0]))
-        returnType = ApexClassStore.get(names[0]).innerClasses[names[1]];
-      }
-      if (!returnType) {
-        // TODO: lineno
-        throw `Invalid return type ${node.returnType} at line ${node.lineno}`;
-      }
-    }
     this.validateParameter(node);
 
+    // TODO: returnType Check
     node.statements.accept(this);
-    return node;
   }
 
   createObject(className) {
@@ -111,7 +100,7 @@ class ApexBuilder {
     let instanceFields = {};
     // console.log(classInfo)
     Object.keys(classInfo.instanceFields).forEach((fieldName) => {
-      let field = classInfo.instanceFields[fieldName]
+      let field = classInfo.instanceFields[fieldName];
       if (field.expression) {
         instanceFields[fieldName] = {
           type: field.type,
@@ -138,28 +127,8 @@ class ApexBuilder {
 
   }
 
-  visitAnnotation(node) {
-    return node;
-  }
-
-  visitInteger(node) {
-    return node;
-  }
-
-  visitParameter(node) {
-    return node;
-  }
-
   visitArrayAccess(node) {
   
-  }
-
-  visitApexObject(node) {
-    return node;
-  }
-
-  visitBoolean(node) {
-    return node;
   }
 
   visitBreak(node) {
@@ -178,10 +147,6 @@ class ApexBuilder {
   
   }
 
-  visitDouble(node) {
-    return node;
-  }
-
   visitFor(node) {
     EnvManager.pushScope({});
 
@@ -189,7 +154,7 @@ class ApexBuilder {
     forControl.forInit.accept(this);
     forControl.forUpdate.forEach((statement) => { statement.accept(this) });
 
-    let condition = forControl.expression.accept(this);
+    let condition = forControl.expression.type();
     if (!condition instanceof Ast.BooleanNode) {
       throw `Should be boolean expression at line ${condition.lineno}`;
     }
@@ -211,7 +176,7 @@ class ApexBuilder {
   }
 
   visitMethodInvocation(node) {
-    let searchResult = methodSearcher.searchMethod(node);
+    let searchResult = methodSearcher.searchMethod(node, 'type');
     searchResult.methodNode = searchResult.methodNode[Object.keys(searchResult.methodNode)[0]];
     let env = { this: searchResult.receiverNode };
     for (let i = 0; i < searchResult.methodNode.parameters.length; i++) {
@@ -231,16 +196,13 @@ class ApexBuilder {
   }
 
   visitName(node) {
-    let values = methodSearcher.searchField(node);
-    console.log(EnvManager.currentScope().env.this);
+    let values = methodSearcher.searchField(node, 'type');
     if (values) return values;
     throw `Variable not declaration : ${node.value.join('.')} at line ${node.lineno}`
   }
 
   visitNew(node) {
-    const classNode = TypeSearcher.search(node.type);
-    node.typeClassNode = classNode;
-
+    const classNode = node.classType.classNode;
     const instanceFields = {};
     Object.keys(classNode.instanceFields).map((fieldName) => {
       const field = classNode.instanceFields[fieldName];
@@ -270,30 +232,10 @@ class ApexBuilder {
   }
 
   visitBinaryOperator(node) {
-    let left, right;
-    let leftType, rightType;
-    left = node.left.accept(this);
-    if (node.left instanceof Ast.NameNode) {
-      if (left.key) {
-        leftType = left.receiverNode.instanceFields[left.key].type.toName();
-      } else {
-        leftType = EnvManager.get(left.receiverNode).type.toName();
-      }
-    } else {
-      leftType = left.type();
-    }
-    right = node.right.accept(this);
-    if (node.right instanceof Ast.NameNode) {
-      if (right.key) {
-        rightType = right.receiverNode.instanceFields[right.key].type.toName();
-      } else {
-        rightType = EnvManager.get(right.receiverNode).type.toName();
-      }
-    } else {
-      rightType = right.type();
-    }
+    const leftType = node.left.type();
+    const rightType = node.right.type();
 
-    switch(node.type) {
+    switch(node.op) {
       case '+':
       case '-':
       case '*':
@@ -303,23 +245,23 @@ class ApexBuilder {
       case '<<':
       case '>>>':
       case '>>':
-        if (leftType != 'Integer' && leftType != 'Double') {
-          throw `Must be integer or double, but ${leftType} at line ${node.lineno}`;
+        if (!(leftType in [Runtime.Integer, Runtime.Double])) {
+          throw `Must be integer or double, but ${leftType.name} at line ${node.lineno}`;
         }
-        if (rightType != 'Integer' && rightType != 'Double') {
-          throw `Must be integer or double, but ${rightType} at line ${node.lineno}`;
+        if (!(rightType in [Runtime.Integer, Runtime.Double])) {
+          throw `Must be integer or double, but ${rightType.name} at line ${node.lineno}`;
         }
-        return left;
+        break;
       case '&':
       case '|':
       case '^':
-        if (leftType != 'Integer') {
-          throw `Must be integer, but ${leftType} at line ${node.lineno}`;
+        if (leftType != Runtime.Integer) {
+          throw `Must be integer, but ${leftType.name} at line ${node.lineno}`;
         }
-        if (rightType != 'Integer') {
-          throw `Must be integer, but ${rightType} at line ${node.lineno}`;
+        if (rightType != Runtime.Integer) {
+          throw `Must be integer, but ${rightType.name} at line ${node.lineno}`;
         }
-        return left;
+        break;
       case '<':
       case '>':
       case '<=':
@@ -329,9 +271,9 @@ class ApexBuilder {
       case '!=':
       case '!==':
         if (leftType != rightType) {
-          throw `Type not matched : left => ${leftType}, right => ${rightType} at line ${node.lineno}`
+          throw `Type not matched : left => ${leftType.name}, right => ${rightType.name} at line ${node.lineno}`
         }
-        return left;
+        break;
       case '=':
       case '+=':
       case '-=':
@@ -339,35 +281,23 @@ class ApexBuilder {
       case '/=':
       case '%=':
         if (leftType != rightType) {
-          throw `Type not matched : left => ${leftType}, right => ${rightType} at line ${node.lineno}`
+          throw `Type not matched : left => ${leftType.name}, right => ${rightType.name} at line ${node.lineno}`
         }
-        return left;
+        break;
       case '&=':
       case '|=':
       case '^=':
-        if (leftType != 'Integer') {
-          throw `Must be integer, but ${leftType} at line ${node.lineno}`;
+        if (leftType != Runtime.Integer) {
+          throw `Must be integer, but ${leftType.name} at line ${node.lineno}`;
         }
-        if (rightType != 'Integer') {
-          throw `Must be integer, but ${rightType} at line ${node.lineno}`;
+        if (rightType != Runtime.Integer) {
+          throw `Must be integer, but ${rightType.name} at line ${node.lineno}`;
         }
         if (leftType != rightType) {
-          throw `Type not matched : left => ${leftType}, right => ${rightType} at line ${node.lineno}`
+          throw `Type not matched : left => ${leftType.name}, right => ${rightType.name} at line ${node.lineno}`
         }
-        return left;
+        break;
     }
-  }
-
-  visitCastExpression(node) {
-    // TODO: check extends or implementation
-    const castType = TypeSearcher.search(node.type);
-    const obj = new Ast.ApexObjectNode();
-    obj.classNode = castType;
-    return obj;
-  }
-
-  visitReturn(node) {
-    return node
   }
 
   visitSoql(node) {
@@ -379,6 +309,9 @@ class ApexBuilder {
     obj.genericType = objectClassInfo;
     return obj;
   }
+
+  visitReturn(node) {}
+
 
   visitString(node) {
     return new Ast.StringNode();
@@ -396,20 +329,17 @@ class ApexBuilder {
   
   }
 
-  visitType(node) {
-    return node;
-  }
-
   visitVariableDeclaration(node) {
     let type = node.type;
     node.declarators.forEach((declarator) => {
-      let decl = declarator.accept(this);
-
-      if (decl.expression && !this.checkType(type, decl.expression)) {
-        throw `Type not matched : variable => ${type.name.join('.')}, initializer => ${decl.expression.type()} at line ${node.lineno}`
+      if (!declarator.expression) return;
+      console.log(declarator.expression);
+      const expressionType = declarator.expression.type().classNode;
+      if (expressionType !== node.type.classNode) {
+        throw `Type not matched : variable => ${node.type.classNode.name}, initializer => ${expressionType.classNode.name} at line ${node.lineno}`
       }
       let env = EnvManager.currentScope();
-      env.define(type, declarator.name, decl.expression ? decl.expression.accept(this) : new Ast.NullNode());
+      env.define(type, declarator.name, new Ast.NullNode());
     });
   }
 
@@ -444,9 +374,11 @@ class ApexBuilder {
     }
   }
 
+  // left => TypeNode
+  // right => expression
   checkType(left, right) {
     if (right instanceof Ast.NullNode) return true;
-    if (left.name.join('.') !== right.type()) return false;
+    if (left.classNode !== right.type()) return false;
     if (!left.parameters || !right.genericType) return true;
     for (let i = 0; i < left.parameters.length; i++) {
       let leftParameter = left.parameters[i];

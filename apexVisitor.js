@@ -48,24 +48,6 @@ apexVisitor.prototype.visitClassDeclaration = function(ctx) {
 };
 
 
-// Visit a parse tree produced by apexParser#typeParameters.
-apexVisitor.prototype.visitTypeParameters = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#typeParameter.
-apexVisitor.prototype.visitTypeParameter = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#typeBound.
-apexVisitor.prototype.visitTypeBound = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
 // Visit a parse tree produced by apexParser#enumDeclaration.
 apexVisitor.prototype.visitEnumDeclaration = function(ctx) {
   return this.visitChildren(ctx);
@@ -132,20 +114,8 @@ apexVisitor.prototype.visitMethodDeclaration = function(ctx) {
 };
 
 
-// Visit a parse tree produced by apexParser#genericMethodDeclaration.
-apexVisitor.prototype.visitGenericMethodDeclaration = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
 // Visit a parse tree produced by apexParser#constructorDeclaration.
 apexVisitor.prototype.visitConstructorDeclaration = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#genericConstructorDeclaration.
-apexVisitor.prototype.visitGenericConstructorDeclaration = function(ctx) {
   return this.visitChildren(ctx);
 };
 
@@ -194,12 +164,6 @@ apexVisitor.prototype.visitConstantDeclarator = function(ctx) {
 
 // Visit a parse tree produced by apexParser#interfaceMethodDeclaration.
 apexVisitor.prototype.visitInterfaceMethodDeclaration = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#genericInterfaceMethodDeclaration.
-apexVisitor.prototype.visitGenericInterfaceMethodDeclaration = function(ctx) {
   return this.visitChildren(ctx);
 };
 

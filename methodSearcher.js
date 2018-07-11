@@ -6,14 +6,20 @@ const Ast = require('./node/ast');
 const crypto = require('crypto');
 const EnvManager = require('./envManager');
 
+class MethodSearchResult {
+  constructor(receiverNode, methodNode) {
+    this.receiverNode = receiverNode;
+    this.methodNode = methodNode;
+  }
+}
 class MethodSearcher {
-  searchMethod(node, visitor) {
+  searchMethod(node, visitor, searchMethod = 'value') {
     if (!(node.nameOrExpression instanceof Ast.NameNode)) {
       let receiverNode = node.nameOrExpression.accept(visitor);
       let classNode = receiverNode.classNode;
       if (classNode) {
         let methodNode = this.searchInstanceMethod(classNode, node.methodName);
-        return { receiverNode, methodNode };
+        return new MethodSearchResult(receiverNode, methodNode);
       }
     }
 
@@ -22,13 +28,14 @@ class MethodSearcher {
     let methodName = names[names.length - 1];
 
     if (EnvManager.localIncludes(name)) {
-      let variable = EnvManager.getValue(name);
+      let variable = EnvManager.get(name);
       let receiverNode = (() => {
         let receiverNode = variable;
         let list = names.slice(1);
         for (let i = 0; i < list.length - 1; i++) {
           if (!receiverNode) return null;
-          receiverNode = receiverNode.instanceFields[list[i]];
+          if (!(searchMethod in receiverNode)) return null;
+          receiverNode = receiverNode[searchMethod].instanceFields[list[i]];
         }
         return receiverNode;
       })();
@@ -36,7 +43,7 @@ class MethodSearcher {
       if (receiverNode) {
         let methodNode = this.searchInstanceMethod(receiverNode.classNode, methodName);
         if (receiverNode && methodNode) {
-          return { receiverNode, methodNode };
+          return new MethodSearchResult(receiverNode, methodNode);
         }
       }
     }
@@ -47,7 +54,8 @@ class MethodSearcher {
         let receiverNode = variable;
         for (let i = 0; i < names.length - 1; i++) {
           if (!receiverNode) return null;
-          receiverNode = receiverNode.instanceFields[names[i]];
+          if (!(searchMethod in receiverNode)) return null;
+          receiverNode = receiverNode[searchMethod].instanceFields[names[i]];
         }
         return receiverNode;
       })();
@@ -55,7 +63,7 @@ class MethodSearcher {
       if (receiverNode) {
         let methodNode = this.searchInstanceMethod(receiverNode.classNode, methodName);
         if (receiverNode && methodNode) {
-          return { receiverNode, methodNode };
+          return new MethodSearchResult(receiverNode, methodNode);
         }
       }
     }
@@ -65,55 +73,68 @@ class MethodSearcher {
       if (classInfo) {
         let methodNode = this.searchStaticMethod(classInfo, names[1]);
         if (classInfo && methodNode) {
-          return { receiverNode: classInfo, methodNode };
+          return new MethodSearchResult(classInfo, methodNode);
+        }
+      }
+      if (NameSpaceStore.includes('System', names[0])) {
+        const clasInfo = NameSpaceStore.get('System', names[0]);
+        if (classInfo) {
+          let methodNode = this.searchStaticMethod(classInfo, names[1]);
+          if (classInfo && methodNode) {
+            return new MethodSearchResult(classInfo, methodNode);
+          }
         }
       }
     }
 
     if (names.length >= 3) {
-      let classInfo = ApexClassStore.get(name);
-      if (classInfo) {
+      let classNode = ApexClassStore.get(name);
+      if (classNode) {
         let receiverNode = (() => {
           let staticFieldName = names[1];
-          let receiverNode = classInfo.staticFields[staticFieldName];
+          if (!(staticFieldName in classNode.staticFields)) return null;
+          let receiverNode = classNode.staticFields[staticFieldName];
           for (let i = 2; i < names.length - 1; i++) {
             if (!receiverNode) return null;
-            receiverNode = receiverNode.instanceFields[names[i]];
+            if (!(searchMethod in receiverNode)) return null;
+            receiverNode = receiverNode[searchMethod].instanceFields[names[i]];
           }
           return receiverNode;
         })();
         if (receiverNode) {
           let methodNode = this.searchInstanceMethod(receiverNode.classNode, methodName);
           if (receiverNode && methodNode) {
-            return { receiverNode, methodNode };
+            return new MethodSearchResult(receiverNode, methodNode);
           }
         }
       }
     }
 
     if (names.length >= 3) {
-      let nameSpace = NameSpaceStore.get(name);
-      let className = names[1];
-      let staticFieldName = names[2];
-      if (nameSpace && className in nameSpace) {
-        let classNode = nameSpace[className];
-        let staticField = classNode.searchStaticField(staticFieldName);
-        let receiverNode = names.reduce((receiver, name) => {
-          if (!receiver) {
-            return;
+      let classNode = NameSpaceStore.get(name, names[1]);
+      if (classNode) {
+        let staticFieldName = names[2];
+        let receiverNode = (() => {
+          let classNode = nameSpace[className];
+          if (!(staticFieldName in classNode.staticFields)) return null;
+          let receiverNode = classNode.staticFields[staticFieldName];
+          for (let i = 3; i < names.length - 1; i++) {
+            if (!receiverNode) return;
+            if (!(searchMethod in receiverNode)) return null;
+            receiverNode = receiverNode[searchMethod].instanceFields[names[i]];
           }
-          return receiver.instanceFields[name];
-        }, staticField);
+          return receiverNode;
+        })();
 
         let methodNode = receiverNode.searchInstanceMethod(methodName);
         if (receiverNode && methodNode) {
-          return { receiverNode, methodNode };
+          return new MethodSearchResult(receiverNode, methodNode);
         }
       }
     }
   }
 
-  searchField(node) {
+  searchField(node, searchMethod = 'type') {
     let names = node.value;
     let name = names[0];
 
@@ -122,18 +143,20 @@ class MethodSearcher {
       if (names.length == 1) {
         return { receiverNode: name, key: null };
       }
-      let variable = EnvManager.getValue(name);
+      let variable = EnvManager.get(name);
       let receiverNode = (() => {
         let receiverNode = variable;
         let list = names.slice(1);
         for (let i = 0; i < list.length - 1; i++) {
           if (!receiverNode) return null;
-          receiverNode = receiverNode.instanceFields[list[i]].value;
+          if (!(searchMethod in receiverNode)) return null;
+          receiverNode = receiverNode[searchMethod].instanceFields[list[i]];
         }
         return receiverNode;
       })();
+
       let key = names[names.length - 1];
-      if (receiverNode && key in receiverNode.instanceFields) {
+      if (receiverNode && key in receiverNode.type().instanceFields) {
         return { receiverNode, key };
       }
     }
@@ -151,10 +174,12 @@ class MethodSearcher {
           let list = names.slice(1);
           for (let i = 0; i < list.length - 1; i++) {
             if (!receiverNode) return null;
-            receiverNode = receiverNode.instanceFields[list[i]];
+            if (!(searchMethod in receiverNode)) return null;
+            receiverNode = receiverNode[searchMethod].instanceFields[list[i]];
           }
           return receiverNode;
         })();
+        console.log(receiverNode)
         let key = names[names.length - 1];
         if (receiverNode && key in receiverNode.instanceFields) {
           return { receiverNode, key };
@@ -172,7 +197,8 @@ class MethodSearcher {
           let list = names.slice(1);
           for (let i = 0; i < list.length - 1; i++) {
             if (!receiverNode) return null;
-            receiverNode = receiverNode.instanceFields[list[i]];
+            if (!(searchMethod in receiverNode)) return null;
+            receiverNode = receiverNode[searchMethod].instanceFields[list[i]];
           }
           return receiverNode;
         })();
@@ -185,18 +211,17 @@ class MethodSearcher {
     }
 
     if (names.length > 2) {
-      let nameSpace = NameSpaceStore.get(name);
-      let apexClassName = names[1];
-      if (nameSpace && apexClassName in nameSpace) {
-        let apexClass = nameSpace[apexClassName];
+      let classNode = NameSpaceStore.get(name, names[1]);
+      if (classNode) {
         let staticFieldName = names[2];
-        if (staticFieldName in apexClass.staticFields) {
+        if (staticFieldName in classNode.staticFields) {
           let receiverNode = (() => {
-            let receiverNode = apexClass.staticFields[staticFieldName];
+            let receiverNode = classNode.staticFields[staticFieldName];
             let list = names.slice(2);
             for (let i = 0; i < list.length - 1; i++) {
               if (!receiverNode) return null;
-              receiverNode = receiverNode.instanceFields[list[i]];
+              if (!(searchMethod in receiverNode)) return null;
+              receiverNode = receiverNode[searchMethod].instanceFields[list[i]];
             }
             return receiverNode;
           })();
@@ -210,6 +235,14 @@ class MethodSearcher {
     }
   }
 
+  searchFieldType(node) {
+    const result = this.searchField(node, 'type');
+    if (result.key) {
+      return result.receiverNode.instanceFields[result.key].type.classNode;
+    } else {
+      return EnvManager.get(result.receiverNode).type.classNode;
+    }
+  }
   searchInstanceMethod(classNode, methodName) {
     if (methodName in classNode.instanceMethods) {
       return classNode.instanceMethods[methodName];

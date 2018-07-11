@@ -79,8 +79,15 @@ class NameSpaceStore {
     nameSpaceStore[namespace][classObject.name] = classObject;
   }
 
-  static get(class_name) {
-    return nameSpaceStore[class_name];
+  static get(nameSpace, className) {
+    if (!(nameSpace in nameSpaceStore)) return null;
+    if (!(className in nameSpaceStore[nameSpace])) return null;
+    return nameSpaceStore[nameSpace][className];
+  }
+
+  static includes(namespace, className) {
+    if (!(namespace in nameSpaceStore)) return false;
+    return className in nameSpaceStore[namespace];
   }
 }
 

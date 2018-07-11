@@ -136,15 +136,15 @@ class ApexInterpreter {
 
   visitNew(node) {
     let newObject = new Ast.ApexObjectNode();
-    newObject.classNode = node.typeClassNode;
+    newObject.classNode = node.classType.classNode;
     newObject.instanceFields = {};
-    const instanceFields = node.typeClassNode.instanceFields;
+    const instanceFields = node.type.classNode.instanceFields;
     Object.keys(instanceFields).forEach((fieldName) => {
       newObject.instanceFields[fieldName] = instanceFields[fieldName].expression.accept(this);
     });
 
     const parameterHash = methodSearcher.calculateMethodParameterHash(node);
-    const constructor = node.typeClassNode.constructors[parameterHash];
+    const constructor = node.type.classNode.constructors[parameterHash];
 
     let env = { this: newObject };
     for (let i = 0; i < constructor.parameters.length; i++) {
@@ -176,7 +176,7 @@ class ApexInterpreter {
       result.receiverNode.instanceFields[result.key] = new Ast.IntegerNode(value);
     } else {
       prev = EnvManager.getValue(result.receiverNode);
-      switch(node.type) {
+      switch(node.op) {
         case '++':
           value = prev.value + 1;
           break;
@@ -196,7 +196,7 @@ class ApexInterpreter {
   visitBinaryOperator(node) {
     let left = node.left.accept(this);
     let right = node.right.accept(this);
-    switch(node.type) {
+    switch(node.op) {
       case '+':
         return new Ast.IntegerNode(left.value + right.value);
       case '-':

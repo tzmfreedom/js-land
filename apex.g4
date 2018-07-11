@@ -83,22 +83,10 @@ variableModifier
     ;
 
 classDeclaration
-    :   CLASS Identifier typeParameters?
+    :   CLASS Identifier
         (EXTENDS type)?
         (IMPLEMENTS typeList)?
         classBody
-    ;
-
-typeParameters
-    :   '<' typeParameter (',' typeParameter)* '>'
-    ;
-
-typeParameter
-    :   Identifier (EXTENDS typeBound)?
-    ;
-
-typeBound
-    :   type ('&' type)*
     ;
 
 enumDeclaration
@@ -119,7 +107,7 @@ enumBodyDeclarations
     ;
 
 interfaceDeclaration
-    :   INTERFACE Identifier typeParameters? (EXTENDS typeList)? interfaceBody
+    :   INTERFACE Identifier (EXTENDS typeList)? interfaceBody
     ;
 
 typeList
@@ -142,10 +130,8 @@ classBodyDeclaration
 
 memberDeclaration
     :   methodDeclaration
-    |   genericMethodDeclaration
     |   fieldDeclaration
     |   constructorDeclaration
-    |   genericConstructorDeclaration
     |   interfaceDeclaration
     |   classDeclaration
     |   enumDeclaration
@@ -165,17 +151,9 @@ methodDeclaration
         )
     ;
 
-genericMethodDeclaration
-    :   typeParameters methodDeclaration
-    ;
-
 constructorDeclaration
     :   Identifier formalParameters (THROWS qualifiedNameList)?
         constructorBody
-    ;
-
-genericConstructorDeclaration
-    :   typeParameters constructorDeclaration
     ;
 
 fieldDeclaration
@@ -198,7 +176,6 @@ interfaceBodyDeclaration
 interfaceMemberDeclaration
     :   constDeclaration
     |   interfaceMethodDeclaration
-    |   genericInterfaceMethodDeclaration
     |   interfaceDeclaration
     |   classDeclaration
     |   enumDeclaration
@@ -217,10 +194,6 @@ interfaceMethodDeclaration
     :   (type|VOID) Identifier formalParameters ('[' ']')*
         (THROWS qualifiedNameList)?
         ';'
-    ;
-
-genericInterfaceMethodDeclaration
-    :   typeParameters interfaceMethodDeclaration
     ;
 
 variableDeclarators

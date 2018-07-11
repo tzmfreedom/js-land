@@ -143,25 +143,6 @@ ApexAstBuilder.prototype.visitClassDeclaration = function(ctx) {
   );
 };
 
-
-// Visit a parse tree produced by apexParser#typeParameters.
-ApexAstBuilder.prototype.visitTypeParameters = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#typeParameter.
-ApexAstBuilder.prototype.visitTypeParameter = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#typeBound.
-ApexAstBuilder.prototype.visitTypeBound = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
 // Visit a parse tree produced by apexParser#enumDeclaration.
 ApexAstBuilder.prototype.visitEnumDeclaration = function(ctx) {
   return this.visitChildren(ctx);
@@ -246,12 +227,6 @@ ApexAstBuilder.prototype.visitMethodDeclaration = function(ctx) {
 };
 
 
-// Visit a parse tree produced by apexParser#genericMethodDeclaration.
-ApexAstBuilder.prototype.visitGenericMethodDeclaration = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
 // Visit a parse tree produced by apexParser#constructorDeclaration.
 ApexAstBuilder.prototype.visitConstructorDeclaration = function(ctx) {
   let name = ctx.Identifier().accept(this);
@@ -265,12 +240,6 @@ ApexAstBuilder.prototype.visitConstructorDeclaration = function(ctx) {
     formalParameters,
     constructorBody
   )
-};
-
-
-// Visit a parse tree produced by apexParser#genericConstructorDeclaration.
-ApexAstBuilder.prototype.visitGenericConstructorDeclaration = function(ctx) {
-  return this.visitChildren(ctx);
 };
 
 
@@ -325,12 +294,6 @@ ApexAstBuilder.prototype.visitConstantDeclarator = function(ctx) {
 
 // Visit a parse tree produced by apexParser#interfaceMethodDeclaration.
 ApexAstBuilder.prototype.visitInterfaceMethodDeclaration = function(ctx) {
-  return this.visitChildren(ctx);
-};
-
-
-// Visit a parse tree produced by apexParser#genericInterfaceMethodDeclaration.
-ApexAstBuilder.prototype.visitGenericInterfaceMethodDeclaration = function(ctx) {
   return this.visitChildren(ctx);
 };
 

@@ -1,4 +1,5 @@
-const Runtime = require('./runtime')
+const NameSpaceStore = require('../apexClass').NameSpaceStore;
+const methodSearcher = require('../methodSearcher');
 
 class AnnotationNode {
   constructor(name, parameters, lineno) {
@@ -55,7 +56,7 @@ class IntegerNode {
   }
 
   type() {
-    return Runtime.Integer;
+    return NameSpaceStore.get('System', 'Integer');
   }
 }
 
@@ -95,7 +96,7 @@ class BooleanNode {
   }
 
   type() {
-    return Runtime.Boolean;
+    return NameSpaceStore.get('System', 'Boolean');
   }
 }
 
@@ -168,7 +169,7 @@ class DoubleNode {
   }
 
   type() {
-    return Runtime.Double;
+    return NameSpaceStore.get('System', 'Double');
   }
 }
 
@@ -340,17 +341,25 @@ class NameNode {
   accept(visitor) {
     return visitor.visitName(this);
   }
+
+  type() {
+   return methodSearcher.searchFieldType(this, 'type');
+  }
 }
 
 class NewNode {
-  constructor(type, parameters, lineno) {
-    this.type = type;
+  constructor(classType, parameters, lineno) {
+    this.classType = classType;
     this.parameters = parameters;
     this.lineno = lineno;
   }
 
   accept(visitor) {
     return visitor.visitNew(this);
+  }
+
+  type() {
+    return this.classType;
   }
 }
 
@@ -382,8 +391,8 @@ class ApexObjectNode {
 }
 
 class UnaryOperatorNode {
-  constructor(type, expression, isPrefix, lineno) {
-    this.type = type;
+  constructor(op, expression, isPrefix, lineno) {
+    this.op = op;
     this.expression = expression;
     this.isPrefix = isPrefix;
     this.lineno = lineno;
@@ -392,11 +401,15 @@ class UnaryOperatorNode {
   accept(visitor) {
     return visitor.visitUnaryOperator(this);
   }
+
+  type() {
+    return this.left.type();
+  }
 }
 
 class BinaryOperatorNode {
-  constructor(type, left, right, lineno) {
-    this.type = type;
+  constructor(op, left, right, lineno) {
+    this.op = op;
     this.left = left;
     this.right = right;
     this.lineno = lineno;
@@ -404,6 +417,10 @@ class BinaryOperatorNode {
 
   accept(visitor) {
     return visitor.visitBinaryOperator(this);
+  }
+
+  type() {
+    return this.left.type();
   }
 }
 
@@ -451,7 +468,7 @@ class StringNode {
   }
 
   type() {
-    return Runtime.String;
+    return NameSpaceStore.get('System', 'String');
   }
 }
 
