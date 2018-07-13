@@ -374,8 +374,8 @@ class NullNode {
 }
 
 class ApexObjectNode {
-  constructor(classNode, instanceFields, genericType, lineno) {
-    this.classNode = classNode;
+  constructor(classType, instanceFields, genericType, lineno) {
+    this.classType = classType;
     this.instanceFields = instanceFields;
     this.genericType = genericType;
     this.lineno = lineno;

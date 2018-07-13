@@ -136,7 +136,7 @@ class ApexInterpreter {
 
   visitNew(node) {
     let newObject = new Ast.ApexObjectNode();
-    newObject.classNode = node.classType.classNode;
+    newObject.classType = node.classType;
     newObject.instanceFields = {};
     const instanceFields = node.type.classNode.instanceFields;
     Object.keys(instanceFields).forEach((fieldName) => {
@@ -167,7 +167,7 @@ class ApexInterpreter {
     let prev, value;
     if (result.key) {
       prev = result.receiverNode.instanceFields[result.key];
-      switch(node.type) {
+      switch(node.op) {
         case '++':
           value = prev.value + 1;
         case '--':

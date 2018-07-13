@@ -115,8 +115,9 @@ class ApexBuilder {
         };
       }
     });
-    const classNode = ApexClassStore.get(className);
-    return new Ast.ApexObjectNode(classNode, instanceFields);
+    const typeNode = new Ast.TypeNode([className], []);
+    typeNode.classNode = ApexClassStore.get(className);
+    return new Ast.ApexObjectNode(typeNode, instanceFields);
   }
 
   visitFieldDeclaration(node) {
