@@ -1,9 +1,8 @@
 let Ast = require('./node/ast');
 let ApexClassStore = require('./apexClass').ApexClassStore;
 let ApexClass = require('./apexClass').ApexClass;
-let LocalEnvironment = require('./localEnv');
 let methodSearcher = require('./methodSearcher');
-let ApexObject = require('./apexClass').ApexObject;
+let TriggerStore = require('./trigger_store');
 
 class SymbolDeclarator {
   visit(node) {
@@ -98,7 +97,7 @@ class SymbolDeclarator {
         // TODO: lineno
         throw `Compile Error: duplicate instance field name ${innerClassName} at line : `
       }
-      innerClasses[innerClassName] = innerClass;
+      innerClasses[innerClassName] = innerClass.accept(this);
     });
 
     const classInfo = new ApexClass(
@@ -118,7 +117,8 @@ class SymbolDeclarator {
   }
 
   visitTrigger(node) {
-
+    TriggerStore.add(node.object, node);
+    return node;
   }
 }
 

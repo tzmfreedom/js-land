@@ -7,6 +7,10 @@ class TypeBuilder {
   }
 
   visitClass(node) {
+    if (node.superClass) node.superClass.accept(this);
+    node.implementClasses.forEach((implementClass) => {
+      implementClass.accept(this);
+    });
     Object.keys(node.staticMethods).forEach((methodName) => {
       let methods = node.staticMethods[methodName];
       Object.keys(methods).forEach((parameterHash) => {
@@ -50,12 +54,18 @@ class TypeBuilder {
   }
 
   visitMethodDeclaration(node) {
+    node.parameters.forEach((parameter) => {
+      parameter.type.accept(this);
+    });
+
     if (node.returnType != 'void'){
       node.returnType.accept(this);
     } else {
       node.returnType = Ast.NullNode;
     }
-    node.statements.accept(this);
+    if (node.statements) {
+      node.statements.accept(this);
+    }
   }
 
   visitInteger(node) {}
@@ -77,6 +87,7 @@ class TypeBuilder {
   visitDouble(node) {}
 
   visitFor(node) {
+    node.forControl.accept(this);
     node.statements.accept(this);
   }
 
@@ -111,7 +122,7 @@ class TypeBuilder {
   visitBinaryOperator(node) {}
 
   visitCastExpression(node) {
-    node.type.accept(this);
+    node.castType.accept(this);
   }
 
   visitReturn(node) {}

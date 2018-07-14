@@ -28,10 +28,12 @@ ApexAstBuilder.prototype.visitTypeDeclaration = function(ctx) {
     let enumDeclaration = ctx.enumDeclaration().accept(this);
     enumDeclaration.modifier = modifiers;
     return enumDeclaration;
-  } else if (ctx.interfaceBodyDeclaration()) {
+  } else if (ctx.interfaceDeclaration()) {
     let interfaceBodyDeclaration = ctx.interfaceBodyDeclaration().accept(this);
     interfaceBodyDeclaration.modifier = modifiers;
     return interfaceBodyDeclaration;
+  } else if (ctx.triggerDeclaration()) {
+    return ctx.triggerDeclaration().accept(this);
   }
 };
 
@@ -338,7 +340,13 @@ ApexAstBuilder.prototype.visitVariableInitializer = function(ctx) {
 
 // Visit a parse tree produced by apexParser#arrayInitializer.
 ApexAstBuilder.prototype.visitArrayInitializer = function(ctx) {
-  return this.visitChildren(ctx);
+  if (ctx.variableInitializer()) {
+    const initializers = ctx.variableInitializer().map((initializer) => {
+      return initializer.accept(this);
+    });
+    return new Ast.ArrayInitializerNode(initializers);
+  }
+  return null;
 };
 
 
@@ -351,9 +359,21 @@ ApexAstBuilder.prototype.visitEnumConstantName = function(ctx) {
 // Visit a parse tree produced by apexParser#type.
 ApexAstBuilder.prototype.visitType = function(ctx) {
   if (ctx.classOrInterfaceType()) {
-    return ctx.classOrInterfaceType().accept(this);
+    let type = ctx.classOrInterfaceType().accept(this);
+    if (ctx.typedArray()) {
+      for (let i = 0; i < ctx.typedArray().length; i++) {
+        type = new Ast.TypeNode(['Array'], [type]);
+      }
+    }
+    return type;
   } else if (ctx.primitiveType()) {
-    return ctx.primitiveType().accept(this);
+    let type = ctx.primitiveType().accept(this);
+    if (ctx.typedArray()) {
+      for (let i = 0; i < ctx.typedArray().length; i++) {
+        type = new Ast.TypeNode(['Array'], [type]);
+      }
+    }
+    return type;
   }
 };
 
@@ -855,7 +875,7 @@ ApexAstBuilder.prototype.visitCreator = function(ctx) {
     let classCreatorRest = ctx.classCreatorRest() ? ctx.classCreatorRest().accept(this) : null;
     let mapCreatorRest = ctx.mapCreatorRest() ? ctx.mapCreatorRest().accept(this) : null;
     let setCreatorRest = ctx.setCreatorRest() ? ctx.setCreatorRest().accept(this) : null;
-    return new Ast.NewNode(createdName, classCreatorRest, ctx.start.line);
+    return new Ast.NewNode(createdName, classCreatorRest || arrayCreatorRest || setCreatorRest, ctx.start.line);
   }
 };
 
@@ -880,7 +900,12 @@ ApexAstBuilder.prototype.visitInnerCreator = function(ctx) {
 
 // Visit a parse tree produced by apexParser#arrayCreatorRest.
 ApexAstBuilder.prototype.visitArrayCreatorRest = function(ctx) {
-  return this.visitChildren(ctx);
+  const dim = ctx.typedArray().length;
+  const expressions = ctx.expression() ? ctx.expression().map((expression) => {
+    return expression.accept(this);
+  }) : null;
+  const arrayInitializer = ctx.arrayInitializer() ? ctx.arrayInitializer().accept(this) : null;
+  return new Ast.ArrayCreatorNode(dim, expressions, arrayInitializer);
 };
 
 
@@ -941,6 +966,30 @@ ApexAstBuilder.prototype.visitExplicitGenericInvocationSuffix = function(ctx) {
 // Visit a parse tree produced by apexParser#arguments.
 ApexAstBuilder.prototype.visitArguments = function(ctx) {
   return ctx.expressionList() ? ctx.expressionList().accept(this) : [];
+};
+
+ApexAstBuilder.prototype.visitArrayAccess = function(ctx) {
+  const receiverNode = ctx.expression()[0].accept(this);
+  const key = ctx.expression()[1].accept(this);
+  return new Ast.ArrayAccessNode(receiverNode, key, ctx.start.line)
+};
+
+ApexAstBuilder.prototype.visitTriggerDeclaration = function(ctx) {
+  const timings = ctx.triggerTimings().accept(this);
+  const name = ctx.Identifier()[0].getText();
+  const object = ctx.Identifier()[1].getText();
+  const block = ctx.block().accept(this);
+  return new Ast.TriggerNode(name, object, timings, block, ctx.start.line);
+};
+
+ApexAstBuilder.prototype.visitTriggerTimings = function(ctx) {
+  return ctx.triggerTiming().map((timing) => {
+    return timing.accept(this);
+  })
+};
+
+ApexAstBuilder.prototype.visitTriggerTiming = function(ctx) {
+  return { timing: ctx.timing.text, dml: ctx.dml.text };
 };
 
 

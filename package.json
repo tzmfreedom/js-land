@@ -9,6 +9,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "antlr4": "^4.7.1"
+    "antlr4": "^4.7.1",
+    "csv-parse": "^2.5.0"
   }
 }

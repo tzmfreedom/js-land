@@ -49,7 +49,20 @@ typeDeclaration
     :   classOrInterfaceModifier* classDeclaration
     |   classOrInterfaceModifier* enumDeclaration
     |   classOrInterfaceModifier* interfaceDeclaration
+    |   triggerDeclaration
     |   ';'
+    ;
+
+triggerDeclaration
+    :   TRIGGER Identifier ON Identifier '(' triggerTimings ')' block
+    ;
+
+triggerTimings
+    :   triggerTiming (',' triggerTiming)*
+    ;
+
+triggerTiming
+    :   timing=(BEFORE | AFTER) dml=(DB_INSERT | DB_UPDATE | DB_UPSERT | DB_DELETE | DB_UNDELETE)
     ;
 
 modifier
@@ -222,10 +235,13 @@ enumConstantName
     ;
 
 type
-    :   classOrInterfaceType ('[' ']')*
-    |   primitiveType ('[' ']')*
+    :   classOrInterfaceType typedArray*
+    |   primitiveType typedArray*
     ;
 
+typedArray
+    : '[' ']'
+    ;
 classOrInterfaceType
     :   Identifier typeArguments? ('.' Identifier typeArguments? )*
     |   SET typeArguments // 'set <' has to be defined explisitly, otherwise it clashes with SET of property setter
@@ -494,10 +510,8 @@ innerCreator
     ;
 
 arrayCreatorRest
-    :   '['
-        (   ']' ('[' ']')* arrayInitializer
-        |   expression ']' ('[' expression ']')* ('[' ']')*
-        )
+    :   typedArray typedArray* arrayInitializer
+    |   '[' expression ']' ('[' expression ']')* typedArray*
     ;
 
 mapCreatorRest
@@ -632,6 +646,10 @@ DB_UPDATE     : U P D A T E;
 DB_DELETE     : D E L E T E;
 DB_UNDELETE   : U N D E L E T E;
 TESTMETHOD   : T E S T M E T H O D;
+TRIGGER       : T R I G G E R;
+ON            : O N;
+BEFORE        : B E F O R E;
+AFTER         : A F T E R;
 
 
 // ?3.10.1 Integer Literals

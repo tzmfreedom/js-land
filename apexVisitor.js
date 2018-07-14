@@ -24,6 +24,24 @@ apexVisitor.prototype.visitTypeDeclaration = function(ctx) {
 };
 
 
+// Visit a parse tree produced by apexParser#triggerDeclaration.
+apexVisitor.prototype.visitTriggerDeclaration = function(ctx) {
+  return this.visitChildren(ctx);
+};
+
+
+// Visit a parse tree produced by apexParser#triggerTimings.
+apexVisitor.prototype.visitTriggerTimings = function(ctx) {
+  return this.visitChildren(ctx);
+};
+
+
+// Visit a parse tree produced by apexParser#triggerTiming.
+apexVisitor.prototype.visitTriggerTiming = function(ctx) {
+  return this.visitChildren(ctx);
+};
+
+
 // Visit a parse tree produced by apexParser#modifier.
 apexVisitor.prototype.visitModifier = function(ctx) {
   return this.visitChildren(ctx);
@@ -206,6 +224,12 @@ apexVisitor.prototype.visitEnumConstantName = function(ctx) {
 
 // Visit a parse tree produced by apexParser#type.
 apexVisitor.prototype.visitType = function(ctx) {
+  return this.visitChildren(ctx);
+};
+
+
+// Visit a parse tree produced by apexParser#typedArray.
+apexVisitor.prototype.visitTypedArray = function(ctx) {
   return this.visitChildren(ctx);
 };
 

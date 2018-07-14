@@ -29,6 +29,33 @@ apexListener.prototype.exitTypeDeclaration = function(ctx) {
 };
 
 
+// Enter a parse tree produced by apexParser#triggerDeclaration.
+apexListener.prototype.enterTriggerDeclaration = function(ctx) {
+};
+
+// Exit a parse tree produced by apexParser#triggerDeclaration.
+apexListener.prototype.exitTriggerDeclaration = function(ctx) {
+};
+
+
+// Enter a parse tree produced by apexParser#triggerTimings.
+apexListener.prototype.enterTriggerTimings = function(ctx) {
+};
+
+// Exit a parse tree produced by apexParser#triggerTimings.
+apexListener.prototype.exitTriggerTimings = function(ctx) {
+};
+
+
+// Enter a parse tree produced by apexParser#triggerTiming.
+apexListener.prototype.enterTriggerTiming = function(ctx) {
+};
+
+// Exit a parse tree produced by apexParser#triggerTiming.
+apexListener.prototype.exitTriggerTiming = function(ctx) {
+};
+
+
 // Enter a parse tree produced by apexParser#modifier.
 apexListener.prototype.enterModifier = function(ctx) {
 };
@@ -305,6 +332,15 @@ apexListener.prototype.enterType = function(ctx) {
 
 // Exit a parse tree produced by apexParser#type.
 apexListener.prototype.exitType = function(ctx) {
+};
+
+
+// Enter a parse tree produced by apexParser#typedArray.
+apexListener.prototype.enterTypedArray = function(ctx) {
+};
+
+// Exit a parse tree produced by apexParser#typedArray.
+apexListener.prototype.exitTypedArray = function(ctx) {
 };
 
 

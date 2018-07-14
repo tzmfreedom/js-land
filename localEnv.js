@@ -1,17 +1,23 @@
 'use strict'
 
+const Variable = require('./variable');
+
 let envStack = [];
 class LocalEnvironment {
-  constructor(env, parent) {
+  constructor(envParameters, parent) {
+    const env = {};
+    Object.keys(envParameters).forEach((key) => {
+      env[key] = new Variable(
+        envParameters[key].type,
+        envParameters[key].value
+      );
+    });
     this.env = env;
     this.parent = parent;
   }
 
   define(type, key, value) {
-    this.env[key] = {
-      type: type,
-      value: value,
-    };
+    this.env[key] = new Variable(type, value);
   }
 
   set(key, value) {
@@ -71,6 +77,14 @@ class LocalEnvironment {
 
   static popScope() {
     envStack.pop();
+  }
+
+  static create(env) {
+    const localEnv = new LocalEnvironment();
+    Object.keys(env).forEach((key) => {
+
+    })
+
   }
 }
 

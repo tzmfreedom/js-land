@@ -1,5 +1,6 @@
 const NameSpaceStore = require('../apexClass').NameSpaceStore;
 const methodSearcher = require('../methodSearcher');
+const TypeStore = require('../type_store');
 
 class AnnotationNode {
   constructor(name, parameters, lineno) {
@@ -56,7 +57,7 @@ class IntegerNode {
   }
 
   type() {
-    return NameSpaceStore.get('System', 'Integer');
+    return TypeStore.get('Integer');
   }
 }
 
@@ -83,6 +84,10 @@ class ArrayAccessNode {
   accept(visitor) {
     return visitor.visitArrayAccess(this);
   }
+
+  type() {
+    return this.receiver.type();
+  }
 }
 
 class BooleanNode {
@@ -96,7 +101,7 @@ class BooleanNode {
   }
 
   type() {
-    return NameSpaceStore.get('System', 'Boolean');
+    return TypeStore.get('Boolean');
   }
 }
 
@@ -169,7 +174,7 @@ class DoubleNode {
   }
 
   type() {
-    return NameSpaceStore.get('System', 'Double');
+    return TypeStore.get('Double');
   }
 }
 
@@ -330,6 +335,12 @@ class MethodInvocationNode {
   accept(visitor) {
     return visitor.visitMethodInvocation(this);
   }
+
+  type() {
+    return Object.values(methodSearcher.searchMethod(this, null, 'type').methodNode)[0].returnType
+    return methodSearcher.searchMethod(this, null, 'type')
+      .methodNode.values();
+  }
 }
 
 class NameNode {
@@ -371,6 +382,10 @@ class NullNode {
   accept(visitor) {
     return visitor.visitNull(this);
   }
+
+  type() {
+    return TypeStore.get('Null');
+  }
 }
 
 class ApexObjectNode {
@@ -386,7 +401,11 @@ class ApexObjectNode {
   }
 
   type() {
-    return this.classNode;
+    return this.classType;
+  }
+
+  val() {
+    return this.type().classNode.valueFunction(this);
   }
 }
 
@@ -455,6 +474,10 @@ class SoqlNode {
   accept(visitor) {
     return visitor.visitSoql(this);
   }
+
+  type() {
+    return TypeStore.get('List');
+  }
 }
 
 class StringNode {
@@ -468,7 +491,7 @@ class StringNode {
   }
 
   type() {
-    return NameSpaceStore.get('System', 'String');
+    return TypeStore.get('String');
   }
 }
 
@@ -571,14 +594,18 @@ class NothingStatementNode {
 }
 
 class CastExpressionNode {
-  constructor(type, expression, lineno) {
-    this.type = type;
+  constructor(castType, expression, lineno) {
+    this.castType = castType;
     this.expression = expression;
     this.lineno = lineno;
   }
 
   accept(visitor) {
     return visitor.visitCastExpression(this);
+  }
+
+  type() {
+    return this.castType;
   }
 }
 
@@ -643,6 +670,29 @@ class PropertyDeclarationNode {
   }
 }
 
+class ArrayInitializerNode {
+  constructor(initializers, lineno) {
+    this.initializers = initializers;
+    this.lineno = lineno;
+  }
+
+  accept(visitor) {
+    return visitor.visitArrayInitializer(this);
+  }
+}
+
+class ArrayCreatorNode {
+  constructor(dim, expressions, arrayInitializer, lineno) {
+    this.dim = dim;
+    this.expressions = expressions;
+    this.arrayInitializer = arrayInitializer;
+    this.lineno = lineno;
+  }
+
+  accept(visitor) {
+    return visitor.visitArrayCreator(this);
+  }
+}
 
 exports.AnnotationNode = AnnotationNode;
 exports.ModifierNode = ModifierNode;
@@ -693,3 +743,5 @@ exports.TypeNode = TypeNode;
 exports.BlockNode = BlockNode;
 exports.GetterSetterNode = GetterSetterNode;
 exports.PropertyDeclarationNode = PropertyDeclarationNode;
+exports.ArrayInitializerNode = ArrayInitializerNode;
+exports.ArrayCreatorNode = ArrayCreatorNode;

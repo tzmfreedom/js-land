@@ -1,9 +1,13 @@
 var Ast = require('./node/ast');
 let methodSearcher = require('./methodSearcher');
 const EnvManager = require('./envManager');
+const ApexClass = require('./apexClass').ApexClass;
+const dataLoader = require('./data_loader');
 
 class ApexInterpreter {
   visit(node) {
+    methodSearcher.setInterpreterReducer();
+
     EnvManager.pushScope({});
     node.accept(this);
     EnvManager.popScope();
@@ -22,7 +26,9 @@ class ApexInterpreter {
   }
 
   visitArrayAccess(node) {
-  
+    const receiver = node.receiver.accept(this);
+    const key = node.key.accept(this);
+    return receiver._records[key.value].value;
   }
 
   visitBoolean(node) {
@@ -107,28 +113,40 @@ class ApexInterpreter {
     let searchResult = methodSearcher.searchMethod(node);
     searchResult.methodNode = searchResult.methodNode[Object.keys(searchResult.methodNode)[0]];
 
-    let env = { this: searchResult.receiverNode };
+    let env = {};
+    if (!(searchResult.receiverNode instanceof ApexClass)) {
+      env.this = {
+        type: searchResult.receiverNode,
+        value: searchResult.receiverNode,
+      };
+    }
+
     for (let i = 0; i < searchResult.methodNode.parameters.length; i++) {
       let parameter = searchResult.methodNode.parameters[i];
-      env[parameter.name] = node.parameters[i].accept(this);
+      env[parameter.name] = {
+        type: parameter.type,
+        value: node.parameters[i].accept(this),
+      }
     }
     let parameters = node.parameters.map((parameter) => { return parameter.accept(this); });
 
     EnvManager.pushScope(env);
     let returnNode;
     if (searchResult.methodNode.nativeFunction) {
-      returnNode = searchResult.methodNode.nativeFunction.call(this, parameters);
+      const value = searchResult.methodNode.nativeFunction.call(this, parameters);
+      returnNode = { value };
     } else {
       returnNode = searchResult.methodNode.statements.accept(this);
     }
     EnvManager.popScope();
-    return returnNode;
+    if (returnNode) return returnNode.value;
+    return null;
   }
 
   visitName(node) {
     let result = methodSearcher.searchField(node);
     if (result.key) {
-      return result.receiverNode.instanceFields[result.key];
+      return result.receiverNode.value.instanceFields[result.key];
     } else {
       return EnvManager.getValue(result.receiverNode);
     }
@@ -138,22 +156,36 @@ class ApexInterpreter {
     let newObject = new Ast.ApexObjectNode();
     newObject.classType = node.classType;
     newObject.instanceFields = {};
-    const instanceFields = node.type.classNode.instanceFields;
+    const instanceFields = node.classType.classNode.instanceFields;
     Object.keys(instanceFields).forEach((fieldName) => {
       newObject.instanceFields[fieldName] = instanceFields[fieldName].expression.accept(this);
     });
 
     const parameterHash = methodSearcher.calculateMethodParameterHash(node);
-    const constructor = node.type.classNode.constructors[parameterHash];
+    const constructor = node.classType.classNode.constructors[parameterHash];
 
-    let env = { this: newObject };
-    for (let i = 0; i < constructor.parameters.length; i++) {
-      let parameter = constructor.parameters[i];
-      env[parameter.name] = node.parameters[i].accept(this);
+    let env = {
+      this: {
+        type: node.classType,
+        value: newObject,
+      }
+    };
+    if (constructor) {
+      for (let i = 0; i < constructor.parameters.length; i++) {
+        let parameter = constructor.parameters[i];
+        env[parameter.name] = {
+          type: parameter.type,
+          value: node.parameters[i].accept(this),
+        };
+      }
+      EnvManager.pushScope(env);
+      if (constructor.nativeFunction) {
+        constructor.nativeFunction.call(this);
+      } else {
+        constructor.statements.accept(this);
+      }
+      EnvManager.popScope();
     }
-    EnvManager.pushScope(env);
-    constructor.statements.accept(this);
-    EnvManager.popScope();
     return newObject;
   }
 
@@ -246,12 +278,18 @@ class ApexInterpreter {
       case '&=':
       case '|=':
       case '^=':
-        let result = methodSearcher.searchField(node.left);
-        right = node.right.accept(this);
-        if (result.key) {
-          result.receiverNode.instanceFields[result.key] = right;
+        if (node.right instanceof Ast.ArrayAccessNode) {
+          const receiver = node.left.receiverNode.accept(this);
+          const key = node.left.key.accept(this);
+          receiver._records[key.value] = right;
         } else {
-          EnvManager.setValue(result.receiverNode, right);
+          let result = methodSearcher.searchField(node.left);
+          right = node.right.accept(this);
+          if (result.key) {
+            result.receiverNode.value.instanceFields[result.key] = right;
+          } else {
+            EnvManager.setValue(result.receiverNode, right);
+          }
         }
         return right;
     }
@@ -263,7 +301,7 @@ class ApexInterpreter {
   }
 
   visitSoql(node) {
-    return node;
+    return dataLoader();
   }
 
   visitString(node) {

@@ -1,9 +1,10 @@
 'use strict';
 
-const LocalEnvironment = require('./localEnv');
 const ApexClass        = require('./apexClass').ApexClass;
 const NameSpaceStore   = require('./apexClass').NameSpaceStore;
 const Ast              = require('./node/ast');
+const TypeStore = require('./type_store');
+const EnvManager = require('./envManager');
 
 NameSpaceStore.register('System');
 
@@ -17,22 +18,22 @@ const ApexSystem = new ApexClass(
   {},
   {
     debug: {
-      a: new Ast.MethodDeclarationNode(
+      'args:Object': new Ast.MethodDeclarationNode(
         'debug',
         [],
         new Ast.TypeNode(['void'], []),
         [
           new Ast.ParameterNode(
             [],
-            new Ast.TypeNode('Object', []),
+            new Ast.TypeNode(['Object'], []),
             'object'
           )
         ],
         [],
-        [],
+        null,
         () => {
-          let object = LocalEnvironment.get('object');
-          console.log(object.value);
+          let object = EnvManager.get('object');
+          console.log(object.val());
         }
       )
     }
@@ -89,16 +90,146 @@ const ApexBoolean = new ApexClass(
 );
 NameSpaceStore.registerClass('System', ApexBoolean);
 
+const ApexArray = new ApexClass(
+  'Array',
+  null,
+  [],
+  {
+    'args:': new Ast.MethodDeclarationNode(
+      'Array',
+      [],
+      new Ast.TypeNode(['void'], []),
+      [],
+      [],
+      null,
+      () => {
+        const obj = EnvManager.get('this').value;
+        obj._records = [];
+      }
+    )
+  },
+  {},
+  {},
+  {
+    add: {
+      'args:Object': new Ast.MethodDeclarationNode(
+        'add',
+        [],
+        new Ast.TypeNode(['void'], []),
+        [
+          new Ast.ParameterNode(
+            [],
+            new Ast.TypeNode(['Object'], []),
+            'value'
+          ),
+        ],
+        [],
+        null,
+        () => {
+          const obj = EnvManager.get('this').value;
+          const value = EnvManager.get('value');
+          obj._records.push(value);
+        }
+      )
+    },
+    get: {
+      'args:Object': new Ast.MethodDeclarationNode(
+        'get',
+        [],
+        new Ast.TypeNode(['Object'], []),
+        [
+          new Ast.ParameterNode(
+            [],
+            new Ast.TypeNode(['Object'], []),
+            'key'
+          )
+        ],
+        [],
+        null,
+        () => {
+          const obj = EnvManager.get('this').value;
+          const keyNode = EnvManager.get('key').value;
+          return obj._records[parseInt(keyNode.value)].value;
+        }
+      )
+    }
+  },
+  []
+);
+NameSpaceStore.registerClass('System', ApexArray);
+
 const ApexList = new ApexClass(
   'List',
   null,
   [],
+  {
+    'args:': new Ast.MethodDeclarationNode(
+      'List',
+      [],
+      new Ast.TypeNode(['void'], []),
+      [],
+      [],
+      null,
+      () => {
+        const obj = EnvManager.get('this').value;
+        obj._records = [];
+      }
+    )
+  },
   {},
   {},
-  {},
-  {},
+  {
+    add: {
+      'args:Object': new Ast.MethodDeclarationNode(
+        'add',
+        [],
+        new Ast.TypeNode(['void'], []),
+        [
+          new Ast.ParameterNode(
+            [],
+            new Ast.TypeNode(['Object'], []),
+            'value'
+          ),
+        ],
+        [],
+        null,
+        () => {
+          const obj = EnvManager.get('this').value;
+          const value = EnvManager.get('value');
+          obj._records.push(value);
+        }
+      )
+    },
+    get: {
+      'args:Object': new Ast.MethodDeclarationNode(
+        'get',
+        [],
+        new Ast.TypeNode(['Object'], []),
+        [
+          new Ast.ParameterNode(
+            [],
+            new Ast.TypeNode(['Object'], []),
+            'key'
+          )
+        ],
+        [],
+        null,
+        () => {
+          const obj = EnvManager.get('this').value;
+          const keyNode = EnvManager.get('key').value;
+          return obj._records[parseInt(keyNode.value)].value;
+        }
+      )
+    }
+  },
   []
 );
+ApexList.valueFunction = (node) => {
+  const messages = node._records.map((record) => {
+    return `  ${record.val()}`;
+  });
+  console.log(`List\n${messages.join('\n')}`);
+};
 NameSpaceStore.registerClass('System', ApexList);
 
 const ApexLong = new ApexClass(
@@ -136,18 +267,6 @@ const ApexDate = new ApexClass(
   []
 );
 NameSpaceStore.registerClass('System', ApexDate);
-
-const ApexDateTime = new ApexClass(
-  'DateTime',
-  null,
-  [],
-  {},
-  {},
-  {},
-  {},
-  []
-);
-NameSpaceStore.registerClass('System', ApexDateTime);
 
 const ApexBlob = new ApexClass(
   'Blob',
@@ -281,6 +400,118 @@ const ApexHttp = new ApexClass(
 );
 NameSpaceStore.registerClass('System', ApexHttp);
 
+const ApexSObject = new ApexClass(
+  'SObject',
+  null,
+  [],
+  {},
+  {},
+  {},
+  {},
+  []
+);
+ApexSObject.valueFunction = (node) => {
+  const keys = Object.keys(node.instanceFields).map((fieldName) => {
+    let field = node.instanceFields[fieldName];
+    return `${fieldName} => ${field.value}`;
+  });
+  return `${node.type().classNode.name}: ${keys.join(', ')}`;
+};
+NameSpaceStore.registerClass('System', ApexSObject);
+
+const ApexDateTime = new ApexClass(
+  'DateTime',
+  null,
+  [],
+  {},
+  {},
+  {},
+  {},
+  {
+    now: {
+      a: new Ast.MethodDeclarationNode(
+        'now',
+        [],
+        new Ast.TypeNode(['DateTime'], []),
+        [],
+        [],
+        null,
+        () => {
+          let obj = new ApexObject();
+          obj.classNode = ApexDateTime;
+          obj.value = Date.now();
+          return obj;
+        }
+      )
+    }
+  },
+  []
+);
+NameSpaceStore.registerClass('System', ApexDateTime);
+
+const NullType = new Ast.TypeNode(
+  ['Null'],
+  []
+);
+NullType.classNode = null;
+TypeStore.set('Null', NullType);
+
+const IntegerType = new Ast.TypeNode(
+  ['Integer'],
+  []
+);
+IntegerType.classNode = ApexInteger;
+TypeStore.set('Integer', IntegerType);
+
+
+const DoubleType = new Ast.TypeNode(
+  ['Double'],
+  []
+);
+DoubleType.classNode = ApexDouble;
+TypeStore.set('Double', DoubleType);
+
+const StringType = new Ast.TypeNode(
+  ['String'],
+  []
+);
+StringType.classNode = ApexString;
+TypeStore.set('String', StringType);
+
+const BooleanType = new Ast.TypeNode(
+  ['Boolean'],
+  []
+);
+BooleanType.classNode = ApexBoolean;
+TypeStore.set('Boolean', BooleanType);
+
+const VoidType = new Ast.TypeNode(
+  ['void'],
+  []
+);
+TypeStore.set('void', VoidType);
+
+const ListType = new Ast.TypeNode(
+  ['List'],
+  []
+);
+ListType.classNode = ApexList;
+TypeStore.set('List', ListType);
+
+const ArrayType = new Ast.TypeNode(
+  ['Array'],
+  []
+);
+ArrayType.classNode = ApexArray;
+TypeStore.set('Array', ArrayType);
+
+const SObjectType = new Ast.TypeNode(
+  ['SObject'],
+  []
+);
+SObjectType.classNode = ApexSObject;
+TypeStore.set('SObject', SObjectType);
+
 module.exports = {
   System: ApexSystem,
   Integer: ApexInteger,
@@ -294,4 +525,7 @@ module.exports = {
   Time: ApexTime,
   Blob: ApexBlob,
   Object: ApexObject,
+  SObject: ApexSObject,
+  List: ApexList,
+  TypeStore: TypeStore,
 };

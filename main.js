@@ -8,18 +8,24 @@ const ApexBuilder = require('./apex_builder');
 const TypeBuilder = require('./type_builder');
 const MethodInvocationNode = require('./node/ast').MethodInvocationNode;
 const NameNode = require('./node/ast').NameNode;
+const NameSpaceStore = require('./apexClass').NameSpaceStore;
 const util = require('util');
 const fs = require('fs');
 
 // Create CST with ANTLR
 const fileList = fs.readdirSync('examples')
                    .filter((file) => {
-                     return fs.statSync(`examples/${file}`).isFile() && /.*\.cls$/.test(file);
+                     return fs.statSync(`examples/${file}`).isFile() && /.*sample3\.cls$/.test(file);
                    });
 
 setTimeout(()=>{}, 10);
 const classes = fileList.map((fileName) => {
   return readFile(`examples/${fileName}`);
+});
+
+const systemClasses = NameSpaceStore.getClasses('System');
+Object.keys(systemClasses).forEach((className) => {
+  build(systemClasses[className])
 });
 
 classes.forEach((classInfo) => {
@@ -55,13 +61,11 @@ function readFile(fileName) {
 }
 
 function build(classInfo) {
-  console.log(`Start Build: ${classInfo.name}`);
   // const builder = new ApexBuilder();
   const typeBuilder = new TypeBuilder();
   typeBuilder.visit(classInfo);
   const apexBuilder = new ApexBuilder();
   apexBuilder.visit(classInfo);
-  console.log(`End Build: ${classInfo.name}`);
 }
 
 function run(className, actionName) {
