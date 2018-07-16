@@ -4,6 +4,9 @@ const variableSearcher = require('./variableSearcher');
 const EnvManager = require('./envManager');
 const ApexClass = require('./apexClass').ApexClass;
 const dataLoader = require('./data_loader');
+const DebuggerPublisher = require('./debugger_publisher');
+const Event = require('./event');
+const rl = require('readline-sync');
 
 class ApexInterpreter {
   visit(node) {
@@ -410,12 +413,63 @@ class ApexInterpreter {
     let returnNode;
     for (let i = 0; i < node.statements.length; i++){
       returnNode = node.statements[i].accept(this);
+      DebuggerPublisher.publish(new Event('line', node.statements[i].lineno));
       if (
         returnNode instanceof Ast.ReturnNode ||
         returnNode instanceof Ast.BreakNode ||
         returnNode instanceof Ast.ContinueNode
       ) {
         return returnNode;
+      }
+    }
+  }
+
+  visitSpecialComment(node) {
+    this.REPL();
+  }
+
+  REPL() {
+    const visitor = this;
+    const handler = {
+      step: -1,
+      show: (args) => {
+        try {
+          console.log(EnvManager.get(args[0]).val());
+        } catch (e) {
+          console.error(e);
+        }
+        return true;
+      },
+      scope: (args) => {
+        console.log(EnvManager.currentScope());
+        return true;
+      },
+      next: function(args) {
+        this.step = 1;
+        const subscriberId = DebuggerPublisher.addSubscriber('line', (event) => {
+          if (this.step > 0) this.step -= 1;
+          if (this.step == 0) {
+            visitor.REPL();
+          }
+          this.step = -1;
+          DebuggerPublisher.unsubscribe('line', subscriberId);
+        });
+        return false;
+      },
+      step: (args) => {
+        return true;
+      },
+      exit: (args) => {
+        return false;
+      }
+    };
+
+    while(true) {
+      const words = rl.promptCL();
+      const cmd = words.shift();
+      if (cmd in handler) {
+        const returnValue = handler[cmd].call(handler, words);
+        if (!returnValue) break;
       }
     }
   }

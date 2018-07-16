@@ -11,6 +11,10 @@ const NameNode = require('./node/ast').NameNode;
 const NameSpaceStore = require('./apexClass').NameSpaceStore;
 const util = require('util');
 const fs = require('fs');
+const DebuggerPublisher = require('./debugger_publisher');
+DebuggerPublisher.addSubscriber('line', (event) => {
+  // console.log(event)
+});
 
 // Create CST with ANTLR
 const fileList = fs.readdirSync('examples')

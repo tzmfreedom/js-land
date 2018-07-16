@@ -345,6 +345,11 @@ blockStatement
     :   localVariableDeclarationStatement
     |   statement
     |   typeDeclaration
+    |   specialComment
+    ;
+
+specialComment
+    :   LINE_COMMENT
     ;
 
 localVariableDeclarationStatement
@@ -1012,7 +1017,7 @@ COMMENT_START
     ;
 
 LINE_COMMENT
-    :   '//' ~[\r\n]* -> skip
+    :   '//' (~[\r\n])*
     ;
 
 //

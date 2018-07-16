@@ -746,6 +746,17 @@ class ArrayCreatorNode {
   }
 }
 
+class SpecialCommentNode {
+  constructor(comment, lineno) {
+    this.comment = comment;
+    this.lineno = lineno;
+  }
+
+  accept(visitor) {
+    return visitor.visitSpecialComment(this);
+  }
+}
+
 exports.AnnotationNode = AnnotationNode;
 exports.ModifierNode = ModifierNode;
 exports.ClassNode = ClassNode;
@@ -797,3 +808,4 @@ exports.GetterSetterNode = GetterSetterNode;
 exports.PropertyDeclarationNode = PropertyDeclarationNode;
 exports.ArrayInitializerNode = ArrayInitializerNode;
 exports.ArrayCreatorNode = ArrayCreatorNode;
+exports.SpecialCommentNode = SpecialCommentNode;

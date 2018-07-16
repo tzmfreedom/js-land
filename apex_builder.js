@@ -6,7 +6,6 @@ const EnvManager = require('./envManager');
 const Runtime = require('./runtime');
 const Variable = require('./variable');
 const ApexClass = require('./apexClass').ApexClass;
-const argumentChecker = require('./argumentChecker');
 
 class ApexBuilder {
   visit(node) {
@@ -131,10 +130,6 @@ class ApexBuilder {
   }
 
   visitFieldDeclaration(node) {
-
-  }
-
-  visitFieldDeclarator(node) {
 
   }
 
@@ -380,6 +375,8 @@ class ApexBuilder {
       }
     }
   }
+
+  visitSpecialComment(node) {}
 
   checkType(leftType, rightType) {
     if (leftType.classNode !== rightType.classNode) return false;

@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "antlr4": "^4.7.1",
-    "csv-parse": "^2.5.0"
+    "csv-parse": "^2.5.0",
+    "readline-sync": "^1.4.9"
   }
 }

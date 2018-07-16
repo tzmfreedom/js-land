@@ -556,7 +556,10 @@ ApexAstBuilder.prototype.visitElementValueArrayInitializer = function(ctx) {
 ApexAstBuilder.prototype.visitBlock = function(ctx) {
   const statements = ctx.blockStatement().map((statement) => {
     return statement.accept(this);
+  }).filter((statement) => {
+    return statement !== null;
   });
+
   return new Ast.BlockNode(statements, ctx.start.line);
 };
 
@@ -569,6 +572,11 @@ ApexAstBuilder.prototype.visitBlockStatement = function(ctx) {
     return ctx.localVariableDeclarationStatement().accept(this);
   } else if (ctx.typeDeclaration()) {
     return ctx.typeDeclaration().accept(this);
+  } else {
+    const method = ctx.LINE_COMMENT().getText().match(/\/\/(.*)/)[1].trim();
+    if (method !== 'debugger') return null;
+
+    return new Ast.SpecialCommentNode(method, ctx.start.line);
   }
 };
 

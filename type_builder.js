@@ -179,6 +179,8 @@ class TypeBuilder {
       node.statements[i].accept(this);
     }
   }
+
+  visitSpecialComment(node) {}
 }
 
 module.exports = TypeBuilder;
