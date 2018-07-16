@@ -94,35 +94,17 @@ class ApexInterpreter {
     const forControl = node.forControl;
     const env = EnvManager.currentScope();
     env.define(forControl.type, forControl.variableDeclaratorId, new Ast.NullNode());
+
     const expression = forControl.expression.accept(this);
+    expression._idx = 0;
+
     const hasNextInstanceMethod = expression.type().classNode.instanceMethods['hasNext'][0];
     const nextInstanceMethod = expression.type().classNode.instanceMethods['next'][0];
-    let condition = (() => {
-      EnvManager.pushScope({ this: { value: expression }});
-      let returnCondition;
-      if (hasNextInstanceMethod.nativeFunction) {
-        returnCondition = hasNextInstanceMethod.nativeFunction.call(this);
-      } else {
-        returnCondition = hasNextInstanceMethod.statements.accept(this);
-      }
-      EnvManager.popScope();
-      return returnCondition;
-    })();
+    let condition = this.invokeMethodByNoParameter(hasNextInstanceMethod, expression);
 
-    expression._idx = 0;
     let returnNode;
     while (condition.value == true) {
-      const object = (() => {
-        EnvManager.pushScope({ this: { value: expression }});
-        let returnObject;
-        if (nextInstanceMethod.nativeFunction) {
-          returnObject = nextInstanceMethod.nativeFunction.call(this);
-        } else {
-          returnObject = nextInstanceMethod.statements.accept(this);
-        }
-        EnvManager.popScope();
-        return returnObject;
-      })();
+      const object = this.invokeMethodByNoParameter(nextInstanceMethod, expression);
       env.set(forControl.variableDeclaratorId, object.value);
       returnNode = node.statements.accept(this);
       if (
@@ -132,17 +114,19 @@ class ApexInterpreter {
       ) {
         break;
       }
-      condition = (() => {
-        EnvManager.pushScope({ this: { value: expression }});
-        let returnCondition;
-        if (hasNextInstanceMethod.nativeFunction) {
-          returnCondition = hasNextInstanceMethod.nativeFunction.call(this);
-        } else {
-          returnCondition = hasNextInstanceMethod.statements.accept(this);
-        }
-        EnvManager.popScope();
-        return returnCondition;
-      })();
+      condition = this.invokeMethodByNoParameter(hasNextInstanceMethod, expression);
+    }
+    EnvManager.popScope();
+    return returnNode;
+  }
+
+  invokeMethodByNoParameter(methodNode, expression) {
+    EnvManager.pushScope({ this: { value: expression }});
+    let returnNode;
+    if (methodNode.nativeFunction) {
+      returnNode = methodNode.nativeFunction.call(this);
+    } else {
+      returnNode = methodNode.statements.accept(this);
     }
     EnvManager.popScope();
     return returnNode;

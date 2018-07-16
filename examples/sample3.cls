@@ -43,6 +43,9 @@ public class Hoge {
         for (Integer ii : i) {
             System.debug(ii);
         }
+        for (Integer ii : i) {
+            System.debug(ii);
+        }
 
         Integer iiii = 0;
         System.debug(iiii + 1);
