@@ -600,6 +600,11 @@ ApexAstBuilder.prototype.visitStatement = function(ctx) {
     let if_statement = ctx.statement()[0].accept(this);
     let else_statement = ctx.statement().length > 1 ? ctx.statement()[1].accept(this) : null;
     return new Ast.IfNode(condition, if_statement, else_statement, lineNo);
+  } else if (ctx.SWITCH()) {
+    const expression = ctx.expression().accept(this);
+    let whenStatements, elseStatement;
+    [whenStatements, elseStatement] = ctx.whenStatements().accept(this);
+    return new Ast.SwitchNode(expression, whenStatements, elseStatement, lineNo);
   } else if (ctx.FOR()) {
     let forControl = ctx.forControl().accept(this);
     let statement = ctx.statement()[0].accept(this);
@@ -713,6 +718,7 @@ ApexAstBuilder.prototype.visitEnhancedForControl = function(ctx) {
   let type = ctx.type().accept(this);
   let variableDeclaratorId = ctx.variableDeclaratorId().accept(this);
   let expression = ctx.expression().accept(this);
+
   return new Ast.EnhancedForControlNode(modifiers, type, variableDeclaratorId, expression, ctx.start.line)
 };
 
@@ -992,5 +998,30 @@ ApexAstBuilder.prototype.visitTriggerTiming = function(ctx) {
   return { timing: ctx.timing.text, dml: ctx.dml.text };
 };
 
+ApexAstBuilder.prototype.visitWhenStatements = function(ctx) {
+  const whenStatements = ctx.whenStatement().map((whenStatement) => {
+    return whenStatement.accept(this);
+  });
+  const elseStatement = ctx.block().accept(this);
+  return [whenStatements, elseStatement];
+};
+
+ApexAstBuilder.prototype.visitWhenStatement = function(ctx) {
+  const whenExpression = ctx.whenExpression().accept(this);
+  const statements = ctx.block().accept(this);
+  return new Ast.WhenNode(whenExpression, statements, ctx.start.line);
+};
+
+ApexAstBuilder.prototype.visitWhenExpression = function(ctx) {
+  if (ctx.literal()){
+    return ctx.literal().map((literal) => {
+      return literal.accept(this);
+    });
+  } else {
+    const type = ctx.type().accept(this);
+    const identifier = ctx.Identifier().getText();
+    return new Ast.WhenTypeNode(type, identifier);
+  }
+};
 
 module.exports = ApexAstBuilder;

@@ -414,6 +414,24 @@ apexVisitor.prototype.visitFinallyBlock = function(ctx) {
 };
 
 
+// Visit a parse tree produced by apexParser#whenStatements.
+apexVisitor.prototype.visitWhenStatements = function(ctx) {
+  return this.visitChildren(ctx);
+};
+
+
+// Visit a parse tree produced by apexParser#whenStatement.
+apexVisitor.prototype.visitWhenStatement = function(ctx) {
+  return this.visitChildren(ctx);
+};
+
+
+// Visit a parse tree produced by apexParser#whenExpression.
+apexVisitor.prototype.visitWhenExpression = function(ctx) {
+  return this.visitChildren(ctx);
+};
+
+
 // Visit a parse tree produced by apexParser#forControl.
 apexVisitor.prototype.visitForControl = function(ctx) {
   return this.visitChildren(ctx);

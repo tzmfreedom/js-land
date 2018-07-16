@@ -358,6 +358,7 @@ localVariableDeclaration
 statement
     :   block
     |   IF parExpression statement (ELSE statement)?
+    |   SWITCH ON expression '{' whenStatements '}'
     |   FOR '(' forControl ')' statement
     |   WHILE parExpression statement
     |   DO statement WHILE parExpression
@@ -396,6 +397,18 @@ finallyBlock
     :   FINALLY block
     ;
 
+whenStatements
+    :   whenStatement whenStatement* (WHEN ELSE block)?
+    ;
+
+whenStatement
+    :   WHEN whenExpression block
+    ;
+
+whenExpression
+    :   literal (',' literal)*
+    |   type Identifier
+    ;
 
 forControl
     :   enhancedForControl
@@ -633,6 +646,8 @@ TRY           : T R Y;
 VOID          : V O I D;
 VOLATILE      : V O L A T I L E;
 WHILE         : W H I L E;
+SWITCH        : S W I T C H;
+WHEN          : W H E N;
 
 // Apexcode specific
 GLOBAL	      : G L O B A L;

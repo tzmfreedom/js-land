@@ -10,36 +10,33 @@ class SymbolDeclarator {
   }
 
   visitClass(node) {
-    let constructors = {};
+    let constructors = [];
     node.constructor.forEach((method) => {
-      let parameterHash = methodSearcher.calculateMethodParameterHash(method);
-      if (parameterHash in constructors) {
-        // TODO: lineno
-        throw `Compile Error: duplicate method name ${method.name} at line : `
-      }
-      constructors[parameterHash] = method;
+      // TODO: duplication error
+      // if (parameterHash in constructors) {
+      //   throw `Compile Error: duplicate method name ${method.name} at line : ${method.lineno}`
+      // }
+      constructors.push(method);
     });
 
     let staticMethods = {};
     node.staticMethods.forEach((method) => {
-      if (!staticMethods[method.name]) staticMethods[method.name] = {};
-      let parameterHash = methodSearcher.calculateMethodParameterHash(method);
-      if (parameterHash in staticMethods[method.name]) {
-        // TODO: lineno
-        throw `Compile Error: duplicate method name ${method.name} at line : `
-      }
-      staticMethods[method.name][parameterHash] = method;
+      if (!staticMethods[method.name]) staticMethods[method.name] = [];
+      // if (parameterHash in staticMethods[method.name]) {
+      //   // TODO: lineno
+      //   throw `Compile Error: duplicate method name ${method.name} at line : ${method.lineno}`
+      // }
+      staticMethods[method.name].push(method);
     });
 
     let instanceMethods = {};
     node.instanceMethods.forEach((method) => {
-      if (!instanceMethods[method.name]) instanceMethods[method.name] = {};
-      let parameterHash = methodSearcher.calculateMethodParameterHash(method);
-      if (parameterHash in instanceMethods[method.name]) {
-        // TODO: lineno
-        throw `Compile Error: duplicate static method name ${method.name} at line : `
-      }
-      instanceMethods[method.name][parameterHash] = method;
+      if (!instanceMethods[method.name]) instanceMethods[method.name] = [];
+      // let parameterHash = methodSearcher.calculateMethodParameterHash(method);
+      // if (parameterHash in instanceMethods[method.name]) {
+      //   throw `Compile Error: duplicate static method name ${method.name} at line : ${method.lineno}`
+      // }
+      instanceMethods[method.name].push(method);
     });
 
     let staticFields = {};
@@ -50,10 +47,12 @@ class SymbolDeclarator {
           // TODO: lineno
           throw `Compile Error: duplicate static field name ${fieldName} at line : `
         }
-        staticFields[fieldName] = {
-          type: declaration.type,
-          expression: declarator.expression,
-        };
+        staticFields[fieldName] = new Ast.FieldVariableNode(
+          declaration.type,
+          declaration.modifiers,
+          declarator.expression,
+          declarator.lineno
+        );
       });
     });
 
@@ -65,11 +64,11 @@ class SymbolDeclarator {
           // TODO: lineno
           throw `Compile Error: duplicate instance field name ${fieldName} at line : `
         }
-        instanceFields[fieldName] = {
-          type: declaration.type,
-          setter: declaration.setter,
-          getter: declaration.getter,
-        };
+        instanceFields[fieldName] = new Ast.FieldVariableNode(
+          declaration.type,
+          declaration.setter,
+          declaration.getter
+        );
         if (declaration.getter_or_setter.type == 'setter') {
           instanceFields[fieldName].setter = declaration.getter_or_setter.methodBody
         } else {

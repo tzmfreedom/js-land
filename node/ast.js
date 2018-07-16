@@ -1,5 +1,6 @@
 const NameSpaceStore = require('../apexClass').NameSpaceStore;
 const methodSearcher = require('../methodSearcher');
+const variableSearcher = require('../variableSearcher');
 const TypeStore = require('../type_store');
 
 class AnnotationNode {
@@ -191,16 +192,34 @@ class FieldDeclarationNode {
   }
 }
 
-class FieldDeclaratorNode {
-  constructor(name, modifiers, expression, lineno) {
-    this.name = name;
+class FieldVariableNode {
+  constructor(type, modifiers, expression, lineno) {
+    this.type = type;
     this.modifiers = modifiers;
     this.expression = expression;
     this.lineno = lineno;
   }
 
   accept(visitor) {
-    return visitor.visitFieldDeclarator(this);
+    return visitor.visitFieldVariable(this);
+  }
+
+  isPrivate() {
+    return this.modifiers.some((modifier) => {
+      return modifier.name === 'private';
+    });
+  }
+
+  isProtected() {
+    return this.modifiers.some((modifier) => {
+      return modifier.name === 'protected';
+    });
+  }
+
+  isPublic() {
+    return this.modifiers.some((modifier) => {
+      return modifier.name === 'public';
+    });
   }
 }
 
@@ -323,6 +342,24 @@ class MethodDeclarationNode {
   accept(visitor) {
     return visitor.visitMethodDeclaration(this);
   }
+
+  isPrivate() {
+    return this.modifiers.some((modifier) => {
+      return modifier.name === 'private';
+    });
+  }
+
+  isProtected() {
+    return this.modifiers.some((modifier) => {
+      return modifier.name === 'protected';
+    });
+  }
+
+  isPublic() {
+    return this.modifiers.some((modifier) => {
+      return modifier.name === 'public';
+    });
+  }
 }
 
 class MethodInvocationNode {
@@ -337,9 +374,7 @@ class MethodInvocationNode {
   }
 
   type() {
-    return Object.values(methodSearcher.searchMethod(this, null, 'type').methodNode)[0].returnType
-    return methodSearcher.searchMethod(this, null, 'type')
-      .methodNode.values();
+    return methodSearcher.searchMethodByType(this).methodNode.returnType;
   }
 }
 
@@ -354,7 +389,7 @@ class NameNode {
   }
 
   type() {
-   return methodSearcher.searchFieldType(this, 'type');
+   return variableSearcher.searchFieldType(this);
   }
 }
 
@@ -496,9 +531,10 @@ class StringNode {
 }
 
 class SwitchNode {
-  constructor(expression, statements, lineno) {
+  constructor(expression, whenStatements, elseStatement, lineno) {
     this.expression = expression;
-    this.statements = statements;
+    this.whenStatements = whenStatements;
+    this.elseStatement = elseStatement;
     this.lineno = lineno;
   }
 
@@ -567,6 +603,18 @@ class WhenNode {
 
   accept(visitor) {
     return visitor.visitWhen(this);
+  }
+}
+
+class WhenTypeNode {
+  constructor(type, identifier, lineno) {
+    this.type = type;
+    this.identifier = identifier;
+    this.lineno = lineno;
+  }
+
+  accept(visitor) {
+    return visitor.visitWhenType(this);
   }
 }
 
@@ -708,7 +756,7 @@ exports.ContinueNode = ContinueNode;
 exports.DmlNode = DmlNode;
 exports.DoubleNode = DoubleNode;
 exports.FieldDeclarationNode = FieldDeclarationNode;
-exports.FieldDeclaratorNode = FieldDeclaratorNode;
+exports.FieldVariableNode = FieldVariableNode;
 exports.TryNode = TryNode;
 exports.CatchNode = CatchNode;
 exports.FinallyNode = FinallyNode;

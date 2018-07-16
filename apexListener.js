@@ -614,6 +614,33 @@ apexListener.prototype.exitFinallyBlock = function(ctx) {
 };
 
 
+// Enter a parse tree produced by apexParser#whenStatements.
+apexListener.prototype.enterWhenStatements = function(ctx) {
+};
+
+// Exit a parse tree produced by apexParser#whenStatements.
+apexListener.prototype.exitWhenStatements = function(ctx) {
+};
+
+
+// Enter a parse tree produced by apexParser#whenStatement.
+apexListener.prototype.enterWhenStatement = function(ctx) {
+};
+
+// Exit a parse tree produced by apexParser#whenStatement.
+apexListener.prototype.exitWhenStatement = function(ctx) {
+};
+
+
+// Enter a parse tree produced by apexParser#whenExpression.
+apexListener.prototype.enterWhenExpression = function(ctx) {
+};
+
+// Exit a parse tree produced by apexParser#whenExpression.
+apexListener.prototype.exitWhenExpression = function(ctx) {
+};
+
+
 // Enter a parse tree produced by apexParser#forControl.
 apexListener.prototype.enterForControl = function(ctx) {
 };

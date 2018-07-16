@@ -1,13 +1,12 @@
-var Ast = require('./node/ast');
-let methodSearcher = require('./methodSearcher');
+const Ast = require('./node/ast');
+const methodSearcher = require('./methodSearcher');
+const variableSearcher = require('./variableSearcher');
 const EnvManager = require('./envManager');
 const ApexClass = require('./apexClass').ApexClass;
 const dataLoader = require('./data_loader');
 
 class ApexInterpreter {
   visit(node) {
-    methodSearcher.setInterpreterReducer();
-
     EnvManager.pushScope({});
     node.accept(this);
     EnvManager.popScope();
@@ -58,14 +57,6 @@ class ApexInterpreter {
     return node;
   }
 
-  visitFieldDeclaration(node) {
-  
-  }
-
-  visitFieldDeclarator(node) {
-  
-  }
-
   visitFieldAccess(node) {
     return node;
   }
@@ -73,6 +64,9 @@ class ApexInterpreter {
   visitFor(node) {
     EnvManager.pushScope({});
 
+    if (node.forControl instanceof Ast.EnhancedForControlNode) {
+      return this.visitEnhancedFor(node);
+    }
     let forControl = node.forControl;
     forControl.forInit.accept(this);
 
@@ -94,6 +88,66 @@ class ApexInterpreter {
     return returnNode;
   }
 
+  visitEnhancedFor(node) {
+    EnvManager.pushScope({});
+
+    const forControl = node.forControl;
+    const env = EnvManager.currentScope();
+    env.define(forControl.type, forControl.variableDeclaratorId, new Ast.NullNode());
+    const expression = forControl.expression.accept(this);
+    const hasNextInstanceMethod = expression.type().classNode.instanceMethods['hasNext'][0];
+    const nextInstanceMethod = expression.type().classNode.instanceMethods['next'][0];
+    let condition = (() => {
+      EnvManager.pushScope({ this: { value: expression }});
+      let returnCondition;
+      if (hasNextInstanceMethod.nativeFunction) {
+        returnCondition = hasNextInstanceMethod.nativeFunction.call(this);
+      } else {
+        returnCondition = hasNextInstanceMethod.statements.accept(this);
+      }
+      EnvManager.popScope();
+      return returnCondition;
+    })();
+
+    expression._idx = 0;
+    let returnNode;
+    while (condition.value == true) {
+      const object = (() => {
+        EnvManager.pushScope({ this: { value: expression }});
+        let returnObject;
+        if (nextInstanceMethod.nativeFunction) {
+          returnObject = nextInstanceMethod.nativeFunction.call(this);
+        } else {
+          returnObject = nextInstanceMethod.statements.accept(this);
+        }
+        EnvManager.popScope();
+        return returnObject;
+      })();
+      env.set(forControl.variableDeclaratorId, object.value);
+      returnNode = node.statements.accept(this);
+      if (
+        returnNode instanceof Ast.ReturnNode ||
+        returnNode instanceof Ast.BreakNode ||
+        returnNode instanceof Ast.ContinueNode
+      ) {
+        break;
+      }
+      condition = (() => {
+        EnvManager.pushScope({ this: { value: expression }});
+        let returnCondition;
+        if (hasNextInstanceMethod.nativeFunction) {
+          returnCondition = hasNextInstanceMethod.nativeFunction.call(this);
+        } else {
+          returnCondition = hasNextInstanceMethod.statements.accept(this);
+        }
+        EnvManager.popScope();
+        return returnCondition;
+      })();
+    }
+    EnvManager.popScope();
+    return returnNode;
+  }
+
   visitForControl(node) {
     return node;
   }
@@ -110,8 +164,7 @@ class ApexInterpreter {
   }
 
   visitMethodInvocation(node) {
-    let searchResult = methodSearcher.searchMethod(node);
-    searchResult.methodNode = searchResult.methodNode[Object.keys(searchResult.methodNode)[0]];
+    const searchResult = methodSearcher.searchMethodByValue(node);
 
     let env = {};
     if (!(searchResult.receiverNode instanceof ApexClass)) {
@@ -144,9 +197,9 @@ class ApexInterpreter {
   }
 
   visitName(node) {
-    let result = methodSearcher.searchField(node);
+    let result = variableSearcher.searchFieldByValue(node);
     if (result.key) {
-      return result.receiverNode.value.instanceFields[result.key];
+      return result.receiverNode.instanceFields[result.key];
     } else {
       return EnvManager.getValue(result.receiverNode);
     }
@@ -161,8 +214,7 @@ class ApexInterpreter {
       newObject.instanceFields[fieldName] = instanceFields[fieldName].expression.accept(this);
     });
 
-    const parameterHash = methodSearcher.calculateMethodParameterHash(node);
-    const constructor = node.classType.classNode.constructors[parameterHash];
+    const constructor = node.classType.classNode.constructors[0];
 
     let env = {
       this: {
@@ -195,7 +247,7 @@ class ApexInterpreter {
   }
 
   visitUnaryOperator(node) {
-    let result = methodSearcher.searchField(node.expression);
+    let result = variableSearcher.searchFieldByValue(node.expression);
     let prev, value;
     if (result.key) {
       prev = result.receiverNode.instanceFields[result.key];
@@ -283,10 +335,10 @@ class ApexInterpreter {
           const key = node.left.key.accept(this);
           receiver._records[key.value] = right;
         } else {
-          let result = methodSearcher.searchField(node.left);
+          let result = variableSearcher.searchFieldByValue(node.left);
           right = node.right.accept(this);
           if (result.key) {
-            result.receiverNode.value.instanceFields[result.key] = right;
+            result.receiverNode.instanceFields[result.key] = right;
           } else {
             EnvManager.setValue(result.receiverNode, right);
           }
@@ -309,15 +361,27 @@ class ApexInterpreter {
   }
 
   visitSwitch(node) {
-  
+    const expression = node.expression.accept(this);
+    const whenStatement = node.whenStatements.find((whenStatement) => {
+      if (Array.isArray(whenStatement.condition)) {
+        const match = whenStatement.condition.some((condition) => {
+          return expression.value === condition.value;
+        });
+        if (match) return true;
+      } else {
+        const condition = whenStatement.condition.accept(this);
+        return expression.value == condition.value;
+      }
+    });
+    if (whenStatement) {
+      whenStatement.statements.accept(this);
+    } else if (node.elseStatement) {
+      node.elseStatement.accept(this);
+    }
   }
 
   visitTrigger(node) {
-  
-  }
-
-  visitTriggerTiming(node) {
-  
+    node.statements.accept(this);
   }
 
   visitVariableDeclaration(node) {
@@ -327,10 +391,6 @@ class ApexInterpreter {
       let env = EnvManager.currentScope();
       env.define(type, declarator.name, value);
     });
-  }
-
-  visitWhen(node) {
-
   }
 
   visitWhile(node) {

@@ -17,8 +17,8 @@ const ApexSystem = new ApexClass(
   {},
   {},
   {
-    debug: {
-      'args:Object': new Ast.MethodDeclarationNode(
+    debug: [
+      new Ast.MethodDeclarationNode(
         'debug',
         [],
         new Ast.TypeNode(['void'], []),
@@ -36,7 +36,7 @@ const ApexSystem = new ApexClass(
           console.log(object.val());
         }
       )
-    }
+    ]
   },
   []
 );
@@ -94,8 +94,8 @@ const ApexArray = new ApexClass(
   'Array',
   null,
   [],
-  {
-    'args:': new Ast.MethodDeclarationNode(
+  [
+    new Ast.MethodDeclarationNode(
       'Array',
       [],
       new Ast.TypeNode(['void'], []),
@@ -107,12 +107,12 @@ const ApexArray = new ApexClass(
         obj._records = [];
       }
     )
-  },
+  ],
   {},
   {},
   {
-    add: {
-      'args:Object': new Ast.MethodDeclarationNode(
+    add: [
+      new Ast.MethodDeclarationNode(
         'add',
         [],
         new Ast.TypeNode(['void'], []),
@@ -131,9 +131,9 @@ const ApexArray = new ApexClass(
           obj._records.push(value);
         }
       )
-    },
-    get: {
-      'args:Object': new Ast.MethodDeclarationNode(
+    ],
+    get: [
+      new Ast.MethodDeclarationNode(
         'get',
         [],
         new Ast.TypeNode(['Object'], []),
@@ -152,7 +152,7 @@ const ApexArray = new ApexClass(
           return obj._records[parseInt(keyNode.value)].value;
         }
       )
-    }
+    ]
   },
   []
 );
@@ -162,8 +162,8 @@ const ApexList = new ApexClass(
   'List',
   null,
   [],
-  {
-    'args:': new Ast.MethodDeclarationNode(
+  [
+    new Ast.MethodDeclarationNode(
       'List',
       [],
       new Ast.TypeNode(['void'], []),
@@ -173,16 +173,47 @@ const ApexList = new ApexClass(
       () => {
         const obj = EnvManager.get('this').value;
         obj._records = [];
+        obj._idx = 0;
       }
     )
-  },
+  ],
   {},
   {},
   {
-    add: {
-      'args:Object': new Ast.MethodDeclarationNode(
-        'add',
+    hasNext: [
+      new Ast.MethodDeclarationNode(
+        'hasNext',
+        [new Ast.ModifierNode('public')],
+        new Ast.TypeNode(['Boolean'], []),
         [],
+        [],
+        null,
+        () => {
+          const obj = EnvManager.get('this').value;
+          return new Ast.BooleanNode(obj._idx < obj._records.length);
+        }
+      )
+    ],
+    next: [
+      new Ast.MethodDeclarationNode(
+        'next',
+        [new Ast.ModifierNode('public')],
+        new Ast.TypeNode(['Object'], []),
+        [],
+        [],
+        null,
+        () => {
+          const obj = EnvManager.get('this').value;
+          const record = obj._records[obj._idx];
+          obj._idx++;
+          return record;
+        }
+      )
+    ],
+    add: [
+      new Ast.MethodDeclarationNode(
+        'add',
+        [new Ast.ModifierNode('public')],
         new Ast.TypeNode(['void'], []),
         [
           new Ast.ParameterNode(
@@ -199,11 +230,11 @@ const ApexList = new ApexClass(
           obj._records.push(value);
         }
       )
-    },
-    get: {
-      'args:Object': new Ast.MethodDeclarationNode(
+    ],
+    get: [
+      new Ast.MethodDeclarationNode(
         'get',
-        [],
+        [new Ast.ModifierNode('public')],
         new Ast.TypeNode(['Object'], []),
         [
           new Ast.ParameterNode(
@@ -220,7 +251,7 @@ const ApexList = new ApexClass(
           return obj._records[parseInt(keyNode.value)].value;
         }
       )
-    }
+    ]
   },
   []
 );
@@ -228,7 +259,7 @@ ApexList.valueFunction = (node) => {
   const messages = node._records.map((record) => {
     return `  ${record.val()}`;
   });
-  console.log(`List\n${messages.join('\n')}`);
+  return `List\n${messages.join('\n')}`;
 };
 NameSpaceStore.registerClass('System', ApexList);
 

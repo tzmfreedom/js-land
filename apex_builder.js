@@ -1,6 +1,7 @@
 const Ast = require('./node/ast');
 const ApexClassStore = require('./apexClass').ApexClassStore;
 const methodSearcher = require('./methodSearcher');
+const variableSearcher = require('./variableSearcher');
 const EnvManager = require('./envManager');
 const Runtime = require('./runtime');
 const Variable = require('./variable');
@@ -160,18 +161,27 @@ class ApexBuilder {
   visitFor(node) {
     EnvManager.pushScope({});
 
-    let forControl = node.forControl;
-    forControl.forInit.accept(this);
-    forControl.forUpdate.forEach((statement) => { statement.accept(this) });
-
-    let condition = forControl.expression.type();
-    if (!condition instanceof Ast.BooleanNode) {
-      throw `Should be boolean expression at line ${condition.lineno}`;
-    }
+    node.forControl.accept(this);
     node.statements.accept(this);
 
     EnvManager.popScope();
     return node;
+  }
+
+  visitForControl(node) {
+    node.forInit.accept(this);
+    node.forUpdate.forEach((statement) => { statement.accept(this) });
+
+    let condition = node.expression.type();
+    if (!condition instanceof Ast.BooleanNode) {
+      throw `Should be boolean expression at line ${condition.lineno}`;
+    }
+  }
+
+  visitEnhancedForControl(node) {
+    let env = EnvManager.currentScope();
+    env.define(node.type, node.variableDeclaratorId, new Ast.NullNode());
+    node.expression.accept(this);
   }
 
   visitIf(node) {
@@ -186,9 +196,7 @@ class ApexBuilder {
   }
 
   visitMethodInvocation(node) {
-    let searchResult = methodSearcher.searchMethod(node, 'type');
-    const methodNode = argumentChecker(searchResult.methodNode, node.parameters);
-    searchResult.methodNode = methodNode;
+    let searchResult = methodSearcher.searchMethodByType(node);
     let env = {};
     if (!(searchResult.receiverNode instanceof ApexClass)) {
       env.this = {
@@ -205,7 +213,7 @@ class ApexBuilder {
   }
 
   visitName(node) {
-    let values = methodSearcher.searchField(node, 'type');
+    let values = variableSearcher.searchFieldType(node);
     if (values) return values;
     throw `Variable not declaration : ${node.value.join('.')} at line ${node.lineno}`
   }
@@ -336,6 +344,7 @@ class ApexBuilder {
       if (expressionType && expressionType !== node.type.classNode) {
         throw `Type not matched : variable => ${node.type.classNode.name}, initializer => ${expressionType.name} at line ${node.lineno}`
       }
+      declarator.accept(this);
       let env = EnvManager.currentScope();
       env.define(type, declarator.name, new Ast.NullNode());
     });
@@ -343,11 +352,9 @@ class ApexBuilder {
 
   visitVariableDeclarator(node) {
     let name = node.name;
-    let expression = node.expression ? node.expression.accept(this) : null;
     if (EnvManager.localIncludes(name)) {
       throw `duplicate variable name ${name} at line ${node.lineno}`;
     }
-    return { name, expression };
   }
 
   visitWhen(node) {

@@ -36,21 +36,45 @@ public class Hoge {
             System.debug('aaa');
         }
 
-        for (Integer i = 0; i < 5; i++) {
-            System.debug(i);
+        for (Integer iii = 0; iii < 5; iii++) {
+            System.debug(iii);
         }
 
-        Integer i = 0;
-        System.debug(i + 1);
-        while(i < 5) {
-            System.debug(i);
-            i++;
+        for (Integer ii : i) {
+            System.debug(ii);
+        }
+
+        Integer iiii = 0;
+        System.debug(iiii + 1);
+        while(iiii < 5) {
+            System.debug(iiii);
+            iiii++;
         }
         System.debug(5*2);
         System.debug(1+3*5);
         System.debug(1.8*2.9);
-        i = 3;
+        iiii = 5;
         System.debug(i);
+        System.debug(h.fib(5));
+
+        switch on i {
+            when 2, 3 {
+                System.debug(i);
+            }
+            when 1 {
+                System.debug(111);
+            }
+            when else {
+                System.debug(123);
+            }
+        }
+    }
+
+    public Integer fib(Integer i) {
+        if (i < 2) {
+            return i;
+        }
+        return fib(i-1) + fib(i-2);
     }
 
     public String hey(Integer b) {
