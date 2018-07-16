@@ -20,7 +20,7 @@ const ApexSystem = new ApexClass(
     debug: [
       new Ast.MethodDeclarationNode(
         'debug',
-        [],
+        [new Ast.ModifierNode('public')],
         new Ast.TypeNode(['void'], []),
         [
           new Ast.ParameterNode(

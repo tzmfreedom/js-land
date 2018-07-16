@@ -50,7 +50,7 @@ function readFile(fileName) {
     const visitor = new ApexAstBuilder();
     const top = visitor.visit(tree);
 
-// console.log(util.inspect(top, {depth: 13, colors: true}));
+   // console.log(util.inspect(top, {depth: 13, colors: true}));
 
     const declarator = new SymbolDeclarator();
     // console.log(`End ReadFile: ${fileName}`);

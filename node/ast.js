@@ -667,6 +667,10 @@ class FieldAccessNode {
   accept(visitor) {
     return visitor.visitFieldAccess(this);
   }
+
+  type() {
+    return this.expression.type();
+  }
 }
 
 class TypeNode {

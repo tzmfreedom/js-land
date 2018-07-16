@@ -218,6 +218,8 @@ class ApexBuilder {
     throw `Variable not declaration : ${node.value.join('.')} at line ${node.lineno}`
   }
 
+  visitFieldAccess(node) {}
+
   visitNew(node) {
     const classNode = node.classType.classNode;
     const instanceFields = {};

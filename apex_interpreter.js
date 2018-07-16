@@ -58,7 +58,8 @@ class ApexInterpreter {
   }
 
   visitFieldAccess(node) {
-    return node;
+    const receiverNode = node.expression.accept(this);
+    return receiverNode.instanceFields[node.fieldName];
   }
 
   visitFor(node) {
@@ -148,7 +149,7 @@ class ApexInterpreter {
   }
 
   visitMethodInvocation(node) {
-    const searchResult = methodSearcher.searchMethodByValue(node);
+    const searchResult = methodSearcher.searchMethodByValue(node, this);
 
     let env = {};
     if (!(searchResult.receiverNode instanceof ApexClass)) {
@@ -165,12 +166,11 @@ class ApexInterpreter {
         value: node.parameters[i].accept(this),
       }
     }
-    let parameters = node.parameters.map((parameter) => { return parameter.accept(this); });
 
     EnvManager.pushScope(env);
     let returnNode;
     if (searchResult.methodNode.nativeFunction) {
-      const value = searchResult.methodNode.nativeFunction.call(this, parameters);
+      const value = searchResult.methodNode.nativeFunction.call(this);
       returnNode = { value };
     } else {
       returnNode = searchResult.methodNode.statements.accept(this);

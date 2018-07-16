@@ -87,6 +87,7 @@ public class Hoge {
 
     public String hey(Integer b) {
         System.debug(123123123);
+        return 'return';
     }
 
     public void hello(String a, Integer b) {

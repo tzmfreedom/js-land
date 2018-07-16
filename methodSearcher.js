@@ -126,20 +126,25 @@ class MethodSearcher {
   }
 
   searchMethodByType(node) {
-    return this.searchMethod(node, reduceTypeByInstanceField);
+    if (!(node.nameOrExpression instanceof Ast.NameNode)) {
+      const fieldAccess = node.nameOrExpression;
+      const receiverType = fieldAccess.expression.type();
+      const methodNode = this.searchInstanceMethod(receiverType, fieldAccess.fieldName, node.parameters);
+      return new MethodSearchResult(fieldAccess.expression, methodNode);
+    } else {
+      return this.searchMethod(node, reduceTypeByInstanceField);
+    }
   }
 
   searchMethodByValue(node, visitor) {
     if (!(node.nameOrExpression instanceof Ast.NameNode)) {
-      let receiverNode = node.nameOrExpression.accept(visitor);
-      let classNode = receiverNode.classNode;
-      if (classNode) {
-        let methodNode = this.searchInstanceMethod(classNode, node.methodName, node.parameters);
-        if (!methodNode.isPublic()) {
-          throw `Method is not visible: ${node.methodName}`;
-        }
-        return new MethodSearchResult(receiverNode, methodNode);
+      const fieldAccess = node.nameOrExpression;
+      const receiverNode = fieldAccess.expression.accept(visitor);
+      const methodNode = this.searchInstanceMethod(receiverNode, fieldAccess.fieldName, node.parameters);
+      if (!methodNode.isPublic()) {
+        throw `Method is not visible: ${node.methodName}`;
       }
+      return new MethodSearchResult(receiverNode, methodNode);
     } else {
       return this.searchMethod(node, reduceValueByInstanceField);
     }
