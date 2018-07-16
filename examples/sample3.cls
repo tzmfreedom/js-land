@@ -47,6 +47,11 @@ public class Hoge {
             System.debug(ii);
         }
 
+        System.debug('****');
+        System.debug(new Hoge().hey(123));
+        System.debug(new Hoge().b);
+        System.debug('****');
+
         Integer iiii = 0;
         System.debug(iiii + 1);
         while(iiii < 5) {

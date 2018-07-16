@@ -107,7 +107,16 @@ class TypeBuilder {
     if (node.elseStatement) node.elseStatement.accept(this);
   }
 
-  visitMethodInvocation(node) {}
+  visitMethodInvocation(node) {
+    node.nameOrExpression.accept(this);
+    node.parameters.forEach((parameter) => {
+      parameter.accept(this);
+    });
+  }
+
+  visitFieldAccess(node) {
+    node.expression.accept(this);
+  }
 
   visitName(node) {}
 
