@@ -11,7 +11,6 @@ const NameNode = require('./node/ast').NameNode;
 const NameSpaceStore = require('./apexClass').NameSpaceStore;
 const util = require('util');
 const fs = require('fs');
-const ReturnChecker = require('./return_checker');
 
 // Create CST with ANTLR
 const fileList = fs.readdirSync('examples')
@@ -65,8 +64,6 @@ function build(classInfo) {
   // const builder = new ApexBuilder();
   const typeBuilder = new TypeBuilder();
   typeBuilder.visit(classInfo);
-  const returnChecker = new ReturnChecker();
-  returnChecker.visit(classInfo);
   const apexBuilder = new ApexBuilder();
   apexBuilder.visit(classInfo);
 }

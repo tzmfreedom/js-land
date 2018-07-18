@@ -11,7 +11,10 @@ public class Hoge {
         return 10;
     }
 
-    public static void action() {
+    public static Integer action() {
+        if (false) {
+            return 1;
+        }
         List<Account> accounts = [SELECT id FROM Account];
         System.debug(accounts);
         // Integer [] j = new Integer[5];
@@ -82,6 +85,7 @@ public class Hoge {
                 System.debug(123);
             }
         }
+        return 1;
     }
 
     public Integer fib(Integer i) {

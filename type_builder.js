@@ -135,7 +135,9 @@ class TypeBuilder {
     node.castType.accept(this);
   }
 
-  visitReturn(node) {}
+  visitReturn(node) {
+    node.expression.accept(this);
+  }
 
   visitSoql(node) {}
 

@@ -487,6 +487,10 @@ class ReturnNode {
   accept(visitor) {
     return visitor.visitReturn(this);
   }
+
+  type() {
+    return this.expression.type();
+  }
 }
 
 class ThrowNode {

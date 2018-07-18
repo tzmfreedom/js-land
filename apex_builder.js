@@ -45,14 +45,14 @@ class ApexBuilder {
 
     Object.keys(staticMethods).forEach((methodName) => {
       let methods = staticMethods[methodName];
-      Object.keys(methods).forEach((parameterHash) => {
-        let methodNode = methods[parameterHash];
+      methods.forEach((methodNode) => {
         let env = {};
         methodNode.parameters.forEach((parameter) => {
           env[parameter.name] = { type: parameter.type };
         });
         EnvManager.pushScope(env, null);
-        methods[parameterHash].accept(this);
+        this.currentMethodNode = methodNode;
+        methodNode.accept(this);
         EnvManager.popScope();
       });
     });
@@ -61,8 +61,7 @@ class ApexBuilder {
     let instanceMethods = node.instanceMethods;
     Object.keys(node.instanceMethods).forEach((methodName) => {
       let methods = instanceMethods[methodName];
-      Object.keys(methods).forEach((parameterHash) => {
-        let methodNode = methods[parameterHash];
+      methods.forEach((methodNode) => {
         let env = {
           this: {
             type: newObject.type(),
@@ -73,7 +72,8 @@ class ApexBuilder {
           env[parameter.name] = { type: parameter.type };
         });
         EnvManager.pushScope(env, null);
-        methods[parameterHash].accept(this);
+        this.currentMethodNode = methodNode;
+        methodNode.accept(this);
         EnvManager.popScope();
       });
     });
@@ -99,9 +99,11 @@ class ApexBuilder {
     this.validateModifierDuplication(node);
     this.validateParameter(node);
 
-    // TODO: returnType Check
     if (node.statements) {
-      node.statements.accept(this);
+      const returnNode = node.statements.accept(this);
+      if (this.currentMethodNode.returnType.classNode !== null && !this.isReturn(returnNode)) {
+        throw `Missing return statement required return type: ${this.currentMethodNode.returnType.name.join('.')}`;
+      }
     }
   }
 
@@ -184,11 +186,15 @@ class ApexBuilder {
     if (!condition instanceof Ast.BooleanNode) {
       throw `Should be boolean expression at line ${condition.lineno}`;
     }
-    node.ifStatement.accept(this);
-    if (node.elseStatement) node.elseStatement.accept(this);
-
-    return node;
+    const ifReturnNode = node.ifStatement.accept(this);
+    if (node.elseStatement) {
+      const elseReturnNode = node.elseStatement.accept(this);
+      if (this.isReturn(ifReturnNode) && this.isReturn(elseReturnNode)) {
+        return ifReturnNode;
+      }
+    }
   }
+
 
   visitMethodInvocation(node) {
     let searchResult = methodSearcher.searchMethodByType(node);
@@ -241,9 +247,7 @@ class ApexBuilder {
     return node;
   }
 
-  visitUnaryOperator(node) {
-    return new Ast.IntegerNode();
-  }
+  visitUnaryOperator(node) {}
 
   visitBinaryOperator(node) {
     const leftType = node.left.type();
@@ -316,7 +320,10 @@ class ApexBuilder {
 
   visitSoql(node) {}
 
-  visitReturn(node) {}
+  visitReturn(node) {
+    this.checkReturnType(node);
+    return node;
+  }
 
   visitString(node) {}
 
@@ -358,24 +365,43 @@ class ApexBuilder {
   }
 
   visitWhile(node) {
-  
+    let returnNode;
+    for (let i = 0; i < node.statements.length; i++) {
+      returnNode = node.statements[i].accept(this);
+      if (this.isReturn(returnNode)) {
+        if (i < node.statements.length-1) {
+          throw `Unreachable statement ${node.statements[i].lineno+1}`;
+        }
+      }
+    }
   }
 
   visitBlock(node) {
     let returnNode;
     for (let i = 0; i < node.statements.length; i++) {
       returnNode = node.statements[i].accept(this);
-      if (
-        returnNode instanceof Ast.ReturnNode ||
-        returnNode instanceof Ast.BreakNode ||
-        returnNode instanceof Ast.ContinueNode
-      ) {
-        return returnNode;
+      if (this.isReturn(returnNode)) {
+        if (i < node.statements.length-1) {
+          throw `Unreachable statement ${node.statements[i].lineno+1}`;
+        }
       }
     }
+    return returnNode;
   }
 
   visitSpecialComment(node) {}
+
+  isReturn(returnNode) {
+    return returnNode instanceof Ast.ReturnNode ||
+      returnNode instanceof Ast.BreakNode ||
+      returnNode instanceof Ast.ContinueNode;
+  }
+
+  checkReturnType(returnNode) {
+    if (this.currentMethodNode.returnType.classNode != returnNode.type().classNode) {
+      throw `Illegal conversion from ${returnNode.type().name.join('.')} to ${this.currentMethodNode.returnType.name.join('.')}`
+    }
+  }
 
   checkType(leftType, rightType) {
     if (leftType.classNode !== rightType.classNode) return false;

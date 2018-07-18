@@ -114,7 +114,6 @@ const ApexArray = new ApexClass(
   ],
   {},
   {},
-  {},
   {
     add: [
       new Ast.MethodDeclarationNode(
@@ -159,6 +158,7 @@ const ApexArray = new ApexClass(
       )
     ]
   },
+  {},
   []
 );
 NameSpaceStore.registerClass('System', ApexArray);
@@ -182,7 +182,6 @@ const ApexList = new ApexClass(
       }
     )
   ],
-  {},
   {},
   {},
   {
@@ -259,6 +258,7 @@ const ApexList = new ApexClass(
       )
     ]
   },
+  {},
   []
 );
 ApexList.valueFunction = (node) => {
@@ -502,7 +502,7 @@ const ApexDateTime = new ApexClass(
 NameSpaceStore.registerClass('System', ApexDateTime);
 
 const NullType = new Ast.TypeNode(
-  ['Null'],
+  ['void'],
   []
 );
 NullType.classNode = null;
