@@ -183,6 +183,14 @@ class TypeBuilder {
     }
   }
 
+  visitThrow(node) {
+    console.log(node);
+  }
+
+  visitTry(node) {
+    console.log(node);
+  }
+
   visitSpecialComment(node) {}
 }
 

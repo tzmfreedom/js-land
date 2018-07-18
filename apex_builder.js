@@ -321,7 +321,9 @@ class ApexBuilder {
   visitSoql(node) {}
 
   visitReturn(node) {
-    this.checkReturnType(node);
+    if (this.currentMethodNode.returnType.classNode != node.type().classNode) {
+      throw `Illegal conversion from ${node.type().name.join('.')} to ${this.currentMethodNode.returnType.name.join('.')}`
+    }
     return node;
   }
 
@@ -389,18 +391,20 @@ class ApexBuilder {
     return returnNode;
   }
 
+  visitThrow(node) {
+    console.log(node);
+  }
+
+  visitTry(node) {
+    console.log(node);
+  }
+
   visitSpecialComment(node) {}
 
   isReturn(returnNode) {
     return returnNode instanceof Ast.ReturnNode ||
       returnNode instanceof Ast.BreakNode ||
       returnNode instanceof Ast.ContinueNode;
-  }
-
-  checkReturnType(returnNode) {
-    if (this.currentMethodNode.returnType.classNode != returnNode.type().classNode) {
-      throw `Illegal conversion from ${returnNode.type().name.join('.')} to ${this.currentMethodNode.returnType.name.join('.')}`
-    }
   }
 
   checkType(leftType, rightType) {

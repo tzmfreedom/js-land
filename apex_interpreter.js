@@ -429,6 +429,14 @@ class ApexInterpreter {
     }
   }
 
+  visitThrow(node) {
+    console.log(node);
+  }
+
+  visitTry(node) {
+    console.log(node);
+  }
+
   visitSpecialComment(node) {
     let step = 1;
     const subscriberId = DebuggerPublisher.addSubscriber('line', (event) => {
@@ -466,6 +474,16 @@ class ApexInterpreter {
         } catch (e) {
           console.error(e);
         }
+        return true;
+      },
+      variables: (args) => {
+        const showVariables = (scope) => {
+          Object.keys(scope.env).forEach((key) => {
+            console.log(`${key} => ${scope.env[key].val()}`);
+          });
+          if (scope.parent) showVariables(scope.parent);
+        };
+        showVariables(EnvManager.currentScope());
         return true;
       },
       scope: (args) => {

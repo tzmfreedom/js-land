@@ -66,6 +66,20 @@ public class Hoge {
             System.debug(iiii);
             iiii++;
         }
+
+        try {
+            throw new Hoge();
+        } catch(Exception e) {
+            System.debug(e);
+        } finally {
+            System.debug(1);
+        }
+
+        try {
+            System.debug(2);
+        } finally {
+            System.debug(3);
+        }
         // _debugger
         System.debug(5*2);
         System.debug(1+3*5);

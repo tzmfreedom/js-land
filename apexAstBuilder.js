@@ -601,8 +601,13 @@ ApexAstBuilder.prototype.visitLocalVariableDeclaration = function(ctx) {
 // Visit a parse tree produced by apexParser#statement.
 ApexAstBuilder.prototype.visitStatement = function(ctx) {
   const lineNo = ctx.start.line;
-  if (ctx.block()) {
-    return ctx.block().accept(this);
+  if (ctx.TRY()) {
+    let block = ctx.block().accept(this);
+    let catchClause = ctx.catchClause() ? ctx.catchClause().map((catchClause) => {
+        return catchClause.accept(this);
+    }) : null;
+    let finallyBlock = ctx.finallyBlock() ? ctx.finallyBlock().accept(this) : null;
+    return new Ast.TryNode(block, catchClause, finallyBlock, lineNo);
   } else if (ctx.IF()) {
     let condition = ctx.parExpression().accept(this);
     let if_statement = ctx.statement()[0].accept(this);
@@ -624,11 +629,6 @@ ApexAstBuilder.prototype.visitStatement = function(ctx) {
       return statement.accept(this)
     });
     return new Ast.WhileNode(condition, statements, doFlag, lineNo);
-  } else if (ctx.TRY()) {
-    let block = ctx.block().accept(this);
-    let catchClause = ctx.catchClause() ? ctx.catchClause().accept(this) : null;
-    let finallyBlock = ctx.finallyBlock() ? ctx.finallyBlock().accept(this) : null;
-    return new Ast.TryNode(block, catchClause, finallyBlock, lineNo);
   } else if (ctx.RETURN()) {
     let expression = ctx.expression().accept(this);
     return new Ast.ReturnNode(expression, lineNo);
@@ -643,6 +643,8 @@ ApexAstBuilder.prototype.visitStatement = function(ctx) {
     return ctx.statementExpression().accept(this);
   } else if (ctx.apexDbExpression()) {
     return ctx.apexDbExpression().accept(this);
+  } else if (ctx.block()) {
+    return ctx.block().accept(this);
   } else {
     return new Ast.NothingStatementNode(lineNo);
   }
