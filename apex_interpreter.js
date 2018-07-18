@@ -7,6 +7,7 @@ const dataLoader = require('./data_loader');
 const DebuggerPublisher = require('./debugger_publisher');
 const Event = require('./event');
 const rl = require('readline-sync');
+const fs = require('fs');
 
 class ApexInterpreter {
   visit(node) {
@@ -152,6 +153,7 @@ class ApexInterpreter {
   }
 
   visitMethodInvocation(node) {
+    DebuggerPublisher.publish(new Event('method_invocation', node, node.lineno));
     const searchResult = methodSearcher.searchMethodByValue(node, this);
 
     let env = {};
@@ -179,6 +181,7 @@ class ApexInterpreter {
       returnNode = searchResult.methodNode.statements.accept(this);
     }
     EnvManager.popScope();
+    DebuggerPublisher.publish(new Event('method_return', node, node.lineno));
     if (returnNode) return returnNode.value;
     return null;
   }
@@ -412,8 +415,10 @@ class ApexInterpreter {
   visitBlock(node){
     let returnNode;
     for (let i = 0; i < node.statements.length; i++){
-      returnNode = node.statements[i].accept(this);
-      DebuggerPublisher.publish(new Event('line', node.statements[i].lineno));
+      const statement = node.statements[i];
+      returnNode = statement.accept(this);
+
+      DebuggerPublisher.publish(new Event('line', statement, statement.lineno));
       if (
         returnNode instanceof Ast.ReturnNode ||
         returnNode instanceof Ast.BreakNode ||
@@ -438,8 +443,23 @@ class ApexInterpreter {
 
   REPL() {
     const visitor = this;
+    let step = -1;
+    let frame = -1;
+
+    const showFile = (event) => {
+      const start = event.lineno - 3;
+      const end = event.lineno + 3;
+      const filebody = fs.readFileSync('./examples/sample3.cls', 'utf8');
+      const lines = filebody.split('\n');
+      for (let i = start; i < end; i++) {
+        if (i == event.lineno) {
+          console.log(`=> ${i}: ${lines[i]}`);
+        } else {
+          console.log(`   ${i}: ${lines[i]}`);
+        }
+      }
+    };
     const handler = {
-      step: -1,
       show: (args) => {
         try {
           console.log(EnvManager.get(args[0]).val());
@@ -452,27 +472,41 @@ class ApexInterpreter {
         console.log(EnvManager.currentScope());
         return true;
       },
-      next: function(args) {
-        this.step = 1;
+      step: (args) => {
+        step = 1;
         const subscriberId = DebuggerPublisher.addSubscriber('line', (event) => {
-          if (this.step > 0) this.step -= 1;
-          if (this.step == 0) {
+          if (step > 0) step--;
+          if (step == 0) {
+            DebuggerPublisher.unsubscribe('line', subscriberId);
+            step = -1;
+
             visitor.REPL();
           }
-          DebuggerPublisher.unsubscribe('line', subscriberId);
         });
         return false;
       },
-      step: (args) => {
-        this.step = 1;
+      next: (args) => {
+        step = 1;
+        frame = 0;
+        const methodInvocationSubscriberId = DebuggerPublisher.addSubscriber('method_invocation', (event) => {
+          if (frame >= 0) frame++;
+        });
+        const methodReturnSubscriberId = DebuggerPublisher.addSubscriber('method_return', (event) => {
+          if (frame > 0) frame--;
+        });
         const subscriberId = DebuggerPublisher.addSubscriber('line', (event) => {
-          if (this.step > 0) this.step -= 1;
-          if (this.step == 0) {
+          if (frame === 0 && step > 0) step--;
+          if (step == 0) {
+            DebuggerPublisher.unsubscribe('line', subscriberId);
+            DebuggerPublisher.unsubscribe('method_invocation', methodInvocationSubscriberId);
+            DebuggerPublisher.unsubscribe('method_return', methodReturnSubscriberId);
+            step = -1;
+            frame = -1;
+            showFile(event)
             visitor.REPL();
           }
-          DebuggerPublisher.unsubscribe('line', subscriberId);
         });
-        return true;
+        return false;
       },
       exit: (args) => {
         DebuggerPublisher.clearSubscriber('line');

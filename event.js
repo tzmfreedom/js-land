@@ -1,8 +1,9 @@
 'use strict'
 
 class Event {
-  constructor(name, lineno) {
+  constructor(name, node, lineno) {
     this.name = name;
+    this.node = node;
     this.lineno = lineno;
   }
 }
