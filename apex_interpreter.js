@@ -425,7 +425,15 @@ class ApexInterpreter {
   }
 
   visitSpecialComment(node) {
-    this.REPL();
+    let step = 1;
+    const subscriberId = DebuggerPublisher.addSubscriber('line', (event) => {
+      if (step > 0) step -= 1;
+      if (step == 0) {
+        this.REPL();
+      }
+      DebuggerPublisher.unsubscribe('line', subscriberId);
+    });
+    return false;
   }
 
   REPL() {
@@ -451,15 +459,23 @@ class ApexInterpreter {
           if (this.step == 0) {
             visitor.REPL();
           }
-          this.step = -1;
           DebuggerPublisher.unsubscribe('line', subscriberId);
         });
         return false;
       },
       step: (args) => {
+        this.step = 1;
+        const subscriberId = DebuggerPublisher.addSubscriber('line', (event) => {
+          if (this.step > 0) this.step -= 1;
+          if (this.step == 0) {
+            visitor.REPL();
+          }
+          DebuggerPublisher.unsubscribe('line', subscriberId);
+        });
         return true;
       },
       exit: (args) => {
+        DebuggerPublisher.clearSubscriber('line');
         return false;
       }
     };

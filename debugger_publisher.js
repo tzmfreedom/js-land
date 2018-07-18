@@ -23,6 +23,10 @@ class DebuggerPublisher {
   static unsubscribe(event, subscriberId) {
     subscribers.get(event).splice(subscriberId, 1);
   }
+
+  static clearSubscriber(event) {
+    subscribers.set(event, []);
+  }
 }
 
 module.exports = DebuggerPublisher;
