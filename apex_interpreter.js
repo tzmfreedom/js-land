@@ -8,6 +8,7 @@ const DebuggerPublisher = require('./debugger_publisher');
 const Event = require('./event');
 const rl = require('readline-sync');
 const fs = require('fs');
+const Table = require('cli-table');
 
 class ApexInterpreter {
   visit(node) {
@@ -470,20 +471,37 @@ class ApexInterpreter {
     const handler = {
       show: (args) => {
         try {
-          console.log(EnvManager.get(args[0]).val());
+          const variable = EnvManager.get(args[0]).value;
+          if (variable.value) {
+            console.log(variable.value);
+          } else {
+            const table = new Table();
+            table.push({ '_objectName': variable.classType.name.join('.') });
+            Object.keys(variable.instanceFields).sort().forEach((instanceFieldName) => {
+              table.push({ [instanceFieldName]: variable.instanceFields[instanceFieldName] });
+            });
+            console.log(table.toString());
+          }
         } catch (e) {
           console.error(e);
         }
         return true;
       },
       variables: (args) => {
+        const fields = {};
         const showVariables = (scope) => {
           Object.keys(scope.env).forEach((key) => {
-            console.log(`${key} => ${scope.env[key].val()}`);
+            fields[key] = scope.env[key].val();
           });
           if (scope.parent) showVariables(scope.parent);
         };
         showVariables(EnvManager.currentScope());
+
+        const table = new Table();
+        Object.keys(fields).sort().forEach((key) => {
+          table.push({ [key]: fields[key] });
+        });
+        console.log(table.toString());
         return true;
       },
       scope: (args) => {

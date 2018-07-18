@@ -367,7 +367,68 @@ const ApexMap = new ApexClass(
   [],
   {},
   {},
-  {},
+  {
+    keys: [
+      new Ast.MethodDeclarationNode(
+        'keys',
+        [new Ast.ModifierNode('public')],
+        new Ast.TypeNode(['List'], []),
+        [],
+        [],
+        null,
+        () => {
+          const obj = EnvManager.get('this').value;
+        }
+      )
+    ],
+    put: [
+      new Ast.MethodDeclarationNode(
+        'put',
+        [new Ast.ModifierNode('public')],
+        new Ast.TypeNode(['void'], []),
+        [
+          new Ast.ParameterNode(
+            [],
+            new Ast.TypeNode(['Object'], []),
+            'key'
+          ),
+          new Ast.ParameterNode(
+            [],
+            new Ast.TypeNode(['Object'], []),
+            'value'
+          ),
+        ],
+        [],
+        null,
+        () => {
+          const obj = EnvManager.get('this').value;
+          const value = EnvManager.get('value');
+          obj._records.push(value);
+        }
+      )
+    ],
+    get: [
+      new Ast.MethodDeclarationNode(
+        'get',
+        [new Ast.ModifierNode('public')],
+        new Ast.TypeNode(['Object'], []),
+        [
+          new Ast.ParameterNode(
+            [],
+            new Ast.TypeNode(['Object'], []),
+            'key'
+          )
+        ],
+        [],
+        null,
+        () => {
+          const obj = EnvManager.get('this').value;
+          const keyNode = EnvManager.get('key').value;
+          return obj._records[parseInt(keyNode.value)].value;
+        }
+      )
+    ]
+  },
   {},
   []
 );

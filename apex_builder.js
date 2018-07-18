@@ -19,7 +19,6 @@ class ApexBuilder {
     if (node.modifiers) {
       node.modifiers.map((modifier) => {
         if (modifiers.includes(modifier.name)) {
-          // TODO: lineno
           throw `Compile Error: duplicate modifier ${name} at line ${node.lineno}`
         }
         modifiers.push(modifier.name);
@@ -31,7 +30,6 @@ class ApexBuilder {
     let parameters = [];
     node.parameters.map((parameter) => {
       if (parameters.includes(parameter.name)){
-        // TODO: lineno
         throw `Compile Error: duplicate modifier ${name} at line ${node.lineno}`
       }
       parameters.push(parameter.name);

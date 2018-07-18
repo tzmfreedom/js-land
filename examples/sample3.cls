@@ -80,7 +80,7 @@ public class Hoge {
         } finally {
             System.debug(3);
         }
-        // _debugger
+        // debugger
         System.debug(5*2);
         System.debug(1+3*5);
         System.debug(1.8*2.9);

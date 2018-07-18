@@ -23,7 +23,6 @@ class SymbolDeclarator {
     node.staticMethods.forEach((method) => {
       if (!staticMethods[method.name]) staticMethods[method.name] = [];
       // if (parameterHash in staticMethods[method.name]) {
-      //   // TODO: lineno
       //   throw `Compile Error: duplicate method name ${method.name} at line : ${method.lineno}`
       // }
       staticMethods[method.name].push(method);
@@ -44,8 +43,7 @@ class SymbolDeclarator {
       declaration.declarators.forEach((declarator) => {
         let fieldName = declarator.name;
         if (fieldName in staticFields) {
-          // TODO: lineno
-          throw `Compile Error: duplicate static field name ${fieldName} at line : `
+          throw `Compile Error: duplicate static field name ${fieldName} at line : ${declarator.lineno}`
         }
         staticFields[fieldName] = new Ast.FieldVariableNode(
           declaration.type,
@@ -61,8 +59,7 @@ class SymbolDeclarator {
       if (declaration instanceof Ast.PropertyDeclarationNode) {
         let fieldName = declaration.identifier;
         if (fieldName in instanceFields) {
-          // TODO: lineno
-          throw `Compile Error: duplicate instance field name ${fieldName} at line : `
+          throw `Compile Error: duplicate instance field name ${fieldName} at line : ${declaration.lineno}`
         }
         instanceFields[fieldName] = new Ast.FieldVariableNode(
           declaration.type,
@@ -78,8 +75,7 @@ class SymbolDeclarator {
         declaration.declarators.forEach((declarator) => {
           let fieldName = declarator.name;
           if (fieldName in instanceFields) {
-            // TODO: lineno
-            throw `Compile Error: duplicate instance field name ${fieldName} at line : `
+            throw `Compile Error: duplicate instance field name ${fieldName} at line : ${declarator.lineno}`
           }
           instanceFields[fieldName] = {
             type: declaration.type,
@@ -93,8 +89,7 @@ class SymbolDeclarator {
     node.innerClasses.forEach((innerClass) => {
       let innerClassName = innerClass.name;
       if (innerClassName in innerClasses) {
-        // TODO: lineno
-        throw `Compile Error: duplicate instance field name ${innerClassName} at line : `
+        throw `Compile Error: duplicate class name ${innerClassName} at line : ${innerClass.lineno}`
       }
       innerClasses[innerClassName] = innerClass.accept(this);
     });
