@@ -7,6 +7,10 @@ public class Hoge {
 
     }
 
+    public Integer yo(){
+        return 10;
+    }
+
     public static void action() {
         List<Account> accounts = [SELECT id FROM Account];
         System.debug(accounts);
@@ -49,6 +53,7 @@ public class Hoge {
 
         System.debug('****');
         System.debug(new Hoge().hey(123));
+        System.debug(new Hoge().yo());
         System.debug(new Hoge().b);
         System.debug('****');
 
@@ -58,7 +63,7 @@ public class Hoge {
             System.debug(iiii);
             iiii++;
         }
-        // debugger
+        // _debugger
         System.debug(5*2);
         System.debug(1+3*5);
         System.debug(1.8*2.9);

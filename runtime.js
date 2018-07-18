@@ -12,7 +12,7 @@ const ApexSystem = new ApexClass(
   'System',
   null,
   [],
-  {},
+  [],
   {},
   {},
   {},
@@ -46,6 +46,7 @@ const ApexString = new ApexClass(
   'String',
   null,
   [],
+  [],
   {},
   {},
   {},
@@ -57,6 +58,7 @@ NameSpaceStore.registerClass('System', ApexString);
 const ApexInteger = new ApexClass(
   'Integer',
   null,
+  [],
   [],
   {},
   {},
@@ -70,6 +72,7 @@ const ApexDouble = new ApexClass(
   'Double',
   null,
   [],
+  [],
   {},
   {},
   {},
@@ -81,6 +84,7 @@ NameSpaceStore.registerClass('System', ApexDouble);
 const ApexBoolean = new ApexClass(
   'Boolean',
   null,
+  [],
   [],
   {},
   {},
@@ -108,6 +112,7 @@ const ApexArray = new ApexClass(
       }
     )
   ],
+  {},
   {},
   {},
   {
@@ -177,6 +182,7 @@ const ApexList = new ApexClass(
       }
     )
   ],
+  {},
   {},
   {},
   {
@@ -267,6 +273,7 @@ const ApexLong = new ApexClass(
   'Long',
   null,
   [],
+  [],
   {},
   {},
   {},
@@ -278,6 +285,7 @@ NameSpaceStore.registerClass('System', ApexLong);
 const ApexDecimal = new ApexClass(
   'Decimal',
   null,
+  [],
   [],
   {},
   {},
@@ -291,6 +299,7 @@ const ApexDate = new ApexClass(
   'Date',
   null,
   [],
+  [],
   {},
   {},
   {},
@@ -302,6 +311,7 @@ NameSpaceStore.registerClass('System', ApexDate);
 const ApexBlob = new ApexClass(
   'Blob',
   null,
+  [],
   [],
   {},
   {},
@@ -315,6 +325,7 @@ const ApexID = new ApexClass(
   'ID',
   null,
   [],
+  [],
   {},
   {},
   {},
@@ -326,6 +337,7 @@ NameSpaceStore.registerClass('System', ApexID);
 const ApexObject = new ApexClass(
   'Object',
   null,
+  [],
   [],
   {},
   {},
@@ -339,6 +351,7 @@ const ApexTime = new ApexClass(
   'Time',
   null,
   [],
+  [],
   {},
   {},
   {},
@@ -350,6 +363,7 @@ NameSpaceStore.registerClass('System', ApexTime);
 const ApexMap = new ApexClass(
   'Map',
   null,
+  [],
   [],
   {},
   {},
@@ -363,6 +377,7 @@ const ApexHttpRequest = new ApexClass(
   'HttpRequest',
   null,
   [],
+  [],
   {},
   {},
   {},
@@ -374,6 +389,7 @@ NameSpaceStore.registerClass('System', ApexHttpRequest);
 const ApexHTTPResponse = new ApexClass(
   'HTTPResponse',
   null,
+  [],
   [],
   {},
   {},
@@ -387,6 +403,7 @@ const ApexXmlStreamWriter = new ApexClass(
   'Xmlstreamwriter',
   null,
   [],
+  [],
   {},
   {},
   {},
@@ -398,6 +415,7 @@ NameSpaceStore.registerClass('System', ApexXmlStreamWriter);
 const ApexXmlStreamReader = new ApexClass(
   'Xmlstreamreader',
   null,
+  [],
   [],
   {},
   {},
@@ -411,6 +429,7 @@ const ApexPageReference = new ApexClass(
   'PageReference',
   null,
   [],
+  [],
   {},
   {},
   {},
@@ -423,6 +442,7 @@ const ApexHttp = new ApexClass(
   'Http',
   null,
   [],
+  [],
   {},
   {},
   {},
@@ -434,6 +454,7 @@ NameSpaceStore.registerClass('System', ApexHttp);
 const ApexSObject = new ApexClass(
   'SObject',
   null,
+  [],
   [],
   {},
   {},
@@ -454,13 +475,13 @@ const ApexDateTime = new ApexClass(
   'DateTime',
   null,
   [],
-  {},
+  [],
   {},
   {},
   {},
   {
-    now: {
-      a: new Ast.MethodDeclarationNode(
+    now: [
+      new Ast.MethodDeclarationNode(
         'now',
         [],
         new Ast.TypeNode(['DateTime'], []),
@@ -474,7 +495,7 @@ const ApexDateTime = new ApexClass(
           return obj;
         }
       )
-    }
+    ]
   },
   []
 );
@@ -558,5 +579,6 @@ module.exports = {
   Object: ApexObject,
   SObject: ApexSObject,
   List: ApexList,
+  NullType: NullType,
   TypeStore: TypeStore,
 };

@@ -14,12 +14,18 @@ class MethodSearchResult {
   }
 }
 
-const reduceTypeByInstanceField = (init, list) => {
+const reduceTypeByInstanceField = (init, list, privateCheck) => {
   let receiverNode = init.type();
   for (let i = 0; i < list.length; i++) {
     if (!receiverNode) return null;
     if (!(list[i] in receiverNode.classNode.instanceFields)) return null;
     const instanceField = receiverNode.classNode.instanceFields[list[i]];
+    if (i === 0 && privateCheck && !(instanceField.isPublic())) {
+      throw `Field is not visible: ${instanceField.name}`;
+    }
+    if (i !== 0 && !(instanceField.isPublic())) {
+      throw `Method is not visible: ${methodNode.name}`;
+    }
     receiverNode = instanceField.type();
   }
   return receiverNode;
@@ -29,8 +35,8 @@ const reduceValueByInstanceField = (init, list) => {
   let receiverNode = init.value;
   for (let i = 0; i < list.length; i++) {
     if (!receiverNode) return null;
-    if (!(list[i] in receiverNode.classNode.instanceFields)) return null;
-    receiverNode = receiverNode.classNode.instanceFields[list[i]].value;
+    if (!(list[i] in receiverNode.instanceFields)) return null;
+    receiverNode = receiverNode.instanceFields[list[i]].value;
   }
   return receiverNode;
 };
@@ -43,7 +49,7 @@ class MethodSearcher {
 
     if (EnvManager.localIncludes(name)) {
       let variable = EnvManager.get(name);
-      let receiverNode = reduce(variable, names.slice(1, names.length-1));
+      let receiverNode = reduce(variable, names.slice(1, names.length-1), name !== 'this');
       if (receiverNode) {
         let methodNode = this.searchInstanceMethod(receiverNode, methodName, node.parameters);
         if (receiverNode && methodNode) {
@@ -57,7 +63,7 @@ class MethodSearcher {
 
     if (EnvManager.localIncludes('this')) {
       let variable = EnvManager.get('this');
-      let receiverNode = reduce(variable, names.slice(1, names.length-1));
+      let receiverNode = reduce(variable, names.slice(0, names.length-1), false);
       if (receiverNode) {
         let methodNode = this.searchInstanceMethod(receiverNode, methodName, node.parameters);
         if (receiverNode && methodNode) {
@@ -71,6 +77,9 @@ class MethodSearcher {
       if (classInfo) {
         let methodNode = this.searchStaticMethod(classInfo, names[1], node.parameters);
         if (classInfo && methodNode) {
+          if (!(methodNode.isPublic())) {
+            throw `Method is not visible: ${methodNode.name}`;
+          }
           return new MethodSearchResult(classInfo, methodNode);
         }
       }
@@ -79,6 +88,9 @@ class MethodSearcher {
         if (classInfo) {
           let methodNode = this.searchStaticMethod(classInfo, names[1], node.parameters);
           if (classInfo && methodNode) {
+            if (!(methodNode.isPublic())) {
+              throw `Method is not visible: ${methodNode.name}`;
+            }
             return new MethodSearchResult(classInfo, methodNode);
           }
         }
@@ -96,7 +108,7 @@ class MethodSearcher {
             let methodNode = this.searchInstanceMethod(receiverNode, methodName, node.parameters);
             if (receiverNode && methodNode) {
               if (!methodNode.isPublic()) {
-                throw `Method is not visible: ${methodName.name}`;
+                throw `Method is not visible: ${methodNode.name}`;
               }
               return new MethodSearchResult(receiverNode, methodNode);
             }
@@ -116,7 +128,7 @@ class MethodSearcher {
           let methodNode = this.searchInstanceMethod(receiverNode, methodName, node.parameters);
           if (receiverNode && methodNode) {
             if (!methodNode.isPublic()) {
-              throw `Method is not visible: ${methodName.name}`;
+              throw `Method is not visible: ${methodNode.name}`;
             }
             return new MethodSearchResult(receiverNode, methodNode);
           }
@@ -142,7 +154,7 @@ class MethodSearcher {
       const receiverNode = fieldAccess.expression.accept(visitor);
       const methodNode = this.searchInstanceMethod(receiverNode, fieldAccess.fieldName, node.parameters);
       if (!methodNode.isPublic()) {
-        throw `Method is not visible: ${node.methodName}`;
+        throw `Method is not visible: ${methodNode.name}`;
       }
       return new MethodSearchResult(receiverNode, methodNode);
     } else {

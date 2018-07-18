@@ -6,7 +6,7 @@ const NameSpaceStore = require('./apexClass').NameSpaceStore;
 const Ast = require('./node/ast');
 const EnvManager = require('./envManager');
 
-const reduceTypeByInstanceField = (init, list) => {
+const reduceTypeByInstanceField = (init, list, privateCheck) => {
   let receiverNode = init.type();
   for (let i = 0; i < list.length; i++) {
     if (!receiverNode) return null;
@@ -14,6 +14,12 @@ const reduceTypeByInstanceField = (init, list) => {
     const instanceField = receiverNode.classNode.instanceFields[list[i]];
     if (!instanceField.isPublic()) {
       throw `Field not visible : ${instanceField.name}`;
+    }
+    if (i === 0 && privateCheck && !(instanceField.isPublic())) {
+      throw `Field is not visible: ${instanceField.name}`;
+    }
+    if (i !== 0 && !(instanceField.isPublic())) {
+      throw `Method is not visible: ${methodNode.name}`;
     }
     receiverNode = instanceField.type();
   }

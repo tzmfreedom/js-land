@@ -1,5 +1,6 @@
 const Ast = require('./node/ast');
 const typeSearch = require('./typeSearch');
+const Runtime = require('./runtime');
 
 class TypeBuilder {
   visit(node) {
@@ -58,10 +59,10 @@ class TypeBuilder {
       parameter.type.accept(this);
     });
 
-    if (node.returnType != 'void'){
-      node.returnType.accept(this);
+    if (node.returnType == 'void'){
+      node.returnType = Runtime.NullType;
     } else {
-      node.returnType = Ast.NullNode;
+      node.returnType.accept(this);
     }
     if (node.statements) {
       node.statements.accept(this);

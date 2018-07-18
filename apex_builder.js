@@ -318,7 +318,6 @@ class ApexBuilder {
 
   visitReturn(node) {}
 
-
   visitString(node) {}
 
   visitInteger(node) {}
