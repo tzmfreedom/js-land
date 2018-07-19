@@ -1,8 +1,8 @@
 let Ast = require('./node/ast');
 let ApexClassStore = require('./apexClass').ApexClassStore;
 let ApexClass = require('./apexClass').ApexClass;
-let methodSearcher = require('./methodSearcher');
-let TriggerStore = require('./trigger_store');
+let MethodResolver = require('./method-resolver');
+let TriggerStore = require('./trigger-store');
 
 class SymbolDeclarator {
   visit(node) {
@@ -63,13 +63,14 @@ class SymbolDeclarator {
         }
         instanceFields[fieldName] = new Ast.FieldVariableNode(
           declaration.type,
-          declaration.setter,
-          declaration.getter
+          declaration.modifiers,
+          new Ast.NullNode(declaration.lineno),
+          declaration.lineno
         );
         if (declaration.getter_or_setter.type == 'setter') {
-          instanceFields[fieldName].setter = declaration.getter_or_setter.methodBody
+          instanceFields[fieldName].setter = declaration.getter_or_setter.methodBody;
         } else {
-          instanceFields[fieldName].getter = declaration.getter_or_setter.methodBody
+          instanceFields[fieldName].getter = declaration.getter_or_setter.methodBody;
         }
       } else {
         declaration.declarators.forEach((declarator) => {
@@ -77,10 +78,12 @@ class SymbolDeclarator {
           if (fieldName in instanceFields) {
             throw `Compile Error: duplicate instance field name ${fieldName} at line : ${declarator.lineno}`
           }
-          instanceFields[fieldName] = {
-            type: declaration.type,
-            expression: declarator.expression,
-          };
+          instanceFields[fieldName] = new Ast.FieldVariableNode(
+            declaration.type,
+            declaration.modifiers,
+            declarator.expression,
+            declarator.lineno
+          );
         });
       }
     });

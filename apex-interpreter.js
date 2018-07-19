@@ -1,16 +1,21 @@
 const Ast = require('./node/ast');
-const methodSearcher = require('./methodSearcher');
-const variableSearcher = require('./variableSearcher');
-const EnvManager = require('./envManager');
+const MethodResolver = require('./method-resolver');
+const VariableResolver = require('./variable-resolver');
+const EnvManager = require('./env-manager');
 const ApexClass = require('./apexClass').ApexClass;
-const dataLoader = require('./data_loader');
-const DebuggerPublisher = require('./debugger_publisher');
+const dataLoader = require('./data-loader');
+const DebuggerPublisher = require('./debugger-publisher');
 const Event = require('./event');
 const rl = require('readline-sync');
 const fs = require('fs');
 const Table = require('cli-table');
 
 class ApexInterpreter {
+  constructor() {
+    this.methodResolver = new MethodResolver(this)
+    this.variableResolver = new VariableResolver(this)
+  }
+
   visit(node) {
     EnvManager.pushScope({});
     node.accept(this);
@@ -155,7 +160,7 @@ class ApexInterpreter {
 
   visitMethodInvocation(node) {
     DebuggerPublisher.publish(new Event('method_invocation', node, node.lineno));
-    const searchResult = methodSearcher.searchMethodByValue(node, this);
+    const searchResult = this.methodResolver.searchMethodByValue(node, this);
 
     let env = {};
     if (!(searchResult.receiverNode instanceof ApexClass)) {
@@ -188,7 +193,7 @@ class ApexInterpreter {
   }
 
   visitName(node) {
-    let result = variableSearcher.searchFieldByValue(node);
+    let result = this.variableResolver.searchFieldByValue(node);
     if (result.key) {
       return result.receiverNode.instanceFields[result.key];
     } else {
@@ -238,7 +243,7 @@ class ApexInterpreter {
   }
 
   visitUnaryOperator(node) {
-    let result = variableSearcher.searchFieldByValue(node.expression);
+    let result = this.variableResolver.searchFieldByValue(node.expression);
     let prev, value;
     if (result.key) {
       prev = result.receiverNode.instanceFields[result.key];
@@ -326,7 +331,7 @@ class ApexInterpreter {
           const key = node.left.key.accept(this);
           receiver._records[key.value] = right;
         } else {
-          let result = variableSearcher.searchFieldByValue(node.left);
+          let result = this.variableResolver.searchFieldByValue(node.left);
           right = node.right.accept(this);
           if (result.key) {
             result.receiverNode.instanceFields[result.key] = right;
@@ -431,11 +436,9 @@ class ApexInterpreter {
   }
 
   visitThrow(node) {
-    console.log(node);
   }
 
   visitTry(node) {
-    console.log(node);
   }
 
   visitSpecialComment(node) {

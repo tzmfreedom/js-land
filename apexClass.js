@@ -1,6 +1,6 @@
 'use strict';
 
-const UpperCasedKeyStore = require('./upcased_store');
+const UpperCasedKeyStore = require('./upcased-store');
 
 class ApexClass {
   constructor(name, superClass, implementClasses, constructors, instanceFields, staticFields, instanceMethods, staticMethods, innerClasses) {

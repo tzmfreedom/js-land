@@ -1,5 +1,5 @@
 const Ast = require('./node/ast');
-const typeSearch = require('./typeSearch');
+const resolveType = require('./resolve-type');
 const Runtime = require('./runtime');
 
 class TypeBuilder {
@@ -150,7 +150,7 @@ class TypeBuilder {
   visitTriggerTiming(node) {}
 
   visitType(node) {
-    node.classNode = typeSearch(node);
+    node.classNode = resolveType(node);
   }
 
   visitVariableDeclaration(node) {
@@ -184,11 +184,9 @@ class TypeBuilder {
   }
 
   visitThrow(node) {
-    console.log(node);
   }
 
   visitTry(node) {
-    console.log(node);
   }
 
   visitSpecialComment(node) {}

@@ -1,6 +1,6 @@
 'use strict'
 
-const LocalEnvironment = require('./localEnv');
+const LocalEnvironment = require('./local-environment');
 
 class EnvManager {
   currentScope() {

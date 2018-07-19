@@ -1,6 +1,6 @@
 'use strict'
 
-const UpperCasedKeyStore = require('./upcased_store');
+const UpperCasedKeyStore = require('./upcased-store');
 
 const subscribers = new UpperCasedKeyStore();
 class DebuggerPublisher {

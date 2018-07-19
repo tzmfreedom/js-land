@@ -1,4 +1,4 @@
-const TypeStore = require('./type_store');
+const TypeStore = require('./type-store');
 const Ast = require('./node/ast');
 const Variable = require('./variable');
 const fs = require('fs');

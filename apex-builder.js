@@ -1,13 +1,18 @@
 const Ast = require('./node/ast');
 const ApexClassStore = require('./apexClass').ApexClassStore;
-const methodSearcher = require('./methodSearcher');
-const variableSearcher = require('./variableSearcher');
-const EnvManager = require('./envManager');
+const MethodResolver = require('./method-resolver');
+const VariableResolver = require('./variable-resolver');
+const EnvManager = require('./env-manager');
 const Runtime = require('./runtime');
 const Variable = require('./variable');
 const ApexClass = require('./apexClass').ApexClass;
 
 class ApexBuilder {
+  constructor() {
+    this.methodResolver = new MethodResolver(this)
+    this.variableResolver = new VariableResolver(this)
+  }
+
   visit(node) {
     EnvManager.pushScope({});
     node.accept(this);
@@ -195,7 +200,7 @@ class ApexBuilder {
 
 
   visitMethodInvocation(node) {
-    let searchResult = methodSearcher.searchMethodByType(node);
+    let searchResult = this.methodResolver.searchMethodByType(node);
     let env = {};
     if (!(searchResult.receiverNode instanceof ApexClass)) {
       env.this = {
@@ -212,7 +217,7 @@ class ApexBuilder {
   }
 
   visitName(node) {
-    let values = variableSearcher.searchFieldType(node);
+    let values = this.variableResolver.searchFieldType(node);
     if (values) return values;
     throw `Variable not declaration : ${node.value.join('.')} at line ${node.lineno}`
   }
@@ -390,11 +395,9 @@ class ApexBuilder {
   }
 
   visitThrow(node) {
-    console.log(node);
   }
 
   visitTry(node) {
-    console.log(node);
   }
 
   visitSpecialComment(node) {}

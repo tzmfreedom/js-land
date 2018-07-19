@@ -3,8 +3,8 @@
 const ApexClass        = require('./apexClass').ApexClass;
 const NameSpaceStore   = require('./apexClass').NameSpaceStore;
 const Ast              = require('./node/ast');
-const TypeStore = require('./type_store');
-const EnvManager = require('./envManager');
+const TypeStore = require('./type-store');
+const EnvManager = require('./env-manager');
 
 NameSpaceStore.register('System');
 

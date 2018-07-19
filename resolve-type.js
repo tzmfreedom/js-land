@@ -3,7 +3,7 @@
 const ApexClassStore = require('./apexClass').ApexClassStore;
 const NameSpaceStore = require('./apexClass').NameSpaceStore;
 
-const typeSearch = (node) => {
+const resolveType = (node) => {
   const names = node.name;
   const name = names[0];
 
@@ -29,4 +29,4 @@ const typeSearch = (node) => {
   }
 };
 
-module.exports = typeSearch;
+module.exports = resolveType;

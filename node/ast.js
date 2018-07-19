@@ -1,7 +1,10 @@
 const NameSpaceStore = require('../apexClass').NameSpaceStore;
-const methodSearcher = require('../methodSearcher');
-const variableSearcher = require('../variableSearcher');
-const TypeStore = require('../type_store');
+const MethodResolver = require('../method-resolver');
+const VariableResolver = require('../variable-resolver');
+const TypeStore = require('../type-store');
+
+const variableResolver = new VariableResolver();
+const methodResolver = new MethodResolver();
 
 class AnnotationNode {
   constructor(name, parameters, lineno) {
@@ -198,6 +201,8 @@ class FieldVariableNode {
     this.modifiers = modifiers;
     this.expression = expression;
     this.lineno = lineno;
+    this.setter = null;
+    this.getter = null;
   }
 
   accept(visitor) {
@@ -374,7 +379,7 @@ class MethodInvocationNode {
   }
 
   type() {
-    return methodSearcher.searchMethodByType(this).methodNode.returnType;
+    return methodResolver.searchMethodByType(this).methodNode.returnType;
   }
 }
 
@@ -389,7 +394,7 @@ class NameNode {
   }
 
   type() {
-   return variableSearcher.searchFieldType(this);
+   return variableResolver.searchFieldType(this);
   }
 }
 

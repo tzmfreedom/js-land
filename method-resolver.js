@@ -4,8 +4,8 @@ const ApexClassStore = require('./apexClass').ApexClassStore;
 const ApexClass = require('./apexClass').ApexClass;
 const NameSpaceStore = require('./apexClass').NameSpaceStore;
 const Ast = require('./node/ast');
-const EnvManager = require('./envManager');
-const argumentChecker = require('./argumentChecker');
+const EnvManager = require('./env-manager');
+const argumentChecker = require('./argument-checker');
 
 class MethodSearchResult {
   constructor(receiverNode, methodNode) {
@@ -24,7 +24,7 @@ const reduceTypeByInstanceField = (init, list, privateCheck) => {
       throw `Field is not visible: ${instanceField.name}`;
     }
     if (i !== 0 && !(instanceField.isPublic())) {
-      throw `Method is not visible: ${methodNode.name}`;
+      throw `Field is not visible: ${instanceField.name}`;
     }
     receiverNode = instanceField.type();
   }
@@ -36,12 +36,24 @@ const reduceValueByInstanceField = (init, list) => {
   for (let i = 0; i < list.length; i++) {
     if (!receiverNode) return null;
     if (!(list[i] in receiverNode.instanceFields)) return null;
-    receiverNode = receiverNode.instanceFields[list[i]].value;
+    receiverNode = getInstanceFieldValue(receiverNode, list[i])
   }
   return receiverNode;
 };
 
-class MethodSearcher {
+const getInstanceFieldValue = (receiverNode, fieldName) => {
+  const instanceField = receiverNode.classNode.instanceFields[fieldName]
+  if (instanceField.getter) {
+    instanceField.getter.statement.accept(this);
+  } else {
+    return receiverNode.instanceFields[fieldName]
+  }
+};
+
+class MethodResolver {
+  constructor (visitor) {
+    this.visitor = visitor
+  }
   searchMethod(node, reduce) {
     let names = node.nameOrExpression.value;
     let name = names[0];
@@ -200,4 +212,4 @@ class MethodSearcher {
   }
 }
 
-module.exports = new MethodSearcher();
+module.exports = MethodResolver;

@@ -4,7 +4,7 @@ const ApexClassStore = require('./apexClass').ApexClassStore;
 const ApexClass = require('./apexClass').ApexClass;
 const NameSpaceStore = require('./apexClass').NameSpaceStore;
 const Ast = require('./node/ast');
-const EnvManager = require('./envManager');
+const EnvManager = require('./env-manager');
 
 const reduceTypeByInstanceField = (init, list, privateCheck) => {
   let receiverNode = init.type();
@@ -19,7 +19,7 @@ const reduceTypeByInstanceField = (init, list, privateCheck) => {
       throw `Field is not visible: ${instanceField.name}`;
     }
     if (i !== 0 && !(instanceField.isPublic())) {
-      throw `Method is not visible: ${methodNode.name}`;
+      throw `Method is not visible: ${instanceField.name}`;
     }
     receiverNode = instanceField.type();
   }
@@ -47,7 +47,11 @@ class VariableSearchResult {
   }
 }
 
-class VariableSearcher {
+class VariableResolver {
+  constructor(visitor) {
+    this.visitor = visitor
+  }
+
   searchField(node, reduce, fieldIncludes) {
     let names = node.value;
     let name = names[0];
@@ -136,4 +140,4 @@ class VariableSearcher {
   }
 }
 
-module.exports = new VariableSearcher();
+module.exports = VariableResolver;

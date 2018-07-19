@@ -1,6 +1,6 @@
 'use strict'
 
-const typeSearch = require('./typeSearch');
+const resolveType = require('./resolve-type');
 
 const argumentChecker = (methodNodes, parameters) => {
   const parameterTypeClasses = parameters.map((parameter) => {
@@ -40,7 +40,7 @@ const matchType = (methodParameterTypeClass, invokeParameterTypeClass) => {
       matchedClass = matchType(methodParameterTypeClass, invokeParameterTypeClass.superClass);
       if (matchedClass) return matchedClass;
     } else if (invokeParameterTypeClass.name !== 'Object') {
-      matchedClass = matchType(methodParameterTypeClass, typeSearch({ name: ['Object']}));
+      matchedClass = matchType(methodParameterTypeClass, resolveType({ name: ['Object']}));
       if (matchedClass) return matchedClass;
     }
     if (invokeParameterTypeClass.implementClasses) {
