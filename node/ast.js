@@ -1,10 +1,7 @@
 const NameSpaceStore = require('../apexClass').NameSpaceStore;
-const MethodResolver = require('../method-resolver');
-const VariableResolver = require('../variable-resolver');
+const methodResolver = require('../method-resolver');
+const variableResolver = require('../variable-resolver');
 const TypeStore = require('../type-store');
-
-const variableResolver = new VariableResolver();
-const methodResolver = new MethodResolver();
 
 class AnnotationNode {
   constructor(name, parameters, lineno) {
@@ -706,7 +703,8 @@ class BlockNode {
 }
 
 class GetterSetterNode {
-  constructor(modifiers, methodBody, lineno) {
+  constructor(type, modifiers, methodBody, lineno) {
+    this.type = type;
     this.modifiers = modifiers;
     this.methodBody = methodBody;
     this.lineno = lineno;
@@ -715,14 +713,33 @@ class GetterSetterNode {
   accept(visitor) {
     return visitor.visitGetterSetter(this);
   }
+
+  isPrivate() {
+    return this.modifiers.some((modifier) => {
+      return modifier.name === 'private';
+    });
+  }
+
+  isProtected() {
+    return this.modifiers.some((modifier) => {
+      return modifier.name === 'protected';
+    });
+  }
+
+  isPublic() {
+    const isPublic = this.modifiers.some((modifier) => {
+      return modifier.name === 'public';
+    });
+    return (isPublic || this.modifiers.length == 0)
+  }
 }
 
 class PropertyDeclarationNode {
-  constructor(modifiers, type, identifier, getter_or_setter, lineno) {
+  constructor(modifiers, type, identifier, getter_setters, lineno) {
     this.modifiers = modifiers;
     this.type = type;
     this.identifier = identifier;
-    this.getter_or_setter = getter_or_setter;
+    this.getter_setters = getter_setters;
     this.lineno = lineno;
   }
 

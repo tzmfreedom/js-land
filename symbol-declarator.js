@@ -1,7 +1,7 @@
 let Ast = require('./node/ast');
 let ApexClassStore = require('./apexClass').ApexClassStore;
 let ApexClass = require('./apexClass').ApexClass;
-let MethodResolver = require('./method-resolver');
+let methodResolver = require('./method-resolver');
 let TriggerStore = require('./trigger-store');
 
 class SymbolDeclarator {
@@ -67,11 +67,13 @@ class SymbolDeclarator {
           new Ast.NullNode(declaration.lineno),
           declaration.lineno
         );
-        if (declaration.getter_or_setter.type == 'setter') {
-          instanceFields[fieldName].setter = declaration.getter_or_setter.methodBody;
-        } else {
-          instanceFields[fieldName].getter = declaration.getter_or_setter.methodBody;
-        }
+        declaration.getter_setters.forEach((getter_setter) => {
+          if (getter_setter.type == 'setter') {
+            instanceFields[fieldName].setter = getter_setter;
+          } else {
+            instanceFields[fieldName].getter = getter_setter;
+          }
+        })
       } else {
         declaration.declarators.forEach((declarator) => {
           let fieldName = declarator.name;

@@ -265,7 +265,7 @@ ApexAstBuilder.prototype.visitPropertyDeclaration = function(ctx) {
 // Visit a parse tree produced by apexParser#propertyBodyDeclaration.
 ApexAstBuilder.prototype.visitPropertyBodyDeclaration = function(ctx) {
   return ctx.propertyBlock().map((propertyBlock) => {
-    propertyBlock.accept(this);
+    return propertyBlock.accept(this);
   });
 };
 
@@ -654,20 +654,8 @@ ApexAstBuilder.prototype.visitStatement = function(ctx) {
 // Visit a parse tree produced by apexParser#propertyBlock.
 ApexAstBuilder.prototype.visitPropertyBlock = function(ctx) {
   const modifiers = ctx.modifier().map((modifier) => { return modifier.accept(this); });
-  const getter_or_setter = ctx.getter() ? ctx.getter().accept(this) : ctx.setter().accept(this);
-  return new Ast.GetterSetterNode(modifiers, getter_or_setter, ctx.start.line);
-};
-
-
-// Visit a parse tree produced by apexParser#getter.
-ApexAstBuilder.prototype.visitGetter = function(ctx) {
-  ctx.methodBody() ? ctx.methodBody().accept(this) : null;
-};
-
-
-// Visit a parse tree produced by apexParser#setter.
-ApexAstBuilder.prototype.visitSetter = function(ctx) {
-  ctx.methodBody() ? ctx.methodBody().accept(this) : null;
+  const type = ctx.getter() ? 'getter' : 'setter';
+  return new Ast.GetterSetterNode(type, modifiers, null, ctx.start.line);
 };
 
 

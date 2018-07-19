@@ -1,6 +1,6 @@
 const Ast = require('./node/ast');
-const MethodResolver = require('./method-resolver');
-const VariableResolver = require('./variable-resolver');
+const methodResolver = require('./method-resolver');
+const variableResolver = require('./variable-resolver');
 const EnvManager = require('./env-manager');
 const ApexClass = require('./apexClass').ApexClass;
 const dataLoader = require('./data-loader');
@@ -11,11 +11,6 @@ const fs = require('fs');
 const Table = require('cli-table');
 
 class ApexInterpreter {
-  constructor() {
-    this.methodResolver = new MethodResolver(this)
-    this.variableResolver = new VariableResolver(this)
-  }
-
   visit(node) {
     EnvManager.pushScope({});
     node.accept(this);
@@ -160,7 +155,7 @@ class ApexInterpreter {
 
   visitMethodInvocation(node) {
     DebuggerPublisher.publish(new Event('method_invocation', node, node.lineno));
-    const searchResult = this.methodResolver.searchMethodByValue(node, this);
+    const searchResult = methodResolver.searchMethodByValue(node, this);
 
     let env = {};
     if (!(searchResult.receiverNode instanceof ApexClass)) {
@@ -193,7 +188,7 @@ class ApexInterpreter {
   }
 
   visitName(node) {
-    let result = this.variableResolver.searchFieldByValue(node);
+    let result = variableResolver.searchFieldByValue(node, this);
     if (result.key) {
       return result.receiverNode.instanceFields[result.key];
     } else {
@@ -243,7 +238,7 @@ class ApexInterpreter {
   }
 
   visitUnaryOperator(node) {
-    let result = this.variableResolver.searchFieldByValue(node.expression);
+    let result = variableResolver.searchFieldByValue(node.expression, this);
     let prev, value;
     if (result.key) {
       prev = result.receiverNode.instanceFields[result.key];
@@ -331,7 +326,7 @@ class ApexInterpreter {
           const key = node.left.key.accept(this);
           receiver._records[key.value] = right;
         } else {
-          let result = this.variableResolver.searchFieldByValue(node.left);
+          let result = variableResolver.searchFieldByValue(node.left, this);
           right = node.right.accept(this);
           if (result.key) {
             result.receiverNode.instanceFields[result.key] = right;

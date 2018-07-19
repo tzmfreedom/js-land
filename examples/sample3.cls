@@ -3,11 +3,14 @@ public class Hoge {
     public Integer b = 1;
     public static Integer b = 1;
 
+    public Integer c { private get; private set; }
+
     public Hoge() {
 
     }
 
     public Integer yo(){
+        c = 1;
         return 10;
     }
 
@@ -25,6 +28,8 @@ public class Hoge {
         System.debug(i.get(1));
         System.debug(i);
         Hoge h = new Hoge();
+        // h.c = 909090;
+        // System.debug(h.c);
         h.a = 1235787;
         System.debug(h.a);
         System.debug(h);

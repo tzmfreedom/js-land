@@ -14,46 +14,41 @@ class MethodSearchResult {
   }
 }
 
-const reduceTypeByInstanceField = (init, list, privateCheck) => {
+const reduceTypeByInstanceField = (init, fieldNames, privateCheck) => {
   let receiverNode = init.type();
-  for (let i = 0; i < list.length; i++) {
+  for (let i = 0; i < fieldNames.length; i++) {
+    const fieldName = fieldNames[i]
     if (!receiverNode) return null;
-    if (!(list[i] in receiverNode.classNode.instanceFields)) return null;
-    const instanceField = receiverNode.classNode.instanceFields[list[i]];
+    if (!(fieldName in receiverNode.classNode.instanceFields)) return null;
+    const instanceField = receiverNode.classNode.instanceFields[fieldName];
     if (i === 0 && privateCheck && !(instanceField.isPublic())) {
       throw `Field is not visible: ${instanceField.name}`;
     }
-    if (i !== 0 && !(instanceField.isPublic())) {
-      throw `Field is not visible: ${instanceField.name}`;
+    if (i !== 0) {
+      if (!(instanceField.isPublic())) {
+        throw `Field is not visible: ${instanceField.name}`;
+      }
+      if (instanceField.getter && !instanceField.getter.isPublic()) {
+        throw `Field is not visible: ${instanceField.name}`;
+      }
     }
     receiverNode = instanceField.type();
   }
   return receiverNode;
 };
 
-const reduceValueByInstanceField = (init, list) => {
+const reduceValueByInstanceField = (init, fieldNames) => {
   let receiverNode = init.value;
-  for (let i = 0; i < list.length; i++) {
+  for (let i = 0; i < fieldNames.length; i++) {
+    const fieldName = fieldNames[i]
     if (!receiverNode) return null;
-    if (!(list[i] in receiverNode.instanceFields)) return null;
-    receiverNode = getInstanceFieldValue(receiverNode, list[i])
+    if (!(fieldName in receiverNode.instanceFields)) return null;
+    receiverNode = receiverNode.instanceFields[fieldName]
   }
   return receiverNode;
 };
 
-const getInstanceFieldValue = (receiverNode, fieldName) => {
-  const instanceField = receiverNode.classNode.instanceFields[fieldName]
-  if (instanceField.getter) {
-    instanceField.getter.statement.accept(this);
-  } else {
-    return receiverNode.instanceFields[fieldName]
-  }
-};
-
 class MethodResolver {
-  constructor (visitor) {
-    this.visitor = visitor
-  }
   searchMethod(node, reduce) {
     let names = node.nameOrExpression.value;
     let name = names[0];
@@ -212,4 +207,4 @@ class MethodResolver {
   }
 }
 
-module.exports = MethodResolver;
+module.exports = new MethodResolver();

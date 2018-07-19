@@ -21,27 +21,6 @@ class ApexClass {
   }
 }
 
-class ApexMethod {
-  constructor(modifiers, returnType, identifier, parameters, throws, statements, nativeFunction) {
-    this.modifiers      = modifiers;
-    this.returnType     = returnType;
-    this.identifier     = identifier;
-    this.parameters     = parameters;
-    this.throws         = throws;
-    this.statements     = statements;
-    this.nativeFunction = nativeFunction;
-  }
-}
-
-class InstanceFieldDeclaration {
-  constructor(modifiers, type, identifier, expression) {
-    this.modifiers  = modifiers;
-    this.type       = type;
-    this.identifier = identifier;
-    this.expression = expression;
-  }
-}
-
 class ApexObject {
   constructor(classNode, instanceFields) {
     this.classNode = classNode;

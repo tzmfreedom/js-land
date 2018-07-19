@@ -1,18 +1,13 @@
 const Ast = require('./node/ast');
 const ApexClassStore = require('./apexClass').ApexClassStore;
-const MethodResolver = require('./method-resolver');
-const VariableResolver = require('./variable-resolver');
+const methodResolver = require('./method-resolver');
+const variableResolver = require('./variable-resolver');
 const EnvManager = require('./env-manager');
 const Runtime = require('./runtime');
 const Variable = require('./variable');
 const ApexClass = require('./apexClass').ApexClass;
 
 class ApexBuilder {
-  constructor() {
-    this.methodResolver = new MethodResolver(this)
-    this.variableResolver = new VariableResolver(this)
-  }
-
   visit(node) {
     EnvManager.pushScope({});
     node.accept(this);
@@ -105,7 +100,7 @@ class ApexBuilder {
     if (node.statements) {
       const returnNode = node.statements.accept(this);
       if (this.currentMethodNode.returnType.classNode !== null && !this.isReturn(returnNode)) {
-        throw `Missing return statement required return type: ${this.currentMethodNode.returnType.name.join('.')}`;
+        throw `Missing return statement required return type: ${this.currentMethodNode.returnType.name.join('.')} at line ${node.lineno}`;
       }
     }
   }
@@ -200,7 +195,7 @@ class ApexBuilder {
 
 
   visitMethodInvocation(node) {
-    let searchResult = this.methodResolver.searchMethodByType(node);
+    let searchResult = methodResolver.searchMethodByType(node);
     let env = {};
     if (!(searchResult.receiverNode instanceof ApexClass)) {
       env.this = {
@@ -217,9 +212,33 @@ class ApexBuilder {
   }
 
   visitName(node) {
-    let values = this.variableResolver.searchFieldType(node);
-    if (values) return values;
-    throw `Variable not declaration : ${node.value.join('.')} at line ${node.lineno}`
+    const resolveResult = variableResolver.searchFieldByType(node)
+    if (!resolveResult) {
+      throw `Variable not declaration : ${node.value.join('.')} at line ${node.lineno}`
+    }
+
+    if (resolveResult.receiverNode instanceof ApexClass) {
+      const field = resolveResult.receiverNode.staticFields[resolveResult.key];
+      if (!(field.isPublic())) {
+        throw `Field is not visible : ${resolveResult.key} at line ${node.lineno}`;
+      }
+      return field.type;
+    } else {
+      if (resolveResult.key) {
+        if (node.value.length !== 2 || node.value[0] !== 'this') {
+          const field = resolveResult.receiverNode.classNode.instanceFields[resolveResult.key]
+          if (!(field.isPublic())) {
+            throw `Field is not visible : ${resolveResult.key} at line ${node.lineno}`;
+          }
+          if (field.getter && !(field.getter.isPublic())) {
+            throw `Field is not visible : ${resolveResult.key} at line ${node.lineno}`;
+          }
+          return field.type;
+        }
+      } else {
+        return EnvManager.get(resolveResult.receiverNode).type();
+      }
+    }
   }
 
   visitFieldAccess(node) {}
@@ -304,6 +323,30 @@ class ApexBuilder {
         if (!this.checkType(leftType, rightType)) {
           throw `Type not matched : left => ${leftType.name}, right => ${rightType.name} at line ${node.lineno}`
         }
+        const resolveResult = variableResolver.searchFieldByType(node.left)
+        if (resolveResult.receiverNode instanceof ApexClass) {
+          const field = resolveResult.receiverNode.staticFields[resolveResult.key];
+          if (!(field.isPublic())) {
+            throw `Field is not visible : ${resolveResult.key} at line ${node.lineno}`;
+          }
+        } else if (resolveResult.key) {
+          const receiverNode = (() => {
+            if (resolveResult.receiverNode instanceof Ast.TypeNode) {
+              return resolveResult.receiverNode;
+            } else {
+              return resolveResult.receiverNode.type();
+            }
+          })();
+          if (node.left.value.length !== 2 || node.left.value[0] !== 'this') {
+            const field = receiverNode.classNode.instanceFields[resolveResult.key]
+            if (!(field.isPublic())) {
+              throw `Field is not visible : ${resolveResult.key} at line ${node.lineno}`;
+            }
+            if (field.setter && !(field.setter.isPublic())) {
+              throw `Field is not visible : ${resolveResult.key} at line ${node.lineno}`;
+            }
+          }
+        }
         break;
       case '&=':
       case '|=':
@@ -325,7 +368,7 @@ class ApexBuilder {
 
   visitReturn(node) {
     if (this.currentMethodNode.returnType.classNode != node.type().classNode) {
-      throw `Illegal conversion from ${node.type().name.join('.')} to ${this.currentMethodNode.returnType.name.join('.')}`
+      throw `Illegal conversion from ${node.type().name.join('.')} to ${this.currentMethodNode.returnType.name.join('.')} at line ${node.lineno}`
     }
     return node;
   }
@@ -375,7 +418,7 @@ class ApexBuilder {
       returnNode = node.statements[i].accept(this);
       if (this.isReturn(returnNode)) {
         if (i < node.statements.length-1) {
-          throw `Unreachable statement ${node.statements[i].lineno+1}`;
+          throw `Unreachable statement ${node.statements[i].lineno+1} at line ${node.lineno}`;
         }
       }
     }
@@ -387,7 +430,7 @@ class ApexBuilder {
       returnNode = node.statements[i].accept(this);
       if (this.isReturn(returnNode)) {
         if (i < node.statements.length-1) {
-          throw `Unreachable statement ${node.statements[i].lineno+1}`;
+          throw `Unreachable statement ${node.statements[i].lineno+1} at line ${node.lineno}`;
         }
       }
     }
