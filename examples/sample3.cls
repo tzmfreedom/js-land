@@ -10,7 +10,7 @@ public class Hoge {
     }
 
     public Integer yo(){
-        c = 1;
+        // c = 1;
         return 10;
     }
 
@@ -78,12 +78,6 @@ public class Hoge {
             System.debug(e);
         } finally {
             System.debug(1);
-        }
-
-        try {
-            System.debug(2);
-        } finally {
-            System.debug(3);
         }
         // _debugger
         System.debug(5*2);
