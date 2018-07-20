@@ -3,14 +3,14 @@ public class Hoge {
     public Integer b = 1;
     public static Integer b = 1;
 
-    public Integer c { private get; private set; }
+    public Integer c { public get; private set; }
 
     public Hoge() {
 
     }
 
     public Integer yo(){
-        // c = 1;
+        c = 1;
         return 10;
     }
 
