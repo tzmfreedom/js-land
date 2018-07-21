@@ -8,7 +8,7 @@ debug:
 
 .PHONY: build
 build:
-	java -jar /usr/local/bin/antlr4 -Dlanguage=JavaScript -visitor apex.g4
+	java -jar /usr/local/bin/antlr4 -Dlanguage=JavaScript -visitor lib/apex.g4
 
 node/ast.js: misc/generate_node.rb misc/node.yml
 	misc/generate_node.rb < misc/node.yml > lib/node/ast.js

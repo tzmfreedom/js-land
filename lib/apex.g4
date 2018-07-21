@@ -139,6 +139,7 @@ classBodyDeclaration
     :   ';'
     |   STATIC? block
     |   modifier* memberDeclaration
+    |   LINE_COMMENT
     ;
 
 memberDeclaration
@@ -462,15 +463,15 @@ apexDbExpression
 	
 expression
     :   primary                                                 # PrimaryExpression
-    |   expression '.' accessor                               # FieldAccess
+    |   expression '.' accessor                                 # FieldAccess
     |   expression '.' explicitGenericInvocation                # OpExpression
     |   expression '[' expression ']'                           # ArrayAccess
     |   expression '(' expressionList? ')'                      # MethodInvocation
     |   NEW creator                                             # NewExpression
     |   '(' type ')' expression                                 # CastExpression
     |   expression op=('++' | '--')                             # PostUnaryExpression
-    |   op=('+'|'-'|'++'|'--') expression                       # PreUnaryExpression
-    |   op=('~'|'!') expression                                 # UnaryExpression
+    |   op=('++'|'--') expression                               # PreUnaryExpression
+    |   op=('+'|'-'|'!') expression                             # UnaryExpression
     |   expression op=('*'|'/'|'%') expression                  # OpExpression
     |   expression op=('+'|'-') expression                      # OpExpression
     |   expression ('<' '<' | '>' '>' '>' | '>' '>') expression # ShiftExpression
