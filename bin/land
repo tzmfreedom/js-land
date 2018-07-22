@@ -1,0 +1,49 @@
+#!/usr/bin/env node
+
+const cli = require('../lib/cli/cli.js')
+const argv = require('optimist').argv
+
+const rl = require('readline-sync');
+const handler = {
+  run: (words) => {
+    if (words.length === 0) {
+      cli.run('Hoge', 'action')
+    } else {
+      cli.run(words[0], words[1])
+    }
+    return true
+  },
+  execute: (words) => {
+    cli.execute(words[0], words[1])
+    return true
+  },
+  reload: (words) => {
+    cli.reloadFile(words[0], words[1])
+    return true
+  },
+  exit: (args) => {
+    return false
+  }
+}
+
+if (argv.i || argv.interactive) {
+  while (true) {
+    const words = rl.promptCL();
+    const cmd = words.shift();
+    try {
+      if (cmd in handler) {
+        const returnValue = handler[cmd].call(handler, words);
+        if (!returnValue) break;
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+} else {
+  if (argv.action) {
+    const args = argv.action.split('#')
+    cli.run(args[0], args[1])
+  } else {
+    cli.run('Hoge', 'action')
+  }
+}
