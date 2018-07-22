@@ -1,6 +1,6 @@
 .PHONY: run
 run:
-	@time bin/land
+	@time bin/land -f examples/sample3.cls --action "Hoge#action"
 
 .PHONY:debug
 debug:
