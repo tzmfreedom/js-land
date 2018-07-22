@@ -511,6 +511,7 @@ primary
     |   VOID '.' CLASS
     |   nonWildcardTypeArguments (explicitGenericInvocationSuffix | THIS arguments)
     |   SoqlLiteral
+    |   primitiveType
     ;
 
 creator
