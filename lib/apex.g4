@@ -62,7 +62,7 @@ triggerTimings
     ;
 
 triggerTiming
-    :   timing=(BEFORE | AFTER) dml=(DB_INSERT | DB_UPDATE | DB_UPSERT | DB_DELETE | DB_UNDELETE)
+    :   timing=(BEFORE | AFTER) dml=(INSERT | UPDATE | UPSERT | DELETE | UNDELETE)
     ;
 
 modifier
@@ -453,7 +453,7 @@ constantExpression
     ;
 
 apexDbExpressionShort
-    :   dml=(DB_INSERT | DB_UPSERT | DB_UPDATE | DB_DELETE | DB_UNDELETE) expression
+    :   dml=(INSERT | UPSERT | UPDATE | DELETE | UNDELETE) expression
     ;
 
 
@@ -510,7 +510,7 @@ primary
     |   type '.' CLASS
     |   VOID '.' CLASS
     |   nonWildcardTypeArguments (explicitGenericInvocationSuffix | THIS arguments)
-    |   SoqlLiteral
+    |   soqlLiteral
     |   primitiveType
     ;
 
@@ -585,18 +585,120 @@ accessor
     ;
 // Apex - SOQL literal
 
-SoqlLiteral
-    : '[' WS* SELECT (SelectRestNoInnerBrackets | SelectRestAllowingInnerBrackets)*? ']'
-	;
-	
-fragment SelectRestAllowingInnerBrackets
-	:  '[' ~']' .*? ']'
-	|	~'[' .*?
+soqlLiteral
+    : '[' query ']'
 	;
 
-fragment SelectRestNoInnerBrackets
-	:  ~'['
-	;
+query
+    : selectClause
+      fromClause
+      whereClause?
+      withClause?
+      groupClause?
+      orderClause?
+      limitClause?
+      offsetClause?
+      viewClause?
+    ;
+
+selectClause
+    : SELECT fieldList
+    ;
+
+fieldList
+    : selectField (COMMA selectField)*
+    ;
+
+selectField
+    : soqlField
+    | subquery
+    | TYPEOF soqlField
+      (WHEN Identifier THEN fieldList)+
+      ELSE fieldList
+      END
+    ;
+
+fromClause
+    : FROM Identifier (USING SCOPE filterScope)?
+    ;
+
+filterScope
+    :
+    ;
+
+soqlField
+    : (Identifier DOT)* Identifier
+    | Identifier LPAREN soqlField (COMMA selectField)* RPAREN
+    ;
+
+subquery
+    : query
+    ;
+
+whereClause
+    : WHERE whereField (and_or=(AND|OR) whereField)*
+    ;
+
+whereField
+    :
+       soqlField
+       op=(
+         '='
+         | '<'
+         | '>'
+         | '<='
+         | '>='
+         | '!='
+         | LIKE
+       )
+       soqlValue
+    ;
+
+limitClause
+    :  LIMIT (IntegerLiteral | bindVariable)
+    ;
+
+orderClause
+    :  soqlField (ASC | DESC) (NULLS (LAST | FIRST))?
+    ;
+
+bindVariable
+    :  COLON expression
+    ;
+
+soqlValue
+    :  literal
+    ;
+
+withClause
+    :  WITH DATA CATEGORY soqlFilteringExpression
+    ;
+
+soqlFilteringExpression
+    :
+    ;
+
+groupClause
+    :  GROUP BY fieldGroupList (HAVING havingConditionExpression)?
+    ;
+
+fieldGroupList
+    :
+    ;
+
+havingConditionExpression
+    :
+    ;
+
+offsetClause
+    :  OFFSET (IntegerLiteral | bindVariable)
+    ;
+
+viewClause
+    : FOR (VIEW | REFERENCE) (UPDATE (TRACKING | VIEWSTAT))?
+    ;
+
+
 // LEXER
 
 // ?3.9 Keywords
@@ -662,11 +764,40 @@ WEBSERVICE    : W E B S E R V I C E;
 APEX_WITH_SHARING :    W I T H SPACE S H A R I N G;
 APEX_WITHOUT_SHARING : W I T H O U T SPACE S H A R I N G;
 SELECT        : S E L E C T;
-DB_INSERT     : I N S E R T;
-DB_UPSERT     : U P S E R T;
-DB_UPDATE     : U P D A T E;
-DB_DELETE     : D E L E T E;
-DB_UNDELETE   : U N D E L E T E;
+FROM          : F R O M;
+WHERE         : W H E R E;
+LIMIT         : L I M I T;
+ORDER         : O R D E R;
+BY            : B Y;
+ASC           : A S C;
+DESC          : D E S C;
+WITH          : W I T H;
+TYPEOF        : T Y P E O F;
+REFERENCE     : R E F E R E N C E;
+VIEW          : V I E W;
+VIEWSTAT      : V I E W S T A T;
+TRACKING      : T R A C K I N G;
+OFFSET        : O F F S E T;
+IN            : I N;
+END           : E N D;
+USING         : U S I N G;
+DATA          : D A T A;
+CATEGORY      : C A T E G O R Y;
+GROUP         : G R O U P;
+HAVING        : H A V I N G;
+NULLS         : N U L L S;
+FIRST         : F I R S T;
+LAST          : L A S T;
+SCOPE         : S C O P E;
+ROLLUP        : R O L L U P;
+CUBE          : C U B E;
+LIKE          : L I K E;
+THEN          : T H E N;
+INSERT     : I N S E R T;
+UPSERT     : U P S E R T;
+UPDATE     : U P D A T E;
+DELETE     : D E L E T E;
+UNDELETE   : U N D E L E T E;
 TESTMETHOD   : T E S T M E T H O D;
 TRIGGER       : T R I G G E R;
 ON            : O N;
