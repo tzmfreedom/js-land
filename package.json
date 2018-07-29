@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "antlr4": "^4.7.1",
+    "better-sqlite3": "^4.1.4",
     "cli-table": "^0.3.1",
     "crypto-js": "^3.1.9-1",
     "csv-parse": "^2.5.0",
