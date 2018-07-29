@@ -627,8 +627,8 @@ filterScope
     ;
 
 soqlField
-    : (Identifier DOT)* Identifier
-    | Identifier LPAREN soqlField (COMMA selectField)* RPAREN
+    : (Identifier DOT)* Identifier  # SoqlFieldReference
+    | Identifier LPAREN soqlField (COMMA soqlField)* RPAREN # SoqlFunctionCall
     ;
 
 subquery
@@ -659,7 +659,7 @@ limitClause
     ;
 
 orderClause
-    :  soqlField (ASC | DESC) (NULLS (LAST | FIRST))?
+    :  ORDER BY soqlField asc_desc=(ASC | DESC)? (NULLS nulls=(LAST | FIRST))?
     ;
 
 bindVariable
