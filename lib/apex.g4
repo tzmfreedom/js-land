@@ -668,6 +668,7 @@ bindVariable
 
 soqlValue
     :  literal
+    |  bindVariable
     ;
 
 withClause
