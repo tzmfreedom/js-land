@@ -139,7 +139,6 @@ classBodyDeclaration
     :   ';'
     |   STATIC? block
     |   modifier* memberDeclaration
-    |   LINE_COMMENT
     ;
 
 memberDeclaration
@@ -250,10 +249,8 @@ classOrInterfaceType
 
 primitiveType
     :   BOOLEAN
-    |   CHAR
-    |   BYTE
-    |   SHORT
-    |   INT
+    |   STRING
+    |   INTEGER
     |   LONG
     |   FLOAT
     |   DOUBLE
@@ -346,11 +343,6 @@ blockStatement
     :   localVariableDeclarationStatement
     |   statement
     |   typeDeclaration
-    |   specialComment
-    ;
-
-specialComment
-    :   LINE_COMMENT
     ;
 
 localVariableDeclarationStatement
@@ -454,6 +446,7 @@ constantExpression
 
 apexDbExpressionShort
     :   dml=(INSERT | UPSERT | UPDATE | DELETE | UNDELETE) expression
+    |   UPSERT expression apexIdentifier
     ;
 
 
@@ -463,7 +456,7 @@ apexDbExpression
 	
 expression
     :   primary                                                 # PrimaryExpression
-    |   expression '.' accessor                                 # FieldAccess
+    |   expression '.' apexIdentifier                           # FieldAccess
     |   expression '.' explicitGenericInvocation                # OpExpression
     |   expression '[' expression ']'                           # ArrayAccess
     |   expression '(' expressionList? ')'                      # MethodInvocation
@@ -579,11 +572,6 @@ arguments
     :   '(' expressionList? ')'
     ;
 
-accessor
-    :   apexIdentifier
-    |   GET
-    |   SET
-    ;
 // Apex - SOQL literal
 
 soqlLiteral
@@ -629,7 +617,7 @@ filterScope
 
 soqlField
     : (apexIdentifier DOT)* apexIdentifier  # SoqlFieldReference
-    | apexIdentifier LPAREN soqlField (COMMA soqlField)* RPAREN # SoqlFunctionCall
+    | apexIdentifier LPAREN (soqlField (COMMA soqlField)*)? RPAREN # SoqlFunctionCall
     ;
 
 subquery
@@ -643,6 +631,7 @@ whereClause
 whereField
     :
        soqlField
+       SOQL_NOT?
        op=(
          '='
          | '<'
@@ -650,9 +639,12 @@ whereField
          | '<='
          | '>='
          | '!='
+         | '<>'
          | LIKE
+         | IN
        )
        soqlValue
+    |  '(' whereField (and_or=(SOQL_AND|SOQL_OR) whereField)* ')'
     ;
 
 limitClause
@@ -670,6 +662,7 @@ bindVariable
 soqlValue
     :  literal
     |  bindVariable
+    |  apexIdentifier COLON literal
     ;
 
 withClause
@@ -706,6 +699,16 @@ apexIdentifier
     |  SET
     |  DATA
     |  GROUP
+    |  DELETE
+    |  INSERT
+    |  UPDATE
+    |  UNDELETE
+    |  UPSERT
+    |  SCOPE
+    |  CATEGORY
+    |  REFERENCE
+    |  OFFSET
+    |  primitiveType
     ;
 
 // LEXER
@@ -719,9 +722,7 @@ GET           : G E T;
 ABSTRACT      : A B S T R A C T;
 BOOLEAN       : B O O L E A N;
 BREAK         : B R E A K;
-BYTE          : B Y T E;
 CATCH         : C A T C H;
-CHAR          : C H A R;
 CLASS         : C L A S S;
 CONST         : C O N S T;
 CONTINUE      : C O N T I N U E;
@@ -740,7 +741,8 @@ GOTO          : G O T O;
 IMPLEMENTS    : I M P L E M E N T S;
 IMPORT        : I M P O R T;
 INSTANCEOF    : I N S T A N C E O F;
-INT           : I N T;
+INTEGER       : I N T E G E R;
+STRING        : S T R I N G;
 INTERFACE     : I N T E R F A C E;
 LONG          : L O N G;
 NATIVE        : N A T I V E;
@@ -750,7 +752,6 @@ PRIVATE       : P R I V A T E;
 PROTECTED     : P R O T E C T E D;
 PUBLIC        : P U B L I C;
 RETURN        : R E T U R N;
-SHORT         : S H O R T;
 STATIC        : S T A T I C;
 
 SUPER         : S U P E R;
@@ -808,6 +809,7 @@ DELETE     : D E L E T E;
 UNDELETE   : U N D E L E T E;
 SOQL_AND   : A N D;
 SOQL_OR    : O R;
+SOQL_NOT   : N O T;
 TESTMETHOD   : T E S T M E T H O D;
 TRIGGER       : T R I G G E R;
 ON            : O N;
@@ -1160,7 +1162,7 @@ COMMENT_START
     ;
 
 LINE_COMMENT
-    :   '//' (~[\r\n])*
+    :   '//' (~[\r\n])* -> skip
     ;
 
 //
