@@ -54,7 +54,7 @@ typeDeclaration
     ;
 
 triggerDeclaration
-    :   TRIGGER Identifier ON Identifier '(' triggerTimings ')' block
+    :   TRIGGER apexIdentifier ON apexIdentifier '(' triggerTimings ')' block
     ;
 
 triggerTimings
@@ -96,14 +96,14 @@ variableModifier
     ;
 
 classDeclaration
-    :   CLASS Identifier
+    :   CLASS apexIdentifier
         (EXTENDS type)?
         (IMPLEMENTS typeList)?
         classBody
     ;
 
 enumDeclaration
-    :   ENUM Identifier (IMPLEMENTS typeList)?
+    :   ENUM apexIdentifier (IMPLEMENTS typeList)?
         '{' enumConstants? ','? enumBodyDeclarations? '}'
     ;
 
@@ -112,7 +112,7 @@ enumConstants
     ;
 
 enumConstant
-    :   annotation* Identifier arguments? classBody?
+    :   annotation* apexIdentifier arguments? classBody?
     ;
 
 enumBodyDeclarations
@@ -120,7 +120,7 @@ enumBodyDeclarations
     ;
 
 interfaceDeclaration
-    :   INTERFACE Identifier (EXTENDS typeList)? interfaceBody
+    :   INTERFACE apexIdentifier (EXTENDS typeList)? interfaceBody
     ;
 
 typeList
@@ -158,7 +158,7 @@ memberDeclaration
    for invalid return type after parsing.
  */
 methodDeclaration
-    :   OVERRIDE? (type|VOID) Identifier formalParameters ('[' ']')*
+    :   OVERRIDE? (type|VOID) apexIdentifier formalParameters ('[' ']')*
         (THROWS qualifiedNameList)?
         (   methodBody
         |   ';'
@@ -166,7 +166,7 @@ methodDeclaration
     ;
 
 constructorDeclaration
-    :   Identifier formalParameters (THROWS qualifiedNameList)?
+    :   apexIdentifier formalParameters (THROWS qualifiedNameList)?
         constructorBody
     ;
 
@@ -200,12 +200,12 @@ constDeclaration
     ;
 
 constantDeclarator
-    :   Identifier ('[' ']')* '=' variableInitializer
+    :   apexIdentifier ('[' ']')* '=' variableInitializer
     ;
 
 // see matching of [] comment in methodDeclaratorRest
 interfaceMethodDeclaration
-    :   (type|VOID) Identifier formalParameters ('[' ']')*
+    :   (type|VOID) apexIdentifier formalParameters ('[' ']')*
         (THROWS qualifiedNameList)?
         ';'
     ;
@@ -219,7 +219,7 @@ variableDeclarator
     ;
 
 variableDeclaratorId
-    :   Identifier ('[' ']')*
+    :   apexIdentifier ('[' ']')*
     ;
 
 variableInitializer
@@ -232,7 +232,7 @@ arrayInitializer
     ;
 
 enumConstantName
-    :   Identifier
+    :   apexIdentifier
     ;
 
 type
@@ -244,7 +244,7 @@ typedArray
     : '[' ']'
     ;
 classOrInterfaceType
-    :   Identifier typeArguments? ('.' Identifier typeArguments? )*
+    :   apexIdentifier typeArguments? ('.' apexIdentifier typeArguments? )*
     |   SET typeArguments // 'set <' has to be defined explisitly, otherwise it clashes with SET of property setter
     ;
 
@@ -298,7 +298,7 @@ constructorBody
     ;
 
 qualifiedName
-    :   Identifier ('.' Identifier)*
+    :   apexIdentifier ('.' apexIdentifier)*
     ;
 
 literal
@@ -322,7 +322,7 @@ elementValuePairs
     ;
 
 elementValuePair
-    :   Identifier '=' elementValue
+    :   apexIdentifier '=' elementValue
     ;
 
 elementValue
@@ -371,8 +371,8 @@ statement
     |   TRY block (catchClause+ finallyBlock? | finallyBlock)
     |   RETURN expression? ';'
     |   THROW expression ';'
-    |   BREAK Identifier? ';'
-    |   CONTINUE Identifier? ';'
+    |   BREAK apexIdentifier? ';'
+    |   CONTINUE apexIdentifier? ';'
     |   ';'
     |   statementExpression ';'
     |   apexDbExpression ';'
@@ -392,7 +392,7 @@ setter
 
 
 catchClause
-    :   CATCH '(' variableModifier* catchType Identifier ')' block
+    :   CATCH '(' variableModifier* catchType apexIdentifier ')' block
     ;
 
 catchType
@@ -413,7 +413,7 @@ whenStatement
 
 whenExpression
     :   literal (',' literal)*
-    |   type Identifier
+    |   type apexIdentifier
     ;
 
 forControl
@@ -506,7 +506,7 @@ primary
     |   THIS
     |   SUPER
     |   literal
-    |   Identifier
+    |   apexIdentifier
     |   type '.' CLASS
     |   VOID '.' CLASS
     |   nonWildcardTypeArguments (explicitGenericInvocationSuffix | THIS arguments)
@@ -520,13 +520,13 @@ creator
     ;
 
 createdName
-    :   Identifier typeArgumentsOrDiamond? ('.' Identifier typeArgumentsOrDiamond?)*
+    :   apexIdentifier typeArgumentsOrDiamond? ('.' apexIdentifier typeArgumentsOrDiamond?)*
     |   primitiveType
     |   SET typeArgumentsOrDiamond // 'set <' has to be defined explisitly, otherwise it clashes with SET of property setter
     ;
 
 innerCreator
-    :   Identifier nonWildcardTypeArgumentsOrDiamond? classCreatorRest
+    :   apexIdentifier nonWildcardTypeArgumentsOrDiamond? classCreatorRest
     ;
 
 arrayCreatorRest
@@ -536,7 +536,7 @@ arrayCreatorRest
 
 mapCreatorRest
     :   '{' '}'
-    |   '{' ( Identifier | expression ) '=>' ( literal | expression ) (',' (Identifier | expression) '=>' ( literal | expression ) )* '}'
+    |   '{' ( apexIdentifier | expression ) '=>' ( literal | expression ) (',' (apexIdentifier | expression) '=>' ( literal | expression ) )* '}'
     ;
 
 setCreatorRest
@@ -567,12 +567,12 @@ nonWildcardTypeArgumentsOrDiamond
 
 superSuffix
     :   arguments
-    |   '.' Identifier arguments?
+    |   '.' apexIdentifier arguments?
     ;
 
 explicitGenericInvocationSuffix
     :   SUPER superSuffix
-    |   Identifier arguments
+    |   apexIdentifier arguments
     ;
 
 arguments
@@ -580,7 +580,7 @@ arguments
     ;
 
 accessor
-    :   Identifier
+    :   apexIdentifier
     |   GET
     |   SET
     ;
@@ -614,13 +614,13 @@ selectField
     : soqlField
     | subquery
     | TYPEOF soqlField
-      (WHEN Identifier THEN fieldList)+
+      (WHEN apexIdentifier THEN fieldList)+
       ELSE fieldList
       END
     ;
 
 fromClause
-    : FROM Identifier (USING SCOPE filterScope)?
+    : FROM apexIdentifier (USING SCOPE filterScope)?
     ;
 
 filterScope
@@ -628,8 +628,8 @@ filterScope
     ;
 
 soqlField
-    : (Identifier DOT)* Identifier  # SoqlFieldReference
-    | Identifier LPAREN soqlField (COMMA soqlField)* RPAREN # SoqlFunctionCall
+    : (apexIdentifier DOT)* apexIdentifier  # SoqlFieldReference
+    | apexIdentifier LPAREN soqlField (COMMA soqlField)* RPAREN # SoqlFunctionCall
     ;
 
 subquery
@@ -700,6 +700,13 @@ viewClause
     : FOR (VIEW | REFERENCE) (UPDATE (TRACKING | VIEWSTAT))?
     ;
 
+apexIdentifier
+    :  Identifier
+    |  GET
+    |  SET
+    |  DATA
+    |  GROUP
+    ;
 
 // LEXER
 
