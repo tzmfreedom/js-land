@@ -318,7 +318,7 @@ annotation
 annotationName : qualifiedName ;
 
 elementValuePairs
-    :   elementValuePair (',' elementValuePair)*
+    :   elementValuePair elementValuePair*
     ;
 
 elementValuePair
@@ -535,7 +535,8 @@ arrayCreatorRest
     ;
 
 mapCreatorRest
-    :   '{' ( Identifier | expression ) '=>' ( literal | expression ) (',' (Identifier | expression) '=>' ( literal | expression ) )* '}'
+    :   '{' '}'
+    |   '{' ( Identifier | expression ) '=>' ( literal | expression ) (',' (Identifier | expression) '=>' ( literal | expression ) )* '}'
     ;
 
 setCreatorRest
@@ -636,7 +637,7 @@ subquery
     ;
 
 whereClause
-    : WHERE whereField (and_or=(AND|OR) whereField)*
+    : WHERE whereField (and_or=(SOQL_AND|SOQL_OR) whereField)*
     ;
 
 whereField
@@ -708,7 +709,6 @@ OVERRIDE      : O V E R R I D E;
 VIRTUAL       : V I R T U A L;
 SET           : S E T;
 GET           : G E T;
-DATABASE      : D A T A B A S E;
 ABSTRACT      : A B S T R A C T;
 BOOLEAN       : B O O L E A N;
 BREAK         : B R E A K;
@@ -799,6 +799,8 @@ UPSERT     : U P S E R T;
 UPDATE     : U P D A T E;
 DELETE     : D E L E T E;
 UNDELETE   : U N D E L E T E;
+SOQL_AND   : A N D;
+SOQL_OR    : O R;
 TESTMETHOD   : T E S T M E T H O D;
 TRIGGER       : T R I G G E R;
 ON            : O N;
