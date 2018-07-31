@@ -243,7 +243,7 @@ typedArray
     : '[' ']'
     ;
 classOrInterfaceType
-    :   apexIdentifier typeArguments? ('.' apexIdentifier typeArguments? )*
+    :   typeIdentifier typeArguments? ('.' typeIdentifier typeArguments? )*
     |   SET typeArguments // 'set <' has to be defined explisitly, otherwise it clashes with SET of property setter
     ;
 
@@ -730,6 +730,22 @@ apexIdentifier
     |  primitiveType
     ;
 
+typeIdentifier
+    :  Identifier
+    |  GET
+    |  SET
+    |  DATA
+    |  GROUP
+    |  SCOPE
+    |  CATEGORY
+    |  REFERENCE
+    |  OFFSET
+    |  THEN
+    |  FIND
+    |  RETURNING
+    |  ALL
+    |  FIELDS
+    ;
 // LEXER
 
 // ?3.9 Keywords
