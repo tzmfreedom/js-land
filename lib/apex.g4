@@ -470,7 +470,7 @@ expression
     |   expression ('<' '<' | '>' '>' '>' | '>' '>') expression # ShiftExpression
     |   expression op=('<=' | '>=' | '>' | '<') expression      # OpExpression
     |   expression op=INSTANCEOF type                           # OpExpression
-    |   expression op=('==' | '!=') expression                  # OpExpression
+    |   expression op=('===' | '==' | '!=') expression          # OpExpression
     |   expression op='&' expression                            # OpExpression
     |   expression op='^' expression                            # OpExpression
     |   expression op='|' expression                            # OpExpression
@@ -504,6 +504,7 @@ primary
     |   VOID '.' CLASS
     |   nonWildcardTypeArguments (explicitGenericInvocationSuffix | THIS arguments)
     |   soqlLiteral
+    |   soslLiteral
     |   primitiveType
     ;
 
@@ -693,6 +694,19 @@ viewClause
     : FOR (VIEW | REFERENCE) (UPDATE (TRACKING | VIEWSTAT))?
     ;
 
+// Apex - SOSL literal
+
+soslLiteral
+    : '[' soslQuery ']'
+	;
+
+soslQuery
+    : FIND literal IN ALL FIELDS RETURNING soslReturningObject (',' soslReturningObject)*
+    ;
+
+soslReturningObject
+    : Identifier ('(' Identifier (',' Identifier)* ')')?
+    ;
 apexIdentifier
     :  Identifier
     |  GET
@@ -708,6 +722,11 @@ apexIdentifier
     |  CATEGORY
     |  REFERENCE
     |  OFFSET
+    |  THEN
+    |  FIND
+    |  RETURNING
+    |  ALL
+    |  FIELDS
     |  primitiveType
     ;
 
@@ -810,6 +829,10 @@ UNDELETE   : U N D E L E T E;
 SOQL_AND   : A N D;
 SOQL_OR    : O R;
 SOQL_NOT   : N O T;
+FIND       : F I N D;
+FIELDS     : F I E L D S;
+RETURNING  : R E T U R N I N G;
+ALL        : A L L;
 TESTMETHOD   : T E S T M E T H O D;
 TRIGGER       : T R I G G E R;
 ON            : O N;
@@ -853,8 +876,7 @@ IntegerTypeSuffix
 
 fragment
 DecimalNumeral
-    :   '0'
-    |   NonZeroDigit (Digits? | Underscores Digits)
+    :   Digits
     ;
 
 fragment
@@ -1011,8 +1033,8 @@ BinaryExponentIndicator
 // ?3.10.3 Boolean Literals
 
 BooleanLiteral
-    :   'true'
-    |   'false'
+    :   T R U E
+    |   F A L S E
     ;
 
 // ?3.10.5 String Literals
@@ -1085,6 +1107,7 @@ TILDE           : '~';
 QUESTION        : '?';
 COLON           : ':';
 EQUAL           : '==';
+T_EQUAL         : '===';
 LE              : '<=';
 GE              : '>=';
 NOTEQUAL        : '!=';
