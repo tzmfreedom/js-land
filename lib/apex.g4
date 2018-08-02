@@ -368,6 +368,7 @@ statement
     |   ';'
     |   statementExpression ';'
     |   apexDbExpression ';'
+    |   SYSTEM '.' RUNAS '(' expression ')' block
     ;
 
 propertyBlock
@@ -727,6 +728,8 @@ apexIdentifier
     |  RETURNING
     |  ALL
     |  FIELDS
+    |  RUNAS
+    |  SYSTEM
     |  primitiveType
     ;
 
@@ -745,6 +748,7 @@ typeIdentifier
     |  RETURNING
     |  ALL
     |  FIELDS
+    |  SYSTEM
     ;
 // LEXER
 
@@ -854,6 +858,8 @@ TRIGGER       : T R I G G E R;
 ON            : O N;
 BEFORE        : B E F O R E;
 AFTER         : A F T E R;
+RUNAS         : R U N A S;
+SYSTEM        : S Y S T E M;
 
 
 // ?3.10.1 Integer Literals
