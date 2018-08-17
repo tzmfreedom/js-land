@@ -468,7 +468,7 @@ expression
     |   op=('+'|'-'|'!') expression                             # UnaryExpression
     |   expression op=('*'|'/'|'%') expression                  # OpExpression
     |   expression op=('+'|'-') expression                      # OpExpression
-    |   expression ('<' '<' | '>' '>' '>' | '>' '>') expression # ShiftExpression
+    |   expression (op+='<' op+='<' | op+='>' op+='>' op+='>' | op+='>' op+='>') expression # ShiftExpression
     |   expression op=('<=' | '>=' | '>' | '<') expression      # OpExpression
     |   expression op=INSTANCEOF type                           # OpExpression
     |   expression op=('===' | '==' | '!=') expression          # OpExpression
