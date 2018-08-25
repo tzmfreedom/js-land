@@ -1,10 +1,18 @@
-# ApexParser
+# Land
+
+Salesforce Apex Execution Environment on Local System.
 
 ## Installation
 
+```bash
+npm install -g land
+```
 
 ## Usage
 
+```bash
+land -f /path/to/file --action "Foo#run"
+```
 
 ## Development
 
