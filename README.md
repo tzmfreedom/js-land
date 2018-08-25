@@ -2,10 +2,12 @@
 
 Salesforce Apex Execution Environment on Local System.
 
+**This is WIP Project. I'll release it to npm by the end of 2018. Please wait until release**
+
 ## Installation
 
 ```bash
-npm install -g land
+npm install -g salesforce-land
 ```
 
 ## Usage
@@ -18,7 +20,7 @@ land -f /path/to/file --action "Foo#run"
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/tzmfreedom/apex_parser.
+Bug reports and pull requests are welcome on GitHub at https://github.com/tzmfreedom/land.
 
 ## License
 
