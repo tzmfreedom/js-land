@@ -15,3 +15,8 @@ node/ast.js: misc/generate_node.rb misc/node.yml
 
 node/apex_interpreter.js: misc/generate_ast_visitor.rb misc/node.yml
 	misc/generate_ast_visitor.rb ApexInterpreter < misc/node.yml > misc/apex_interpreter.js
+
+.PHONY: test
+test:
+	npx mocha --require intelli-espower-loader
+
