@@ -1,6 +1,8 @@
 const assert = require('power-assert')
 const Cli = require('../lib/cli/cli')
 const request = require('request')
+const EnvManager = require('../lib/env-manager')
+const Ast = require('../lib/node/ast')
 
 const testCases = [
   {
@@ -33,8 +35,11 @@ describe('parse', () => {
 
         const actual = JSON.parse(body)
 
-        const cli = new Cli(testCase.filePath)
-        cli.run(testCase.className, 'main')
+        EnvManager.pushScope({
+          klassName: new Ast.StringNode(testCase.className)
+        })
+        const cli = new Cli(null, './test/test_cases')
+        cli.run('TestCaseHandler', 'run')
       })
     })
   })
