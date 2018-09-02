@@ -35,11 +35,13 @@ describe('parse', () => {
 
         const actual = JSON.parse(body)
 
-        EnvManager.pushScope({
-          klassName: new Ast.StringNode(testCase.className)
-        })
         const cli = new Cli(null, './test/test_cases')
-        cli.run('TestCaseHandler', 'run')
+        try {
+          const hoge = cli.run('TestCaseHandler', 'run', [new Ast.StringNode(testCase.className)])
+          console.log(hoge)
+        } catch (e) {
+          console.log(e)
+        }
       })
     })
   })
