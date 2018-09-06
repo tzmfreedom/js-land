@@ -1,6 +1,8 @@
+ACTION := Hoge1\#action
+
 .PHONY: run
 run:
-	@time bin/land -f examples/sample.cls --action "Hoge1#action"
+	time bin/land -d examples --action "$(ACTION)"
 
 .PHONY:debug
 debug:
@@ -20,3 +22,6 @@ node/apex_interpreter.js: misc/generate_ast_visitor.rb misc/node.yml
 test:
 	npx mocha --require intelli-espower-loader
 
+.PHONY: metadata
+metadata:
+	node ./metadata.js $(SOBJECT) $(SOBJECT).meta.json
