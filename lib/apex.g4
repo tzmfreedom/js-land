@@ -627,7 +627,12 @@ subquery
     ;
 
 whereClause
-    : WHERE whereField (and_or=(SOQL_AND|SOQL_OR) whereField)*
+    : WHERE whereFields
+    ;
+
+whereFields
+    : whereField
+    | whereFields and_or=(SOQL_AND|SOQL_OR) whereFields
     ;
 
 whereField
