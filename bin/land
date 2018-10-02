@@ -2,6 +2,7 @@
 
 const Cli = require('../lib/cli/cli.js')
 const argv = require('optimist').argv
+const Sqlite3Adapter = require('../lib/database/sqlite3')
 
 const rl = require('readline-sync');
 const handler = {
@@ -46,4 +47,8 @@ if (argv.i || argv.interactive) {
 } else if (argv.action) {
   const args = argv.action.split('#')
   cli.run(args[0], args[1])
+} else if (argv._.length > 0) {
+  if (argv._[0] == "db:setup") {
+    new Sqlite3Adapter().setupDB()
+  }
 }
