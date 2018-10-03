@@ -18,7 +18,7 @@ public class Hoge {
         if (false) {
             return 1;
         }
-        List<Account> accounts = [SELECT id FROM Account];
+        List<Account> accounts = [SELECT id, Name FROM Account WHERE Name LIKE '%test%' AND Name LIKE '%JS%'];
         System.debug(accounts);
         // Integer [] j = new Integer[5];
         List<Integer> i = new List<Integer>();

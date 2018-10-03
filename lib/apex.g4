@@ -651,7 +651,7 @@ whereField
          | IN
        )
        soqlValue
-    |  '(' whereField (and_or=(SOQL_AND|SOQL_OR) whereField)* ')'
+    |  '(' whereFields ')'
     ;
 
 limitClause
