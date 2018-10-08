@@ -6,8 +6,14 @@ Salesforce Apex Execution Environment on Local System.
 
 ## Installation
 
+install from npm
 ```bash
 npm install -g salesforce-land
+```
+
+setup SObject Metadata
+```bash
+land setup
 ```
 
 ## Usage

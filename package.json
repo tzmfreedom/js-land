@@ -1,10 +1,13 @@
 {
-  "name": "land",
-  "version": "1.0.0",
+  "name": "salesforce-land",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "land": "./bin/land"
   },
   "author": "",
   "license": "MIT",
@@ -14,15 +17,18 @@
     "cli-table": "^0.3.1",
     "crypto-js": "^3.1.9-1",
     "csv-parse": "^2.5.0",
+    "escape-html": "^1.0.3",
+    "fast-xml-parser": "^3.12.5",
     "optimist": "^0.6.1",
     "prompt": "^1.0.0",
     "readline-sync": "^1.4.9",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "sync-request": "^6.0.0"
   },
   "devDependencies": {
     "intelli-espower-loader": "^1.0.1",
-    "jsforce": "^1.9.0",
+    "jsforce": "^1.9.1",
     "mocha": "^5.2.0",
-    "power-assert": "^1.6.0"
+    "power-assert": "^1.6.1"
   }
 }

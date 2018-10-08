@@ -1,36 +1,89 @@
 #!/usr/bin/env node
 
-const Cli = require('../lib/cli/cli.js')
 const argv = require('optimist').argv
 
-const rl = require('readline-sync');
-const handler = {
-  run: (words) => {
-    if (words.length === 0) {
-      cli.run('Hoge', 'action')
-    } else {
-      cli.run(words[0], words[1])
-    }
-    return true
-  },
-  execute: (words) => {
-    cli.execute(words[0], words[1])
-    return true
-  },
-  reload: (words) => {
-    cli.reloadFile(words[0], words[1])
-    return true
-  },
-  exit: (args) => {
-    return false
-  }
+if (argv.i || argv.interactive) {
+  interactive()
+} else if (argv.action) {
+  run()
+} else if (argv._[0] == 'setup') {
+  createMetadata()
 }
 
-const filename = argv.f
-const dirname = argv.d
-const cli = new Cli(filename, dirname)
+function run() {
+  const Cli = require('../lib/cli/cli.js')
+  const filename = argv.f
+  const dirname = argv.d
+  const cli = new Cli(filename, dirname)
 
-if (argv.i || argv.interactive) {
+  const args = argv.action.split('#')
+  cli.run(args[0], args[1])
+}
+
+function createMetadata() {
+  const process = require('process')
+  const jsforce = require('jsforce')
+  const conn = new jsforce.Connection()
+  const prompt = require('prompt')
+  const fs = require('fs')
+
+  prompt.start()
+
+  const schema = {
+    properties: {
+      username: {
+        default: process.env.SALESFORCE_USERNAME
+      },
+      password: {
+        required: true,
+        hidden: true,
+      }
+    }
+  }
+
+  prompt.get(schema, (err, result) => {
+    conn.login(result.username, result.password, (err, userInfo) => {
+      if (err) {
+        return console.error(err)
+      }
+      conn.describeGlobal((err, result) => {
+        result.sobjects.forEach((sobject) => {
+          conn.sobject(sobject.name).describe((err, meta) => {
+            if (err) {
+              return console.error(err)
+            }
+            fs.writeFileSync(`./meta/${sobject.name}.json`, JSON.stringify(meta))
+          })
+        })
+      })
+    })
+  })
+}
+
+function interactive() {
+  const rl = require('readline-sync');
+  const handler = {
+    run: (words) => {
+      if (words.length === 0) {
+        cli.run('Hoge', 'action')
+      } else {
+        cli.run(words[0], words[1])
+      }
+      return true
+    },
+    execute: (words) => {
+      cli.execute(words[0], words[1])
+      return true
+    },
+    reload: (words) => {
+      cli.reloadFile(words[0], words[1])
+      return true
+    },
+    exit: (args) => {
+      return false
+    }
+  }
+
   while (true) {
     const words = rl.promptCL();
     const cmd = words.shift();
@@ -43,7 +96,4 @@ if (argv.i || argv.interactive) {
       console.log(e)
     }
   }
-} else if (argv.action) {
-  const args = argv.action.split('#')
-  cli.run(args[0], args[1])
 }
