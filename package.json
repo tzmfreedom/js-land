@@ -1,6 +1,6 @@
 {
   "name": "salesforce-land",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -19,6 +19,7 @@
     "csv-parse": "^2.5.0",
     "escape-html": "^1.0.3",
     "fast-xml-parser": "^3.12.5",
+    "jsforce": "^1.9.1",
     "optimist": "^0.6.1",
     "prompt": "^1.0.0",
     "readline-sync": "^1.4.9",
@@ -27,7 +28,6 @@
   },
   "devDependencies": {
     "intelli-espower-loader": "^1.0.1",
-    "jsforce": "^1.9.1",
     "mocha": "^5.2.0",
     "power-assert": "^1.6.1"
   }
