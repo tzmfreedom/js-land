@@ -46,6 +46,7 @@ function createMetadata() {
       if (err) {
         return console.error(err)
       }
+      fs.mkdirSync('meta')
       conn.describeGlobal((err, result) => {
         result.sobjects.forEach((sobject) => {
           conn.sobject(sobject.name).describe((err, meta) => {
