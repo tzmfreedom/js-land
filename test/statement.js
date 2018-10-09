@@ -8,8 +8,8 @@ const testCases = [
   {
     name: 'variable declaration',
     filePath: './test/test_cases/VariableDeclaration.cls',
-    className: 'VariableDeclaration',
-  },
+    className: 'VariableDeclaration'
+  }
 ]
 
 const ACTUAL_RESULT_URI = `https://land-developer-edition.ap4.force.com/services/apexrest/land.json`
@@ -26,7 +26,7 @@ const getActualResult = (className, callback) => {
 
 describe('parse', () => {
   testCases.forEach((testCase) => {
-    it (testCase.name, () => {
+    it(testCase.name, () => {
       getActualResult(testCase.className, (err, response, body) => {
         if (err) {
           console.error(err)
