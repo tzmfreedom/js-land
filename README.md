@@ -11,7 +11,7 @@ install from npm
 npm install -g salesforce-land
 ```
 
-setup SObject Metadata
+setup SObject Metadata (create ./meta directory on current directory)
 ```bash
 land setup
 ```
