@@ -20,6 +20,7 @@
     "escape-html": "^1.0.3",
     "fast-xml-parser": "^3.12.5",
     "jsforce": "^1.9.1",
+    "jsonfile": "^5.0.0",
     "optimist": "^0.6.1",
     "prompt": "^1.0.0",
     "readline-sync": "^1.4.9",
