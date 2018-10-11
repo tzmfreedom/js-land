@@ -1,23 +1,31 @@
 #!/usr/bin/env node
 
+const ApexRunner = require('../lib/apex-runner.js')
 const argv = require('optimist').argv
 
 if (argv.i || argv.interactive) {
-  interactive()
+  const filename = argv.f
+  const dirname = argv.d
+  let klass, action
+  if (argv.action) {
+    const args = argv.action.split('#')
+    klass = args[0]
+    action = args[1]
+  }
+  interactiveRun(filename, dirname,klass, action)
 } else if (argv.action) {
   run()
-} else if (argv._[0] == 'setup') {
+} else if (argv._[0] === 'setup') {
   createMetadata()
 }
 
 function run () {
-  const Cli = require('../lib/cli/cli.js')
   const filename = argv.f
   const dirname = argv.d
-  const cli = new Cli(filename, dirname)
+  const runner = new ApexRunner(filename, dirname)
 
   const args = argv.action.split('#')
-  cli.run(args[0], args[1])
+  runner.run(args[0], args[1])
 }
 
 function createMetadata () {
@@ -61,40 +69,84 @@ function createMetadata () {
   })
 }
 
-function interactive () {
-  const rl = require('readline-sync')
+function interactiveRun (filename, dirname, klass, action) {
+  const readline = require('readline')
   const handler = {
-    run: (words) => {
-      if (words.length === 0) {
-        cli.run('Hoge', 'action')
-      } else {
-        cli.run(words[0], words[1])
+    run: (words, cb) => {
+      if (words.length === 1) {
+        klass = words[0]
+      } else if (words.length === 2) {
+        klass = words[0]
+        action = words[1]
       }
-      return true
-    },
-    execute: (words) => {
-      cli.execute(words[0], words[1])
-      return true
-    },
-    reload: (words) => {
-      cli.reloadFile(words[0], words[1])
-      return true
-    },
-    exit: (args) => {
-      return false
-    }
-  }
 
-  while (true) {
-    const words = rl.promptCL()
-    const cmd = words.shift()
-    try {
-      if (cmd in handler) {
-        const returnValue = handler[cmd].call(handler, words)
-        if (!returnValue) break
+      if (!klass) {
+        throw new Error('specify class name')
       }
-    } catch (e) {
-      console.log(e)
+      if (!action) {
+        action = 'run'
+      }
+
+      runner.run(klass, action, [], () => { cb(true) })
+    },
+    execute: (words, cb) => {
+      if (words.length === 1) {
+        klass = words[0]
+      } else if (words.length === 2) {
+        klass = words[0]
+        action = words[1]
+      }
+
+      if (!klass) {
+        throw new Error('specify class name')
+      }
+      if (!action) {
+        action = 'run'
+      }
+      runner.execute(klass, action)
+      cb(true)
+    },
+    reload: (words, cb) => {
+      runner.reloadFile(words[0], words[1])
+      cb(true)
+    },
+    exit: (words, cb) => {
+      cb(false)
     }
   }
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  })
+  const runner = new ApexRunner(filename, dirname)
+  const question = () => {
+    rl.question('> ', (word) => {
+      const words = word.split(' ')
+      const cmd = words.shift()
+      try {
+        if (!cmd || cmd === '') {
+          question()
+          return
+        }
+
+        if (cmd in handler) {
+          handler[cmd](words, (result) => {
+            if (result) {
+              question()
+            } else {
+              rl.close()
+            }
+          })
+        } else {
+          throw new Error(`command not found: ${cmd}`)
+        }
+      } catch (e) {
+        console.log(e)
+        question()
+      }
+    })
+  }
+  runner.preload(() => {
+    question()
+  })
 }
