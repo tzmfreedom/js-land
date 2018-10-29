@@ -87,7 +87,10 @@ function interactiveRun (filename, dirname, klass, action) {
         action = 'run'
       }
 
-      runner.run(klass, action, [], () => { cb(true) })
+      runner.run(klass, action, [])
+        .then(() => {
+          cb(true)
+        })
     },
     execute: (words, cb) => {
       if (words.length === 1) {
@@ -146,7 +149,8 @@ function interactiveRun (filename, dirname, klass, action) {
       }
     })
   }
-  runner.preload(() => {
-    question()
-  })
+  runner.preload()
+    .then(() => {
+      question()
+    })
 }
