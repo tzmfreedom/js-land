@@ -25,3 +25,7 @@ test:
 .PHONY: metadata
 metadata:
 	node ./metadata.js $(SOBJECT) $(SOBJECT).meta.json
+
+.PHONY: publish
+publish:
+	npm publish
